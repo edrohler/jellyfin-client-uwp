@@ -20,8 +20,7 @@ namespace Jellyfin
         {
             SdkClientSettings = ConfigureSdkSettings();
             Services = ConfigureServices();
-
-
+            
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
@@ -31,6 +30,9 @@ namespace Jellyfin
         public SdkClientSettings SdkClientSettings { get; set; }
         
         public IServiceProvider Services { get; }
+
+        // For access to the shell's navigation Frame from the LoginViewModel (every other page has direct access to the contentFrame already)
+        public ShellPage Shell { get; set; }
         
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
@@ -54,9 +56,11 @@ namespace Jellyfin
             {
                 if (rootFrame.Content == null)
                 {
-                    rootFrame.Navigate(string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.DeviceName)) 
-                        ? typeof(LoginPage)                 // If there is no token stored, go directly to LoginPage
-                        : typeof(ShellPage), e.Arguments);  // If the user is authenticated, go to ShellPage 
+                    // Condition 1 - If there is no token stored, go to LoginPage
+                    // Condition 1 - If the user is authenticated, go to ShellPage
+                    rootFrame.Navigate(string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)) 
+                        ? typeof(LoginPage)
+                        : typeof(ShellPage), e.Arguments);
                 }
 
                 Window.Current.Activate();

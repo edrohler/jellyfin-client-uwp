@@ -1,45 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
+﻿using Jellyfin.Common;
+using Jellyfin.Helpers;
+using Jellyfin.Models;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace Jellyfin.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class LoginPage : Page
     {
         public LoginPage()
         {
-            this.InitializeComponent();            
+            this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-        }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
-        {
+            // Clear User's Credentials
+            StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 
-        }
+            // Determine if we need to show the Server URL box
+            if (e.Parameter is LogoutType logoutType)
+            {
+                switch (logoutType)
+                {
+                    case LogoutType.User:
+                        ViewModel.IsServerUrlVisible = false;
+                        break;
+                    case LogoutType.Server:
+                        ViewModel.IsServerUrlVisible = true;
+                        break;
+                }
+            }
 
-        private void ServerTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            
+
+            await ViewModel.PageReadyAsync();
         }
     }
 }

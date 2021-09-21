@@ -4,56 +4,85 @@
       xmlns:local="using:Jellyfin.Views"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:viewModels="using:Jellyfin.ViewModels"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <NavigationView x:Name="NavView">
-        <NavigationView.MenuItems>
-            <NavigationViewItem Icon="Home"
-                                Content="Home" />
-            <NavigationViewItemSeparator />
-            <NavigationViewItem Icon="AllApps"
-                                Content="Movies" />
-            <NavigationViewItem Icon="Audio"
-                                Content="Music" />
-            <NavigationViewItem Icon="Video"
-                                Content="Games" />
-        </NavigationView.MenuItems>
+    <Page.DataContext>
+        <viewModels:ShellViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
 
+    <NavigationView x:Name="NavView" 
+                    SelectionChanged="NavView_OnSelectionChanged"
+                    Loaded="NavView_OnLoaded"
+                    MenuItemsSource="{Binding MenuItems}"
+                    IsBackButtonVisible="Collapsed">
+        <NavigationView.MenuItemTemplate>
+            <DataTemplate>
+                <NavigationViewItem Content="{Binding Name}">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="{Binding Icon}" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </DataTemplate>
+        </NavigationView.MenuItemTemplate>
         <NavigationView.AutoSuggestBox>
             <AutoSuggestBox x:Name="SuggestBox"
-                            QueryIcon="Find" />
+                            ItemsSource="{Binding SuggestBoxItems}"
+                            UpdateTextOnSelect="True"
+                            QueryIcon="Find" 
+                            Text="{Binding SearchTerm, Mode=TwoWay}" />
         </NavigationView.AutoSuggestBox>
+        <NavigationView.PaneHeader>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}"
+                           FontSize="28"
+                           VerticalAlignment="Center"
+                           Text="Jellyfin" />
+                <AppBarButton Icon="Refresh" 
+                              Command="{Binding RefreshCommand}"
+                              Grid.Column="1"/>
+            </Grid>
+        </NavigationView.PaneHeader>
 
-        <NavigationView.HeaderTemplate>
-            <DataTemplate>
-                <Grid Margin="24,10,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}"
-                               FontSize="28"
-                               VerticalAlignment="Center"
-                               Text="Jellyfin" />
-                    <CommandBar Grid.Column="1"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                DefaultLabelPosition="Right"
-                                Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
-                        <AppBarButton Label="Refresh"
-                                      Icon="Refresh" />
-                        <AppBarButton Label="Import"
-                                      Icon="Import" />
-                    </CommandBar>
-                </Grid>
-            </DataTemplate>
-        </NavigationView.HeaderTemplate>
+        <!--<NavigationView.MenuItems>
+            <NavigationViewItem Icon="Home"
+                                Content="Home" />
+            <NavigationViewItem
+                Content="Movies">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets"
+                              Glyph="&#xe8b2;" />
+                    --><!-- cheatsheet for Segoe icons https://www.microsoft.com/en-us/p/simple-segoe-ui-finder/9wzdncrdhvh8 --><!--
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Icon="Audio"
+                                Content="Music" />
+            <NavigationViewItem
+                Content="Games">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets"
+                              Glyph="&#xe7fc;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem
+                Content="Photos">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets"
+                              Glyph="&#xeb9f;" />
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>-->
 
         <NavigationView.PaneFooter>
             <Grid>
                 <NavigationViewItem Content="Logout"
-                                    Icon="Switch" />
+                                    Icon="Switch"/>
             </Grid>
         </NavigationView.PaneFooter>
         

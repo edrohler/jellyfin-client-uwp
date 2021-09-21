@@ -6,12 +6,21 @@ namespace Jellyfin.Common
 {
     public static class Constants
     {
-        public static string JellyfinSettingsFile { get; } = $"{ApplicationData.Current.LocalFolder.Path}\\Jellyfin-UWP-{Environment.MachineName}.json";
+        // Constants for SdkClientSettings //
 
-        public static string AppVersion { get; } = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
+        public static string JellyfinSettingsFile = $"{ApplicationData.Current.LocalFolder.Path}\\Jellyfin-UWP-{Environment.MachineName}.json";
 
-        public static string AppName { get; } = Package.Current.DisplayName;
+        public static string AppVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
-        public static string DeviceName { get; } = Environment.MachineName;
+        public static string AppName = Package.Current.DisplayName;
+
+        public static string DeviceName = Environment.MachineName;
+
+
+        // Constants for settings and token names //
+
+        public static string AccessTokenKey = @"EmbyAuthToken";
+
+        public static string PinFilePath = $"{ApplicationData.Current.LocalFolder.Path}\\temporary-pin.txt";
     }
 }
