@@ -1,16 +1,19 @@
-﻿using Jellyfin.Sdk;
+﻿using Jellyfin.Common;
+using Jellyfin.Helpers;
+using Jellyfin.Sdk;
+using Jellyfin.Services;
 using Jellyfin.Views;
-using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Jellyfin.Common;
-using Jellyfin.Helpers;
-using Newtonsoft.Json;
 
 namespace Jellyfin
 {
@@ -18,8 +21,14 @@ namespace Jellyfin
     {
         public App()
         {
+            // We need to set the SdkClientSetting first because everything else requires it
             SdkClientSettings = ConfigureSdkSettings();
-            Services = ConfigureServices();
+
+            // We need to setup an HttpClient that has the correct headers (every service will reuse the same HttpClient instance)
+            DefaultHttpClient = ConfigureDefaultHttpClient();
+
+            // Now, we can setup the services using the previously configured requisites
+            ConfigureServices();
             
             this.InitializeComponent();
             this.Suspending += OnSuspending;
@@ -27,9 +36,9 @@ namespace Jellyfin
         
         public new static App Current => (App)Application.Current;
 
-        public SdkClientSettings SdkClientSettings { get; set; }
-        
-        public IServiceProvider Services { get; }
+        public SdkClientSettings SdkClientSettings { get; private set; }
+
+        public HttpClient DefaultHttpClient { get; private set; }
 
         // For access to the shell's navigation Frame from the LoginViewModel (every other page has direct access to the contentFrame already)
         public ShellPage Shell { get; set; }
@@ -115,20 +124,51 @@ namespace Jellyfin
                 return sdkSettings;
             }
         }
-        
-        private static IServiceProvider ConfigureServices()
+
+        private void ConfigureServices()
         {
-            var services = new ServiceCollection();
+            SystemClientService.Current.SystemClient = new SystemClient(
+                this.ConfigureSdkSettings(),
+                this.DefaultHttpClient);
 
-            // Add Jellyfin SDK services.
-            services.AddSingleton<ISystemClient, SystemClient>();
-            services.AddSingleton<IUserClient, UserClient>();
-            services.AddSingleton<IUserViewsClient, UserViewsClient>();
-            services.AddSingleton<IUserLibraryClient, UserLibraryClient>();
+            UserClientService.Current.UserLibraryClient = new UserClient(
+                this.ConfigureSdkSettings(),
+                this.DefaultHttpClient);
 
-            return services.BuildServiceProvider();
+            UserLibraryClientService.Current.UserLibraryClient = new UserLibraryClient(
+                this.ConfigureSdkSettings(),
+                this.DefaultHttpClient);
+
+            UserViewsClientService.Current.UserViewsClient = new UserViewsClient(
+                this.ConfigureSdkSettings(),
+                this.DefaultHttpClient);
         }
+        
+        private HttpClient ConfigureDefaultHttpClient()
+        {
+            // Setting up automatic decompression
+            var handler = new HttpClientHandler();
+            if (handler.SupportsAutomaticDecompression)
+                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
+            // create an Httpclient using the handler
+            var client = new HttpClient(handler);
+
+            // Set the HttpClient's headers
+            client.DefaultRequestHeaders.UserAgent.Add(
+                new ProductInfoHeaderValue(
+                    this.SdkClientSettings.ClientName,
+                    this.SdkClientSettings.ClientVersion));
+
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json", 1.0));
+
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("*/*", 0.8));
+
+            return client;
+        }
+        
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();

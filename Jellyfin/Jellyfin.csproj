@@ -126,6 +126,10 @@
     <Compile Include="Helpers\StorageHelpers.cs" />
     <Compile Include="Models\LogoutType.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
+    <Compile Include="Services\SystemClientService.cs" />
+    <Compile Include="Services\UserClientService.cs" />
+    <Compile Include="Services\UserLibraryClientService.cs" />
+    <Compile Include="Services\UserViewsClientService.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
@@ -233,9 +237,6 @@
     </PackageReference>
     <PackageReference Include="Jellyfin.Sdk">
       <Version>10.7.7</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection">
-      <Version>5.0.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.12</Version>

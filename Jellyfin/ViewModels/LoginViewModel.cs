@@ -1,20 +1,18 @@
-﻿using System;
-using System.Net.Mime;
-using System.Threading.Tasks;
-using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using CommonHelpers.Common;
+﻿using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using Jellyfin.Common;
 using Jellyfin.Helpers;
 using Jellyfin.Sdk;
+using Jellyfin.Services;
 using Jellyfin.Views;
+using System;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
 
 namespace Jellyfin.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
-        private readonly UserClient userClientService;
         private string serverUrl;
         private string username;
         private string password;
@@ -23,8 +21,6 @@ namespace Jellyfin.ViewModels
 
         public LoginViewModel()
         {
-            userClientService = (UserClient)App.Current.Services.GetService(typeof(UserClient));
-
             // The cool thing about using a "CanExecute" delegates, is that it will automatically disable a bound UI control if it returns false
             LoginCommand = new DelegateCommand(async ()=> await LoginAsync(), CanLoginExecute);
             ForgotPasswordCommand = new DelegateCommand(async () => await ForgotPasswordAsync(), CanForgotPasswordExecute);
@@ -66,7 +62,15 @@ namespace Jellyfin.ViewModels
         
         public async Task PageReadyAsync()
         {
-            // do any async work in here when page loads.
+            // Always Clear User's Credentials
+            StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
+
+            // If we also need to clear the server URL, take care of it in the two important locations
+            if (!IsServerUrlVisible)
+            {
+                App.Current.DefaultHttpClient.BaseAddress = null;
+                App.Current.SdkClientSettings.BaseUrl = "";
+            }
         }
 
         private async Task LoginAsync()
@@ -74,7 +78,12 @@ namespace Jellyfin.ViewModels
             IsBusy = true;
             IsBusyMessage = "Logging in...";
 
-            var authenticationResult = await userClientService.AuthenticateUserByNameAsync(new AuthenticateUserByName
+            // We need to set the Server URL to the HttpClient's BaseAddress and the SdkSettings BaseUrl
+            App.Current.DefaultHttpClient.BaseAddress = new Uri(this.ServerUrl, UriKind.Absolute);
+            App.Current.SdkClientSettings.BaseUrl = this.ServerUrl;
+
+            // Now, we can make a request to the server
+            var authenticationResult = await UserClientService.Current.UserLibraryClient.AuthenticateUserByNameAsync(new AuthenticateUserByName
             {
                 Username = this.Username,
                 Pw = this.Password
@@ -86,6 +95,7 @@ namespace Jellyfin.ViewModels
             // and then save the value securely
             StorageHelpers.Instance.StoreToken(Constants.AccessTokenKey, authenticationResult.AccessToken);
 
+            // when you're done, go to the ShellPage (which has HomePage as the first page in the NavigationView)
             App.Current.Shell.Frame.Navigate(typeof(ShellPage), authenticationResult.User);
 
             IsBusyMessage = "";
@@ -100,10 +110,22 @@ namespace Jellyfin.ViewModels
 
         private async Task ForgotPasswordAsync()
         {
+            if (string.IsNullOrEmpty(ServerUrl))
+            {
+                await new MessageDialog("You must complete the Server URL in order to reset your password").ShowAsync();
+                return;
+            }
+            else
+            {
+                // Set the server Url so the user can reset password
+                App.Current.DefaultHttpClient.BaseAddress = new Uri(this.ServerUrl, UriKind.Absolute);
+                App.Current.SdkClientSettings.BaseUrl = this.ServerUrl;
+            }
+
             IsBusy = true;
             IsBusyMessage = "Resetting password...";
 
-            var result =  await userClientService.ForgotPasswordAsync(new ForgotPasswordDto
+            var result =  await UserClientService.Current.UserLibraryClient.ForgotPasswordAsync(new ForgotPasswordDto
             {
                 EnteredUsername = this.Username
             });
