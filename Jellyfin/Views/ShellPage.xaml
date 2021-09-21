@@ -52,9 +52,11 @@
 
         <NavigationView.PaneFooter>
             <Grid>
-                <Button Content="Logout" Click="Button_Click" />
+                <NavigationViewItem Content="Logout"
+                                    Icon="Switch" />
             </Grid>
         </NavigationView.PaneFooter>
+        
         <Frame x:Name="ContentFrame"
                Margin="24">
             <Frame.ContentTransitions>
