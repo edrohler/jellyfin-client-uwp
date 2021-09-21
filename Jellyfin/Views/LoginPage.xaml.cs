@@ -24,17 +24,22 @@ namespace Jellyfin.Views
     {
         public LoginPage()
         {
-            this.InitializeComponent();
-
-            
+            this.InitializeComponent();            
         }
-
-        private string BaseUrl = App.ClientSettingsSdk.BaseUrl;
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
         }
 
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ServerTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            
+        }
     }
 }

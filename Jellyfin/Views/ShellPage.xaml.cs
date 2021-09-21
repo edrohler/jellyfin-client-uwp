@@ -42,7 +42,7 @@ namespace Jellyfin.Views
         {
             // Clear User's Credentials
             StorageHelpers.Instance.DeleteToken(DeviceName);
-            this.ContentFrame.Navigate(typeof(LoginPage));
+            ContentFrame.Navigate(typeof(LoginPage));
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -74,10 +74,10 @@ namespace Jellyfin.Views
             if (string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(DeviceName)))
             {
                 // if Not then login
-                this.ContentFrame.Navigate(typeof(LoginPage));
+                ContentFrame.Navigate(typeof(LoginPage));
             } else
             {
-                this.ContentFrame.Navigate(typeof(MainPage));
+                ContentFrame.Navigate(typeof(MainPage));
             }
 
         }

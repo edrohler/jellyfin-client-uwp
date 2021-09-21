@@ -8,7 +8,37 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-
+    <Grid x:Name="ContentArea"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          Width="500">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBox x:Name="ServerTextBox"
+                 Grid.Row="0"
+                 Margin="2"
+                 TextChanged="ServerTextBox_TextChanged" />
+        <TextBox x:Name="UserNameTextBox"
+                 Grid.Row="1"
+                 Margin="2"/>
+        <PasswordBox x:Name="PasswordTextBox"
+                     Grid.Row="2"
+                     Margin="2"/>
+        <Button x:Name="LoginButton"
+                Grid.Row="3"
+                Width="75"
+                Content="Login"
+                Margin="2"
+                Click="LoginButton_Click"/>
+        <Button x:Name="ForgorPasswordButton"
+                Grid.Row="3"
+                HorizontalAlignment="Center"
+                Content="Forgot Password"
+                Background="Gray"
+                Width="125" />
     </Grid>
 </Page>
