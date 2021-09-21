@@ -9,6 +9,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Jellyfin.Common;
+using Jellyfin.Helpers;
 using Newtonsoft.Json;
 
 namespace Jellyfin
@@ -53,13 +54,9 @@ namespace Jellyfin
             {
                 if (rootFrame.Content == null)
                 {
-                    // Initialize services
-                    
-
-                    // Now that we know we have a new instance of the app running, load the SdkSettings file
-                    
-
-                    rootFrame.Navigate(typeof(ShellPage), e.Arguments);
+                    rootFrame.Navigate(string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.DeviceName)) 
+                        ? typeof(LoginPage)                 // If there is no token stored, go directly to LoginPage
+                        : typeof(ShellPage), e.Arguments);  // If the user is authenticated, go to ShellPage 
                 }
 
                 Window.Current.Activate();
