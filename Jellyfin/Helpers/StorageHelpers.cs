@@ -29,8 +29,8 @@ namespace Jellyfin.Helpers
         {
             _appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            //Note: Generate your own private encryption key instead of the sample one: b78BfJKEs7g
-            var keyGenerator = new Rfc2898DeriveBytes("b78BfJKEs7g", Encoding.ASCII.GetBytes("b78BfJKEs7g"));
+            //Note: Generate your own private encryption key instead of this sample one: DsFZ3gWtpP5
+            var keyGenerator = new Rfc2898DeriveBytes("DsFZ3gWtpP5", Encoding.ASCII.GetBytes("DsFZ3gWtpP5"));
             _symmetricKey = keyGenerator.GetBytes(32);
             _initializationVector = keyGenerator.GetBytes(16);
         }

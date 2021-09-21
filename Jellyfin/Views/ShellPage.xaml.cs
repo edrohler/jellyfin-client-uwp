@@ -1,85 +1,180 @@
-﻿using Jellyfin.Helpers;
-using Jellyfin.Sdk;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
+﻿using System;
+using System.Threading.Tasks;
+using Windows.Foundation.Metadata;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
+using Jellyfin.Models;
 
 namespace Jellyfin.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class ShellPage : Page
     {
         public ShellPage()
         {
             this.InitializeComponent();
+
+            // We want to set the app-wide Shell reference right away
+            App.Current.Shell = this;
         }
 
-        private string JellyfinSettingsFile = $"{ApplicationData.Current.LocalFolder.Path}\\Jellyfin-UWP-{Environment.MachineName}.json";
-        private string ClientName = "Jellyfin Universal Windows";
-        // TODO: Read this from a build config.
-        private string ClientVersion = "0.0.1";
-        private string DeviceName = Environment.MachineName;
-        private string DeviceId;
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            // Clear User's Credentials
-            StorageHelpers.Instance.DeleteToken(DeviceName);
-            ContentFrame.Navigate(typeof(LoginPage));
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            // Store the SdkSettings Locally
-            if (!File.Exists(JellyfinSettingsFile))
+            await ViewModel.PageReadyAsync();
+
+            // Setting the initial page
+            this.ContentFrame.Navigate(typeof(HomePage));
+        }
+
+        private async void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            // This is how you'd navigate when the selection changes in the NavigationView
+            if (args.SelectedItem is NavigationViewItem selectedItem)
             {
-
-                // First Run
-                DeviceId = Guid.NewGuid().ToString();
-
-                JObject sdkSettings = new JObject(
-                    new JProperty(nameof(ClientName), ClientName),
-                    new JProperty(nameof(ClientVersion), ClientVersion),
-                    new JProperty(nameof(DeviceName), DeviceName),
-                    new JProperty(nameof(DeviceId), DeviceId));
-
-                File.WriteAllText(JellyfinSettingsFile, sdkSettings.ToString());
+                switch (selectedItem.Content)
+                {
+                    case "Home":
+                        ContentFrame.Navigate(typeof(HomePage));
+                        break;
+                    case "Movies":
+                        //ContentFrame.Navigate(typeof(MoviesPage));
+                        break;
+                    case "Music":
+                        //ContentFrame.Navigate(typeof(MusicPage));
+                        break;
+                    case "Photos":
+                        //ContentFrame.Navigate(typeof(PhotosPage));
+                        break;
+                    case "Games":
+                        //ContentFrame.Navigate(typeof(GamesPage));
+                        break;
+                    case "Logout":
+                        await AttemptLogout();
+                        break;
+                }
             }
+        }
+        
+        private async Task AttemptLogout()
+        {
+            var md = new MessageDialog("Are you sure you want to logout?", "Logout");
 
-            App.ClientSettingsSdk = new SdkClientSettings();
-            App.ClientSettingsSdk.InitializeClientSettings(ClientName, ClientVersion, DeviceName, DeviceId);
+            // Popup options (we are not limited to 2)
 
-
-            // Get Access Token 
-            // If that exists then nav to MainPage
-            if (string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(DeviceName)))
+            // Button 1. Let the LoginPage know we're only logging out the user
+            md.Commands.Add(new UICommand("Logout User", (command) =>
             {
-                // if Not then login
-                ContentFrame.Navigate(typeof(LoginPage));
-            } else
+                ContentFrame.Navigate(typeof(LoginPage), LogoutType.User);
+            }));
+
+            // Button 2. Let the login page know we need ot also change the server
+            md.Commands.Add(new UICommand("Logout Server", (command) =>
             {
-                ContentFrame.Navigate(typeof(MainPage));
+                
+                ContentFrame.Navigate(typeof(LoginPage), LogoutType.Server);
+            }));
+
+            // Button 3. Cancel
+            md.Commands.Add(new UICommand("Cancel"));
+
+            // Make sure the default button is the 3rd button (Cancel)
+            md.DefaultCommandIndex = 2;
+
+            await md.ShowAsync();
+        }
+
+
+
+        // Since the NavigationView doesn't have the same features in the older versions of Windows 10.
+        // This handy checker lets you use each version of the NavigationView's features with confidence, the values set below are recommended by Microsoft.
+        private void NavView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var navView = sender as NavigationView;
+            var rootGrid = VisualTreeHelper.GetChild(navView, 0) as Grid;
+
+            // SDK 18362 (1903)
+            // SDK 17763 (1809)
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 7))
+            {
+                // Find the back button.
+                var paneToggleButtonGrid = VisualTreeHelper.GetChild(rootGrid, 0) as Grid;
+                var buttonHolderGrid = VisualTreeHelper.GetChild(paneToggleButtonGrid, 1) as Grid;
+                var navigationViewBackButton = VisualTreeHelper.GetChild(buttonHolderGrid, 0) as Button;
+
+                navigationViewBackButton.AccessKey = "A";
+
+                if (navView.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
+                {
+                    // Set back button key tip placement mode.
+                    navigationViewBackButton.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Bottom;
+
+                    // Find the settings item and set properties.
+                    var grid = VisualTreeHelper.GetChild(rootGrid, 1) as Grid;
+                    var topNavArea = VisualTreeHelper.GetChild(grid, 0) as StackPanel;
+                    var topNavGrid = VisualTreeHelper.GetChild(topNavArea, 1) as Grid;
+                    var settingsTopNavPaneItem = VisualTreeHelper.GetChild(topNavGrid, 7) as NavigationViewItem;
+
+                    settingsTopNavPaneItem.AccessKey = "S";
+                    settingsTopNavPaneItem.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Bottom;
+                }
+                else
+                {
+                    // Set back button key tip placement mode.
+                    navigationViewBackButton.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Right;
+
+                    // Find the settings item and set properties.
+                    var grid = VisualTreeHelper.GetChild(rootGrid, 1) as Grid;
+                    var rootSplitView = VisualTreeHelper.GetChild(grid, 1) as SplitView;
+                    var grid2 = VisualTreeHelper.GetChild(rootSplitView, 0) as Grid;
+                    var paneRoot = VisualTreeHelper.GetChild(grid2, 0) as Grid;
+                    var border = VisualTreeHelper.GetChild(paneRoot, 0) as Border;
+                    var paneContentGrid = VisualTreeHelper.GetChild(border, 0) as Grid;
+                    var settingsNavPaneItem = VisualTreeHelper.GetChild(paneContentGrid, 6) as NavigationViewItem;
+
+                    settingsNavPaneItem.AccessKey = "S";
+                    settingsNavPaneItem.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Right;
+                }
             }
+            // SDK 17134 (1803)
+            else if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 6))
+            {
+                // Find the back button and set properties.
+                var paneToggleButtonGrid = VisualTreeHelper.GetChild(rootGrid, 0) as Grid;
+                var buttonHolderGrid = VisualTreeHelper.GetChild(paneToggleButtonGrid, 1) as Grid;
+                var navigationViewBackButton = VisualTreeHelper.GetChild(buttonHolderGrid, 0) as Button;
 
+                navigationViewBackButton.AccessKey = "A";
+                navigationViewBackButton.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Right;
+
+                // Find the settings item and set properties.
+                var rootSplitView = VisualTreeHelper.GetChild(rootGrid, 1) as SplitView;
+                var grid = VisualTreeHelper.GetChild(rootSplitView, 0) as Grid;
+                var paneRoot = VisualTreeHelper.GetChild(grid, 0) as Grid;
+                var border = VisualTreeHelper.GetChild(paneRoot, 0) as Border;
+                var paneContentGrid = VisualTreeHelper.GetChild(border, 0) as Grid;
+                var settingsNavPaneItem = VisualTreeHelper.GetChild(paneContentGrid, 5) as NavigationViewItem;
+
+                settingsNavPaneItem.AccessKey = "S";
+                settingsNavPaneItem.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Right;
+            }
+            // SDK 16299 (Fall Creator's Update)
+            else if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 5))
+            {
+                // Find the settings item and set properties.
+                var rootSplitView = VisualTreeHelper.GetChild(rootGrid, 1) as SplitView;
+                var grid = VisualTreeHelper.GetChild(rootSplitView, 0) as Grid;
+                var paneRoot = VisualTreeHelper.GetChild(grid, 0) as Grid;
+                var border = VisualTreeHelper.GetChild(paneRoot, 0) as Border;
+                var paneContentGrid = VisualTreeHelper.GetChild(border, 0) as Grid;
+                var settingsNavPaneItem = VisualTreeHelper.GetChild(paneContentGrid, 4) as NavigationViewItem;
+
+                settingsNavPaneItem.AccessKey = "S";
+                settingsNavPaneItem.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Right;
+            }
         }
     }
 }
