@@ -21,7 +21,8 @@ namespace Jellyfin.ViewModels
 
         public LoginViewModel()
         {
-            // The cool thing about using a "CanExecute" delegates, is that it will automatically disable a bound UI control if it returns false
+            // The cool thing about using a "CanExecute" delegates,
+            // is that it will automatically disable a bound UI control if it returns false
             LoginCommand = new DelegateCommand(async ()=> await LoginAsync(), CanLoginExecute);
             ForgotPasswordCommand = new DelegateCommand(async () => await ForgotPasswordAsync(), CanForgotPasswordExecute);
         }
@@ -62,14 +63,28 @@ namespace Jellyfin.ViewModels
         
         public async Task PageReadyAsync()
         {
-            // Always Clear User's Credentials
-            StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
+            // Always Clear User's Credentials ?
+            // StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 
-            // If we also need to clear the server URL, take care of it in the two important locations
-            if (!IsServerUrlVisible)
+            //// If we also need to clear the server URL, take care of it in the two important locations
+            //if (!IsServerUrlVisible)
+            //{
+            //    App.Current.DefaultHttpClient.BaseAddress = null;
+            //    App.Current.SdkClientSettings.BaseUrl = "";
+            //}
+
+            if (string.IsNullOrEmpty(App.Current.SdkClientSettings.BaseUrl))
             {
-                App.Current.DefaultHttpClient.BaseAddress = null;
-                App.Current.SdkClientSettings.BaseUrl = "";
+                IsValidServerUrl = false;
+                IsServerUrlVisible = true;
+            } else
+            {
+                PublicSystemInfo ServerInfo = await ValidateServerAsync(App.Current.SdkClientSettings.BaseUrl);
+                if (!string.IsNullOrEmpty(ServerInfo.Id))
+                {
+                    IsValidServerUrl = true;
+                    IsValidServerUrl = false;
+                }
             }
         }
 
@@ -83,7 +98,7 @@ namespace Jellyfin.ViewModels
             App.Current.SdkClientSettings.BaseUrl = this.ServerUrl;
 
             // Now, we can make a request to the server
-            var authenticationResult = await UserClientService.Current.UserLibraryClient.AuthenticateUserByNameAsync(new AuthenticateUserByName
+            AuthenticationResult authenticationResult = await UserClientService.Current.UserLibraryClient.AuthenticateUserByNameAsync(new AuthenticateUserByName
             {
                 Username = this.Username,
                 Pw = this.Password
@@ -91,6 +106,7 @@ namespace Jellyfin.ViewModels
             
             // Once we have the token, we can update the SdkClientSettings (do not save the SdkClient settings json when it has the token inside!!!)
             App.Current.SdkClientSettings.AccessToken = authenticationResult.AccessToken;
+
             
             // and then save the value securely
             StorageHelpers.Instance.StoreToken(Constants.AccessTokenKey, authenticationResult.AccessToken);
@@ -125,7 +141,7 @@ namespace Jellyfin.ViewModels
             IsBusy = true;
             IsBusyMessage = "Resetting password...";
 
-            var result =  await UserClientService.Current.UserLibraryClient.ForgotPasswordAsync(new ForgotPasswordDto
+            ForgotPasswordResult result =  await UserClientService.Current.UserLibraryClient.ForgotPasswordAsync(new ForgotPasswordDto
             {
                 EnteredUsername = this.Username
             });
@@ -154,6 +170,11 @@ namespace Jellyfin.ViewModels
         {
             // the ForgotPassword method will not execute if the Username is empty
             return !string.IsNullOrEmpty(Username);
+        }
+
+        public async Task<PublicSystemInfo> ValidateServerAsync(string baseurl)
+        {
+            return await SystemClientService.Current.SystemClient.GetPublicSystemInfoAsync();
         }
     }
 }

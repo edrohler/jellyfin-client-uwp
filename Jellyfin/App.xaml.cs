@@ -4,6 +4,7 @@ using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
@@ -24,7 +25,8 @@ namespace Jellyfin
             // We need to set the SdkClientSetting first because everything else requires it
             SdkClientSettings = ConfigureSdkSettings();
 
-            // We need to setup an HttpClient that has the correct headers (every service will reuse the same HttpClient instance)
+            // We need to setup an HttpClient that has the correct headers
+            // (every service will reuse the same HttpClient instance)
             DefaultHttpClient = ConfigureDefaultHttpClient();
 
             // Now, we can setup the services using the previously configured requisites
@@ -79,6 +81,11 @@ namespace Jellyfin
         // Load SdkClientSettings (you can access any value globally using App.Current.ClientSettingsSdk)
         private SdkClientSettings ConfigureSdkSettings()
         {
+
+#if DEBUG
+            File.Delete(Constants.JellyfinSettingsFile);
+#endif
+
             if (File.Exists(Constants.JellyfinSettingsFile))
             {
                 // ************************************************ //
@@ -86,10 +93,10 @@ namespace Jellyfin
                 // ************************************************ //
 
                 // Load the existing file
-                var json = File.ReadAllText(Constants.JellyfinSettingsFile);
+                string json = File.ReadAllText(Constants.JellyfinSettingsFile);
 
                 // Deserialize the json into an SdkClientSettings object
-                var sdkSettings = JsonConvert.DeserializeObject<SdkClientSettings>(json);
+                SdkClientSettings sdkSettings = JsonConvert.DeserializeObject<SdkClientSettings>(json);
 
                 // Initialize the SdkClientSettings object
                 sdkSettings?.InitializeClientSettings(
@@ -106,20 +113,25 @@ namespace Jellyfin
                 // Scenario 2: This is the first run (or PC Settings -> Reset App was used)
                 // ************************************************************************ //
 
-                var sdkSettings = new SdkClientSettings();
+                SdkClientSettings sdkSettings = new SdkClientSettings();
 
                 // Note: It's safer to only use NewGuid() here so you don't accidentally regenerate the GUID
                 sdkSettings.InitializeClientSettings(
                     Constants.AppName,
                     Constants.AppVersion,
                     Constants.DeviceName,
-                    Guid.NewGuid().ToString());
-                
+                    Constants.DeviceId.ToString());
+
                 // Serialize the values into JSON
-                var serializedSettings = JsonConvert.SerializeObject(sdkSettings);
+                JObject serializedSettings = new JObject(
+                    new JProperty(nameof(Constants.AppName), Constants.AppName),
+                    new JProperty(nameof(Constants.AppVersion), Constants.AppVersion),
+                    new JProperty(nameof(Constants.DeviceName), Constants.DeviceName),
+                    new JProperty(nameof(Constants.DeviceId), Constants.DeviceId.ToString()),
+                    new JProperty("BaseUrl", ""));
 
                 // Save the file to local storage
-                File.WriteAllText(Constants.JellyfinSettingsFile, serializedSettings);
+                File.WriteAllText(Constants.JellyfinSettingsFile, serializedSettings.ToString());
 
                 return sdkSettings;
             }
@@ -147,12 +159,12 @@ namespace Jellyfin
         private HttpClient ConfigureDefaultHttpClient()
         {
             // Setting up automatic decompression
-            var handler = new HttpClientHandler();
+            HttpClientHandler handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             // create an Httpclient using the handler
-            var client = new HttpClient(handler);
+            HttpClient client = new HttpClient(handler);
 
             // Set the HttpClient's headers
             client.DefaultRequestHeaders.UserAgent.Add(
@@ -171,7 +183,7 @@ namespace Jellyfin
         
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
+            SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
 
             //TODO: Save application state and stop any background activity
             // This is where you need to save any state because the app has been suspended.

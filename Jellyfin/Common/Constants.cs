@@ -16,6 +16,8 @@ namespace Jellyfin.Common
 
         public static string DeviceName = Environment.MachineName;
 
+        public static Guid DeviceId = Guid.NewGuid();
+
 
         // Constants for settings and token names //
 
