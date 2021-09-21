@@ -75,6 +75,8 @@ namespace Jellyfin.Views
             md.Commands.Add(new UICommand("Logout Server", (command) =>
             {
                 
+
+
                 ContentFrame.Navigate(typeof(LoginPage), LogoutType.Server);
             }));
 
