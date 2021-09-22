@@ -10,7 +10,6 @@ namespace Jellyfin.ViewModels
             
         }
 
-        // IMPORTANT: You should never run async code in a constructor. so we signal the view model when the page is ready in this Task
         public async Task PageReadyAsync()
         {
 

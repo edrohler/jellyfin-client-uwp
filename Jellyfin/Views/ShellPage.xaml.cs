@@ -33,6 +33,7 @@ namespace Jellyfin.Views
         private async void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             // This is how you'd navigate when the selection changes in the NavigationView
+            // Will need to be more dynamic. Use a single content collection page that queries the collection on load.
             if (args.SelectedItem is NavigationViewItem selectedItem)
             {
                 switch (selectedItem.Content)
@@ -90,7 +91,7 @@ namespace Jellyfin.Views
         }
 
 
-
+        //
         // Since the NavigationView doesn't have the same features in the older versions of Windows 10.
         // This handy checker lets you use each version of the NavigationView's features with confidence, the values set below are recommended by Microsoft.
         private void NavView_OnLoaded(object sender, RoutedEventArgs e)
