@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 
 namespace Jellyfin.ViewModels
 {
@@ -102,9 +103,9 @@ namespace Jellyfin.ViewModels
             StorageHelpers.Instance.StoreToken(Constants.AccessTokenKey, authenticationResult.AccessToken);
 
             // when you're done, go to the ShellPage (which has HomePage as the first page in the NavigationView)
-            App.Current.Shell.Frame.Navigate(typeof(ShellPage), authenticationResult.User);
-
-            IsBusyMessage = "";
+            App.Current.RootFrame.Navigate(typeof(ShellPage), authenticationResult.User);
+            
+           IsBusyMessage = "";
             IsBusy = false;
         }
         
