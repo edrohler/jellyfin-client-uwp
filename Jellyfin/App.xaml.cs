@@ -45,32 +45,35 @@ namespace Jellyfin
         // For access to the shell's navigation Frame from the LoginViewModel
         // (every other page has direct access to the contentFrame already)
         public ShellPage Shell { get; set; }
-        
+
+        // For navigation outside of the ShellPage
+        public Frame RootFrame { get; set; }
+
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Frame rootFrame = Window.Current.Content as Frame;
+            RootFrame = Window.Current.Content as Frame;
             
-            if (rootFrame == null)
+            if (RootFrame == null)
             {
-                rootFrame = new Frame();
+                RootFrame = new Frame();
 
-                rootFrame.NavigationFailed += OnNavigationFailed;
+                RootFrame.NavigationFailed += OnNavigationFailed;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
                 }
                 
-                Window.Current.Content = rootFrame;
+                Window.Current.Content = RootFrame;
             }
 
             if (e.PrelaunchActivated == false)
             {
-                if (rootFrame.Content == null)
+                if (RootFrame.Content == null)
                 {
                     // Condition 1 - If there is no token stored, go to LoginPage
                     // Condition 2 - If the user is authenticated, go to ShellPage
-                    rootFrame.Navigate(string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)) 
+                    RootFrame.Navigate(string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)) 
                         ? typeof(LoginPage)
                         : typeof(ShellPage), e.Arguments);
                 }
