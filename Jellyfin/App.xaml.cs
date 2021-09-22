@@ -27,7 +27,7 @@ namespace Jellyfin
 
             // We need to setup an HttpClient that has the correct headers
             // (every service will reuse the same HttpClient instance)
-            //DefaultHttpClient = ConfigureDefaultHttpClient("");
+            DefaultHttpClient = ConfigureDefaultHttpClient();
 
             // Now, we can setup the services using the previously configured requisites
             ConfigureServices();
@@ -87,7 +87,7 @@ namespace Jellyfin
         {
 
 #if DEBUG
-            File.Delete(Constants.JellyfinSettingsFile);
+            StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 #endif
 
             if (File.Exists(Constants.JellyfinSettingsFile))
@@ -97,17 +97,20 @@ namespace Jellyfin
                 // ************************************************ //
 
                 // Load the existing file
-                string json = File.ReadAllText(Constants.JellyfinSettingsFile);
+                JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
 
-                // Deserialize the json into an SdkClientSettings object
-                SdkClientSettings sdkSettings = JsonConvert.DeserializeObject<SdkClientSettings>(json);
+                // New up and SdkClientSettings
+                SdkClientSettings sdkSettings = new SdkClientSettings();
 
                 // Initialize the SdkClientSettings object
-                sdkSettings?.InitializeClientSettings(
-                    sdkSettings.ClientName,
-                    sdkSettings.ClientVersion,
-                    sdkSettings.DeviceName,
-                    sdkSettings.DeviceId);
+                sdkSettings.InitializeClientSettings(
+                    json[nameof(Constants.AppName)].ToString(),
+                    json[nameof(Constants.AppVersion)].ToString(),
+                    json[nameof(Constants.DeviceName)].ToString(),
+                    json[nameof(Constants.DeviceId)].ToString());
+
+                // Set the known BaseUrl if any
+                sdkSettings.BaseUrl = json["BaseUrl"].ToString();
 
                 return sdkSettings;
             }
@@ -160,7 +163,7 @@ namespace Jellyfin
                 this.DefaultHttpClient);
         }
         
-        public void ConfigureDefaultHttpClient(Uri BaseUrl)
+        public HttpClient ConfigureDefaultHttpClient()
         {
             // Setting up automatic decompression
             HttpClientHandler handler = new HttpClientHandler();
@@ -168,23 +171,21 @@ namespace Jellyfin
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             // create an Httpclient using the handler
-            this.DefaultHttpClient = new HttpClient(handler);
-
-            this.DefaultHttpClient.BaseAddress = BaseUrl;
+            var client = new HttpClient(handler);
 
             // Set the HttpClient's headers
-            this.DefaultHttpClient.DefaultRequestHeaders.UserAgent.Add(
+            client.DefaultRequestHeaders.UserAgent.Add(
                 new ProductInfoHeaderValue(
                     this.SdkClientSettings.ClientName,
                     this.SdkClientSettings.ClientVersion));
 
-            this.DefaultHttpClient.DefaultRequestHeaders.Accept.Add(
+            client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json", 1.0));
 
-            this.DefaultHttpClient.DefaultRequestHeaders.Accept.Add(
+            client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("*/*", 0.8));
 
-            //return client;
+            return client;
         }
         
         private void OnSuspending(object sender, SuspendingEventArgs e)

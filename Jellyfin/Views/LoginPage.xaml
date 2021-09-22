@@ -24,20 +24,26 @@
         </Grid.RowDefinitions>
 
         <TextBox x:Name="ServerTextBox"
-                 Header="Server"
                  Text="{Binding ServerUrl, Mode=TwoWay}"
                  Visibility="{Binding IsServerUrlVisible, Converter={StaticResource BoolToVisibilityConv}}"
                  Grid.Row="0"
-                 Margin="0,10,0,0" />
+                 Margin="0,10,0,0">
+            <TextBox.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Server Url:" Margin="0,0,5,0"></TextBlock>
+                    <TextBlock Text="{Binding ServerUrlHeader}"></TextBlock>
+                </StackPanel>
+            </TextBox.Header>
+        </TextBox>
 
         <TextBox x:Name="UserNameTextBox"
-                 Header="Username"
+                 Header="Username:"
                  Text="{Binding Username, Mode=TwoWay}"
                  Grid.Row="1"
                  Margin="0,10,0,0" />
 
         <PasswordBox x:Name="PasswordTextBox"
-                     Header="Password"
+                     Header="Password:"
                      Password="{Binding Password, Mode=TwoWay}"
                      Grid.Row="2"
                      Margin="0,10,0,0" />

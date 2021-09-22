@@ -20,6 +20,7 @@ namespace Jellyfin.ViewModels
         private string serverUrl;
         private string username;
         private string password;
+        private string serverUrlHeader;
         private bool isValidServerUrl = true;
         public bool IsServerUrlVisible { get; set; }
 
@@ -34,7 +35,13 @@ namespace Jellyfin.ViewModels
         public string ServerUrl
         {
             get => serverUrl;
-            set => SetProperty(ref serverUrl, value, "ServerUrl", ValidateServer);
+            set => SetProperty(ref serverUrl, value, nameof(ServerUrl), ValidateServer);
+        }
+
+        public string ServerUrlHeader
+        {
+            get => serverUrlHeader;
+            set => SetProperty(ref serverUrlHeader, value);
         }
 
         public string Username
@@ -58,22 +65,23 @@ namespace Jellyfin.ViewModels
         public DelegateCommand LoginCommand { get; set; }
 
         public DelegateCommand ForgotPasswordCommand { get; set; }
-        
+
         public async Task PageReadyAsync()
         {
             // Always Clear User's Credentials
             StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 
             // Sets BaseUrl on Login or from settings on App Startup.
-            // If it's not present, show it.
+            // If it's not present, show show the Input.
             // Logout shouldn't remove it. Logout is for chaning the user.
             if (string.IsNullOrEmpty(App.Current.SdkClientSettings.BaseUrl))
             {
                 this.IsValidServerUrl = false;
                 this.IsServerUrlVisible = true;
-            } else
+            }
+            else
             {
-                
+
                 ServerSystemInfo = await SystemClientService.Current.SystemClient.GetPublicSystemInfoAsync();
                 if (!string.IsNullOrEmpty(ServerSystemInfo.Id))
                 {
@@ -91,24 +99,24 @@ namespace Jellyfin.ViewModels
             // Make a login request to the server
             AuthenticationResult authenticationResult = await UserClientService.Current.UserLibraryClient.AuthenticateUserByNameAsync(
                 new AuthenticateUserByName
-            {
-                Username = this.Username,
-                Pw = this.Password
-            });
-            
+                {
+                    Username = this.Username,
+                    Pw = this.Password
+                });
+
             // Once we have the token, we can update the SdkClientSettings
             App.Current.SdkClientSettings.AccessToken = authenticationResult.AccessToken;
-            
-            // and then save the value securely
+
+            // Encrypot and save the token
             StorageHelpers.Instance.StoreToken(Constants.AccessTokenKey, authenticationResult.AccessToken);
 
-            // when you're done, go to the ShellPage (which has HomePage as the first page in the NavigationView)
+            // Navigate to the ShellPage passing in the UserDto
             App.Current.RootFrame.Navigate(typeof(ShellPage), authenticationResult.User);
-            
-           IsBusyMessage = "";
+
+            IsBusyMessage = "";
             IsBusy = false;
         }
-        
+
         private async Task ForgotPasswordAsync()
         {
             if (string.IsNullOrEmpty(ServerUrl))
@@ -126,7 +134,7 @@ namespace Jellyfin.ViewModels
             IsBusy = true;
             IsBusyMessage = "Resetting password...";
 
-            ForgotPasswordResult result =  await UserClientService.Current.UserLibraryClient.ForgotPasswordAsync(new ForgotPasswordDto
+            ForgotPasswordResult result = await UserClientService.Current.UserLibraryClient.ForgotPasswordAsync(new ForgotPasswordDto
             {
                 EnteredUsername = this.Username
             });
@@ -157,9 +165,10 @@ namespace Jellyfin.ViewModels
             return !string.IsNullOrEmpty(Username);
         }
 
-        public void ValidateServer()
+
+        public async void ValidateServer()
         {
-            if(!string.IsNullOrEmpty(ServerUrl))
+            if (!string.IsNullOrEmpty(ServerUrl))
             {
                 // Check if valid URI for HttpClient
                 Uri uriResult;
@@ -168,50 +177,64 @@ namespace Jellyfin.ViewModels
 
                 if (result)
                 {
-                    // Configure the default http client.
-                    App.Current.ConfigureDefaultHttpClient(uriResult);
-                    
-
-                    // Parse settings from local storage
-                    JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
-                    json["BaseUrl"] = ServerUrl;
-
                     try
                     {
+                        // Set default http client base address.
+                        // Will throw if a previous singletone instance was configured
+                        App.Current.DefaultHttpClient.BaseAddress = uriResult;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Have to re-configure the DefaultHttpClient when Server URL is changed
+                        // Otherwise, it will throw because we're using a singleton
+                        Debug.WriteLine(ex.Message);
+                        App.Current.ConfigureDefaultHttpClient();
+                    }
+                    finally
+                    {
+                        // Parse settings from local storage
+                        JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
+                        json["BaseUrl"] = ServerUrl;
+
                         // Update App.Current Settings in Memory
                         App.Current.SdkClientSettings.BaseUrl = ServerUrl;
 
-                        // Get Jellyfin Server Info
-                        PublicSystemInfo ServerInfo = SystemClientService.Current.SystemClient.GetPublicSystemInfoAsync().Result;
-
-                        if (!string.IsNullOrEmpty(ServerInfo.Id))
+                        try
                         {
-                            // Update settings to local storage on Successful GetPublicSyInfo call
+                            // Update ValidServerUrl on Successful GetPublicSyInfo call
+                            // Will throw if a Jellyfin server is not available
+                            PublicSystemInfo ServerInfo = await SystemClientService.Current.SystemClient.GetPublicSystemInfoAsync();
+
+                            // Update settings to local storage on Successful GetPublicSysInfo call
                             File.WriteAllText(Constants.JellyfinSettingsFile, json.ToString());
 
-                            // Update ValidServerUrl on Successful GetPublicSyInfo call
+                            // Enable Login button
                             this.IsValidServerUrl = true;
-                        } else
+                            ServerUrlHeader = "Valid Jellyfin Server";
+                        }
+                        catch (Exception ex)
                         {
+                            // Catch BadRequest to GetPublicSysInfo
+                            // This means likely good URI but not a Jellyfin Server
+                            ServerUrlHeader = "Not a valid Jellyfin Server";
+                            Debug.WriteLine(ex.Message);
                             App.Current.SdkClientSettings.BaseUrl = "";
                             this.IsValidServerUrl = false;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                        App.Current.SdkClientSettings.BaseUrl = "";
-                        this.IsValidServerUrl = false;
-                    }
                 }
                 else
                 {
+                    ServerUrlHeader = "Not a valid URI";
+                    Debug.WriteLine("Not a valid URI");
                     App.Current.SdkClientSettings.BaseUrl = "";
                     this.IsValidServerUrl = false;
                 }
-            } 
+            }
             else
             {
+                ServerUrlHeader = "URI is Empty";
+                Debug.WriteLine("URI is Empty");
                 App.Current.SdkClientSettings.BaseUrl = "";
                 this.IsValidServerUrl = false;
             }
