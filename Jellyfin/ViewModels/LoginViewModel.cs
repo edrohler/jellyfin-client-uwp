@@ -72,8 +72,7 @@ namespace Jellyfin.ViewModels
             StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 
             // Sets BaseUrl on Login or from settings on App Startup.
-            // If it's not present, show show the Input.
-            // Logout shouldn't remove it. Logout is for chaning the user.
+            // If it's not present, show the ServerUrl Input.
             if (string.IsNullOrEmpty(App.Current.SdkClientSettings.BaseUrl))
             {
                 this.IsValidServerUrl = false;
@@ -104,7 +103,7 @@ namespace Jellyfin.ViewModels
                     Pw = this.Password
                 });
 
-            // Once we have the token, we can update the SdkClientSettings
+            // Update the SdkClientSettings with AccessToken
             App.Current.SdkClientSettings.AccessToken = authenticationResult.AccessToken;
 
             // Encrypot and save the token
@@ -171,8 +170,7 @@ namespace Jellyfin.ViewModels
             if (!string.IsNullOrEmpty(ServerUrl))
             {
                 // Check if valid URI for HttpClient
-                Uri uriResult;
-                bool result = Uri.TryCreate(ServerUrl, UriKind.Absolute, out uriResult)
+                bool result = Uri.TryCreate(ServerUrl, UriKind.Absolute, out Uri uriResult)
                     && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
                 if (result)
@@ -187,7 +185,7 @@ namespace Jellyfin.ViewModels
                     {
                         // Have to re-configure the DefaultHttpClient when Server URL is changed
                         // Otherwise, it will throw because we're using a singleton
-                        Debug.WriteLine(ex.Message);
+                        ExceptionLogger.LogException(ex);
                         App.Current.ConfigureDefaultHttpClient();
                     }
                     finally
@@ -217,7 +215,7 @@ namespace Jellyfin.ViewModels
                             // Catch BadRequest to GetPublicSysInfo
                             // This means likely good URI but not a Jellyfin Server
                             ServerUrlHeader = "Not a valid Jellyfin Server";
-                            Debug.WriteLine(ex.Message);
+                            ExceptionLogger.LogException(ex);
                             App.Current.SdkClientSettings.BaseUrl = "";
                             this.IsValidServerUrl = false;
                         }
@@ -226,7 +224,7 @@ namespace Jellyfin.ViewModels
                 else
                 {
                     ServerUrlHeader = "Not a valid URI";
-                    Debug.WriteLine("Not a valid URI");
+                    ExceptionLogger.LogException(new Exception("Server URL Not Valid"));
                     App.Current.SdkClientSettings.BaseUrl = "";
                     this.IsValidServerUrl = false;
                 }
@@ -234,7 +232,7 @@ namespace Jellyfin.ViewModels
             else
             {
                 ServerUrlHeader = "URI is Empty";
-                Debug.WriteLine("URI is Empty");
+                ExceptionLogger.LogException(new Exception("Server URL is Null"));
                 App.Current.SdkClientSettings.BaseUrl = "";
                 this.IsValidServerUrl = false;
             }

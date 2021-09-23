@@ -3,7 +3,6 @@ using Jellyfin.Helpers;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -22,14 +21,14 @@ namespace Jellyfin
     {
         public App()
         {
-            // We need to set the SdkClientSetting first because everything else requires it
+            // Set the SdkClientSetting first because everything else requires it
             SdkClientSettings = ConfigureSdkSettings();
 
-            // We need to setup an HttpClient that has the correct headers
+            // Setup an HttpClient with Default Headers
             // (every service will reuse the same HttpClient instance)
             DefaultHttpClient = ConfigureDefaultHttpClient();
 
-            // Now, we can setup the services using the previously configured requisites
+            // Configure Jellyfin Services
             ConfigureServices();
             
             this.InitializeComponent();
@@ -43,7 +42,6 @@ namespace Jellyfin
         public HttpClient DefaultHttpClient { get; private set; }
 
         // For access to the shell's navigation Frame from the LoginViewModel
-        // (every other page has direct access to the contentFrame already)
         public ShellPage Shell { get; set; }
 
         // For navigation outside of the ShellPage
@@ -82,19 +80,19 @@ namespace Jellyfin
             }
         }
 
-        // Load SdkClientSettings (you can access any value globally using App.Current.ClientSettingsSdk)
+        // Initialize SdkClientSettings
+        // Access globally using App.Current.ClientSettingsSdk
         private SdkClientSettings ConfigureSdkSettings()
         {
-
 #if DEBUG
             StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 #endif
 
             if (File.Exists(Constants.JellyfinSettingsFile))
             {
-                // ************************************************ //
-                // Scenario 1: the user has an existing SdkSettings
-                // ************************************************ //
+                // ************************************************************ //
+                // Sdk Setting Scenario 1: the app has an existing SdkSettings
+                // ************************************************************ //
 
                 // Load the existing file
                 JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
@@ -116,9 +114,9 @@ namespace Jellyfin
             }
             else
             {
-                // ************************************************************************ //
-                // Scenario 2: This is the first run (or PC Settings -> Reset App was used)
-                // ************************************************************************ //
+                // ********************************************************************************* //
+                // Sdk Setting Scenario: This is the first run (or PC Settings -> Reset App was used)
+                // ********************************************************************************* //
 
                 SdkClientSettings sdkSettings = new SdkClientSettings();
 
@@ -146,18 +144,21 @@ namespace Jellyfin
 
         private void ConfigureServices()
         {
+            // Configure SystemClient
             SystemClientService.Current.SystemClient = new SystemClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
+            // Configure UserClient
             UserClientService.Current.UserLibraryClient = new UserClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
-
+            // Configure UserLibraryClient
             UserLibraryClientService.Current.UserLibraryClient = new UserLibraryClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
+            // Configure UserViewsClient
             UserViewsClientService.Current.UserViewsClient = new UserViewsClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
@@ -165,12 +166,12 @@ namespace Jellyfin
         
         public HttpClient ConfigureDefaultHttpClient()
         {
-            // Setting up automatic decompression
+            // Set automatic decompression
             HttpClientHandler handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-            // create an Httpclient using the handler
+            // Create an Httpclient using the handler
             var client = new HttpClient(handler);
 
             // Set the HttpClient's headers
@@ -179,6 +180,7 @@ namespace Jellyfin
                     this.SdkClientSettings.ClientName,
                     this.SdkClientSettings.ClientVersion));
 
+            // Add Default Headers
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json", 1.0));
 
