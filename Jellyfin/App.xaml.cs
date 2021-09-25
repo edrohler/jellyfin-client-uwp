@@ -109,7 +109,7 @@ namespace Jellyfin
 
                 // Set the known BaseUrl if any
                 sdkSettings.BaseUrl = json["BaseUrl"].ToString();
-
+                sdkSettings.AccessToken = StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey);
                 return sdkSettings;
             }
             else
@@ -153,6 +153,7 @@ namespace Jellyfin
             UserClientService.Current.UserLibraryClient = new UserClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
+
             // Configure UserLibraryClient
             UserLibraryClientService.Current.UserLibraryClient = new UserLibraryClient(
                 this.SdkClientSettings,
@@ -162,6 +163,7 @@ namespace Jellyfin
             UserViewsClientService.Current.UserViewsClient = new UserViewsClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
+
         }
         
         public HttpClient ConfigureDefaultHttpClient()

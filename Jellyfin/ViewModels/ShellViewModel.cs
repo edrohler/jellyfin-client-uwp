@@ -10,12 +10,14 @@ using Jellyfin.Helpers;
 using Jellyfin.Sdk;
 using Jellyfin.Common;
 using Jellyfin.Views;
+using Jellyfin.Services;
 
 namespace Jellyfin.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {
         private string searchTerm;
+        private UserDto userDto = null;
 
         public ShellViewModel()
         {
@@ -24,12 +26,12 @@ namespace Jellyfin.ViewModels
             
             RefreshCommand = new DelegateCommand(Refresh);
 
-            // This is only so you can see menu items at design time
-            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-            {
-                LoadMenuItemsAsync().ConfigureAwait(false);
-                LoadSearchBoxNamesAsync().ConfigureAwait(false);
-            }
+            //// This is only so you can see menu items at design time
+            //if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
+            //{
+            //    LoadMenuItemsAsync().ConfigureAwait(false);
+            //    LoadSearchBoxNamesAsync().ConfigureAwait(false);
+            //}
         }
 
         public ObservableCollection<MenuDataItem> MenuItems { get; set; }
@@ -41,7 +43,8 @@ namespace Jellyfin.ViewModels
             get => searchTerm;
             set
             {
-                // The SetProperty method will return 'true' if the new value is different (anything inside the if block will run if the value changed)
+                // The SetProperty method will return 'true' if the new value is different
+                // (anything inside the if block will run if the value changed)
                 if (SetProperty(ref searchTerm, value))
                 {
                     Search();
@@ -56,62 +59,54 @@ namespace Jellyfin.ViewModels
             
         }
 
-        // IMPORTANT: You should never run async code in a constructor. so we signal the view model when the page is ready in this Task
         public async Task PageReadyAsync()
         {
-            await LoadMenuItemsAsync();
+            this.userDto = await UserClientService.Current.UserLibraryClient.GetCurrentUserAsync();
 
-            await LoadSearchBoxNamesAsync();
+            await LoadMenuItemsAsync(userDto.Id);
+
+            //await LoadSearchBoxNamesAsync();
         }
 
-        private async Task LoadMenuItemsAsync()
+        private async Task LoadMenuItemsAsync(Guid userId)
         {
-            // START - API simulation code
-            // Just simulating getting the user's libraries
-            await Task.Delay(1000);
-
-            // This is only to mimic what you'll get from the API ( I doubt groupItem is the correct model). 
-            var mediaLibraries = new List<string>()
-            {
-                "Home",
-                "TV",
-                "Movies",
-                "Music",
-                "Photos",
-                "Games"
-            };
-
-            // END - API simulation code
-            
-            
-            // Now you can iterate over the user's groups/library and create a menu item for it
+            // Get User Collections for Menu
+            BaseItemDtoQueryResult userViews = await UserViewsClientService.Current.UserViewsClient.GetUserViewsAsync(userId);
 
             // In case this is a refresh
             MenuItems.Clear();
 
-            // Iterate over the API results for the libraries, and create menu item
-            foreach (var libraryItem in mediaLibraries)
+            // Add Home Menu Item
+            MenuItems.Add(new MenuDataItem
             {
-                var item = new MenuDataItem
+                Name = "Home",
+                Icon = IconHelper.GetIconForItem("Home")
+            });
+
+            // Iterate over the API results for the libraries, and create additional menu items
+            foreach (BaseItemDto libraryItem in userViews.Items)
+            {
+                MenuDataItem item = new MenuDataItem
                 {
-                    Name = libraryItem,
-                    Icon = IconHelper.GetIconForItem(libraryItem)
+                    Name = libraryItem.Name,
+                    Icon = IconHelper.GetIconForItem(libraryItem.CollectionType)
                 };
 
                 MenuItems.Add(item);
             }
         }
 
-        private async Task LoadSearchBoxNamesAsync()
-        {
-            // I'm not sure if you want to keep this or not, but it's just how you'd add items to the AutosuggestBox
-            SuggestBoxItems.Add("Good Will Hunting");
-            SuggestBoxItems.Add("Avengers");
-            SuggestBoxItems.Add("when Harry Met Sally");
-            SuggestBoxItems.Add("Black Widow");
-            SuggestBoxItems.Add("Dune (1977)");
-            SuggestBoxItems.Add("dune (2021)");
-        }
+        //private async Task LoadSearchBoxNamesAsync()
+        //{
+        //    // I'm not sure if you want to keep this or not,
+        //    // but it's just how you'd add items to the AutosuggestBox
+        //    SuggestBoxItems.Add("Good Will Hunting");
+        //    SuggestBoxItems.Add("Avengers");
+        //    SuggestBoxItems.Add("when Harry Met Sally");
+        //    SuggestBoxItems.Add("Black Widow");
+        //    SuggestBoxItems.Add("Dune (1977)");
+        //    SuggestBoxItems.Add("dune (2021)");
+        //}
         
         private void Search()
         {
