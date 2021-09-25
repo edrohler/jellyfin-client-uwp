@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -85,6 +86,7 @@ namespace Jellyfin
         private SdkClientSettings ConfigureSdkSettings()
         {
 #if DEBUG
+            // User for testing Login
             //StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 #endif
 
@@ -109,7 +111,14 @@ namespace Jellyfin
 
                 // Set the known BaseUrl if any
                 sdkSettings.BaseUrl = json["BaseUrl"].ToString();
-                sdkSettings.AccessToken = StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey);
+
+                // Checks if AccessToken exists and set the SDK Settings AccessToken from storage
+                // If not, continue to LoginPage
+                if(File.Exists($"{ApplicationData.Current.LocalFolder.Path}\\{Constants.AccessTokenKey}.txt"))
+                {
+                    sdkSettings.AccessToken = StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey);
+                }
+
                 return sdkSettings;
             }
             else
