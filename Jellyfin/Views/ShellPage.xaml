@@ -37,52 +37,25 @@
         <NavigationView.PaneHeader>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition  />
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}"
                            FontSize="28"
                            VerticalAlignment="Center"
                            Text="Jellyfin" />
-                <AppBarButton Icon="Refresh" 
+                <AppBarButton Icon="Refresh"
                               Command="{Binding RefreshCommand}"
-                              Grid.Column="1"/>
+                              Grid.Column="1" />
             </Grid>
         </NavigationView.PaneHeader>
 
-        <!--<NavigationView.MenuItems>
-            <NavigationViewItem Icon="Home"
-                                Content="Home" />
-            <NavigationViewItem
-                Content="Movies">
-                <NavigationViewItem.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets"
-                              Glyph="&#xe8b2;" />
-                    --><!-- cheatsheet for Segoe icons https://www.microsoft.com/en-us/p/simple-segoe-ui-finder/9wzdncrdhvh8 --><!--
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Icon="Audio"
-                                Content="Music" />
-            <NavigationViewItem
-                Content="Games">
-                <NavigationViewItem.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets"
-                              Glyph="&#xe7fc;"/>
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem
-                Content="Photos">
-                <NavigationViewItem.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets"
-                              Glyph="&#xeb9f;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-        </NavigationView.MenuItems>-->
-
         <NavigationView.PaneFooter>
             <Grid>
-                <NavigationViewItem Content="Logout"
-                                    Icon="Switch"/>
+                <NavigationViewItem x:Name="LogoutNavViewItem" Content="Logout"
+                                    Tapped="LogoutNavViewItem_Tapped"
+                                    KeyUp="LogoutNavViewItem_KeyUp">
+                </NavigationViewItem>
             </Grid>
         </NavigationView.PaneFooter>
         

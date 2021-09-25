@@ -30,7 +30,7 @@ namespace Jellyfin.Views
             this.ContentFrame.Navigate(typeof(HomePage));
         }
 
-        private async void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             // This is how you'd navigate when the selection changes in the NavigationView
             // Will need to be more dynamic. Use a single content collection page that queries the collection on load.
@@ -38,9 +38,6 @@ namespace Jellyfin.Views
             {
                 switch (selectedItem.Content)
                 {
-                    case "Home":
-                        ContentFrame.Navigate(typeof(HomePage));
-                        break;
                     case "Movies":
                         //ContentFrame.Navigate(typeof(MoviesPage));
                         break;
@@ -53,47 +50,18 @@ namespace Jellyfin.Views
                     case "Games":
                         //ContentFrame.Navigate(typeof(GamesPage));
                         break;
-                    case "Logout":
-                        await AttemptLogout();
+                    default:
+                        ContentFrame.Navigate(typeof(HomePage));
                         break;
                 }
             }
-        }
-        
-        private async Task AttemptLogout()
-        {
-            var md = new MessageDialog("Are you sure you want to logout?", "Logout");
-
-            // Popup options (we are not limited to 2)
-
-            // Button 1. Let the LoginPage know we're only logging out the user
-            md.Commands.Add(new UICommand("Logout User", (command) =>
-            {
-                ContentFrame.Navigate(typeof(LoginPage), LogoutType.User);
-            }));
-
-            // Button 2. Let the login page know we need ot also change the server
-            md.Commands.Add(new UICommand("Logout Server", (command) =>
-            {
-                
-
-
-                ContentFrame.Navigate(typeof(LoginPage), LogoutType.Server);
-            }));
-
-            // Button 3. Cancel
-            md.Commands.Add(new UICommand("Cancel"));
-
-            // Make sure the default button is the 3rd button (Cancel)
-            md.DefaultCommandIndex = 2;
-
-            await md.ShowAsync();
         }
 
 
         //
         // Since the NavigationView doesn't have the same features in the older versions of Windows 10.
-        // This handy checker lets you use each version of the NavigationView's features with confidence, the values set below are recommended by Microsoft.
+        // This handy checker lets you use each version of the NavigationView's features with confidence
+        // The values set below are recommended by Microsoft.
         private void NavView_OnLoaded(object sender, RoutedEventArgs e)
         {
             var navView = sender as NavigationView;
@@ -177,6 +145,42 @@ namespace Jellyfin.Views
 
                 settingsNavPaneItem.AccessKey = "S";
                 settingsNavPaneItem.KeyTipPlacementMode = Windows.UI.Xaml.Input.KeyTipPlacementMode.Right;
+            }
+        }
+
+        //
+        // Will Prompt Logout
+        private async void AttemptLogoutAsync()
+        {
+            MessageDialog md = new MessageDialog("Are you sure you want to logout?", "Logout");
+
+            // Button 1
+            md.Commands.Add(new UICommand("Logout", (command) =>
+            {
+                App.Current.RootFrame.Navigate(typeof(LoginPage));
+            }));
+
+            // Button 2. Cancel
+            md.Commands.Add(new UICommand("Cancel"));
+
+            // Make sure the default button is the 3rd button (Cancel)
+            md.DefaultCommandIndex = 2;
+
+            await md.ShowAsync();
+        }
+
+        // Catch if Logout Tapped or Clicked
+        private void LogoutNavViewItem_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            AttemptLogoutAsync();
+        }
+
+        // Catch if Logout Selected with Enter Key
+        private void LogoutNavViewItem_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                AttemptLogoutAsync();
             }
         }
     }

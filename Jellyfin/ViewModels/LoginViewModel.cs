@@ -110,7 +110,7 @@ namespace Jellyfin.ViewModels
             StorageHelpers.Instance.StoreToken(Constants.AccessTokenKey, authenticationResult.AccessToken);
 
             // Navigate to the ShellPage passing in the UserDto
-            App.Current.RootFrame.Navigate(typeof(ShellPage), authenticationResult.User);
+            App.Current.RootFrame.Navigate(typeof(ShellPage));
 
             IsBusyMessage = "";
             IsBusy = false;

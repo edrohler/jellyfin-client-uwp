@@ -10,9 +10,15 @@ namespace Jellyfin.ViewModels
             
         }
 
-        public async Task PageReadyAsync()
-        {
-
-        }
+        // Load UserDto Home Page Content
+        // Sections:
+        //      My Media Tiles to Collections
+        //      Continue Watching
+        //      Next Up
+        //      Latest for each collection
+        //public async Task PageReadyAsync()
+        //{
+            
+        //}
     }
 }
