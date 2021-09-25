@@ -8,6 +8,8 @@ using Windows.ApplicationModel;
 using CommonHelpers.Mvvm;
 using Jellyfin.Helpers;
 using Jellyfin.Sdk;
+using Jellyfin.Common;
+using Jellyfin.Views;
 
 namespace Jellyfin.ViewModels
 {

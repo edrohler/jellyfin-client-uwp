@@ -85,7 +85,7 @@ namespace Jellyfin
         private SdkClientSettings ConfigureSdkSettings()
         {
 #if DEBUG
-            StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
+            //StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 #endif
 
             if (File.Exists(Constants.JellyfinSettingsFile))
