@@ -11,7 +11,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -113,8 +112,8 @@ namespace Jellyfin
                 sdkSettings.BaseUrl = json["BaseUrl"].ToString();
 
                 // Checks if AccessToken exists and set the SDK Settings AccessToken from storage
-                // If not, continue to LoginPage
-                if(File.Exists($"{ApplicationData.Current.LocalFolder.Path}\\{Constants.AccessTokenKey}.txt"))
+                // If not, will continue to LoginPage
+                if(!string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)))
                 {
                     sdkSettings.AccessToken = StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey);
                 }
