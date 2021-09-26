@@ -130,9 +130,13 @@
     <Compile Include="Services\UserClientService.cs" />
     <Compile Include="Services\UserLibraryClientService.cs" />
     <Compile Include="Services\UserViewsClientService.cs" />
+    <Compile Include="ViewModels\LibraryViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\LibraryPage.xaml.cs">
+      <DependentUpon>LibraryPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
@@ -217,6 +221,10 @@
     <Page Include="Resources\JellyfinStyleResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\LibraryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginPage.xaml">
       <SubType>Designer</SubType>

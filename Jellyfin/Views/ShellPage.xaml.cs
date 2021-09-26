@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Jellyfin.Models;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.Views
 {
@@ -26,35 +27,26 @@ namespace Jellyfin.Views
 
             await ViewModel.PageReadyAsync();
 
+
+            // Profile Image
+            BitmapImage profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tage={App.Current.AppUser.PrimaryImageTag}"));
+            this.ProfileImage.Source = profileImage;
+            this.ProfileImage.Width = 40;
+            this.ProfileImage.Height = 40;
+
+            // Profile Name
+            this.AccountNavViewItem.Content = App.Current.AppUser.Name;
+            
             // Setting the initial page
             this.ContentFrame.Navigate(typeof(HomePage));
         }
 
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            // This is how you'd navigate when the selection changes in the NavigationView
-            // Will need to be more dynamic. Use a single content collection page that queries the collection on load.
-            if (args.SelectedItem is NavigationViewItem selectedItem)
-            {
-                switch (selectedItem.Content)
-                {
-                    case "Movies":
-                        //ContentFrame.Navigate(typeof(MoviesPage));
-                        break;
-                    case "Music":
-                        //ContentFrame.Navigate(typeof(MusicPage));
-                        break;
-                    case "Photos":
-                        //ContentFrame.Navigate(typeof(PhotosPage));
-                        break;
-                    case "Games":
-                        //ContentFrame.Navigate(typeof(GamesPage));
-                        break;
-                    default:
-                        ContentFrame.Navigate(typeof(HomePage));
-                        break;
-                }
-            }
+            MenuDataItem selectedItem = args.SelectedItem as MenuDataItem;
+
+            // Naviagte to the Grid Content Page and Pass Library Id
+            ContentFrame.Navigate(typeof(LibraryPage), selectedItem.Id);
         }
 
 

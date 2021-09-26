@@ -70,7 +70,7 @@ namespace Jellyfin.ViewModels
         private async Task LoadMenuItemsAsync(Guid userId)
         {
             // Get User Collections for Menu
-            BaseItemDtoQueryResult userViews = await UserViewsClientService.Current.UserViewsClient.GetUserViewsAsync(userId);
+            App.Current.UserViews = await UserViewsClientService.Current.UserViewsClient.GetUserViewsAsync(userId);
 
             // In case this is a refresh
             MenuItems.Clear();
@@ -83,12 +83,13 @@ namespace Jellyfin.ViewModels
             });
 
             // Iterate over the API results for the libraries, and create additional menu items
-            foreach (BaseItemDto libraryItem in userViews.Items)
+            foreach (BaseItemDto libraryItem in App.Current.UserViews.Items)
             {
                 MenuDataItem item = new MenuDataItem
                 {
                     Name = libraryItem.Name,
-                    Icon = IconHelper.GetIconForItem(libraryItem.CollectionType)
+                    Icon = IconHelper.GetIconForItem(libraryItem.CollectionType),
+                    Id = libraryItem.Id
                 };
 
                 MenuItems.Add(item);

@@ -30,18 +30,20 @@ namespace Jellyfin
 
             // Configure Jellyfin Services
             ConfigureServices();
-            
+
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
-        
+
         public new static App Current => (App)Application.Current;
 
         public SdkClientSettings SdkClientSettings { get; private set; }
 
         public HttpClient DefaultHttpClient { get; private set; }
 
+        // Jellyfin Global Objects
         public UserDto AppUser { get; set; } = null;
+        public BaseItemDtoQueryResult UserViews { get; set; } = null;
 
         // For access to the shell's navigation Frame from the LoginViewModel
         public ShellPage Shell { get; set; }
