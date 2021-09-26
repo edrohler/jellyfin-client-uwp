@@ -176,6 +176,11 @@ namespace Jellyfin
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
+            // Configure ItemsClient
+            ItemsClientService.Current.ItemsClient = new ItemsClient(
+                this.SdkClientSettings,
+                this.DefaultHttpClient);
+
         }
         
         public HttpClient ConfigureDefaultHttpClient()

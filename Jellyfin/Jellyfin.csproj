@@ -126,6 +126,7 @@
     <Compile Include="Helpers\StorageHelpers.cs" />
     <Compile Include="Models\LogoutType.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
+    <Compile Include="Services\ItemsClientService.cs" />
     <Compile Include="Services\SystemClientService.cs" />
     <Compile Include="Services\UserClientService.cs" />
     <Compile Include="Services\UserLibraryClientService.cs" />

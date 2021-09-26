@@ -45,8 +45,21 @@ namespace Jellyfin.Views
         {
             MenuDataItem selectedItem = args.SelectedItem as MenuDataItem;
 
-            // Naviagte to the Grid Content Page and Pass Library Id
-            ContentFrame.Navigate(typeof(LibraryPage), selectedItem.Id);
+            switch (selectedItem.Name)
+            {
+                case "Home":
+                    // Navigate to the Home Page
+                    ContentFrame.Navigate(typeof(HomePage));
+                    break;
+                case "Profile":
+                    //// Navigate to the Profile Page
+                    //ContentFrame.Navigate(typeof(ProfilePage));
+                    break;
+                default:
+                    // Naviagte to the Grid Content Page and Pass Library Id
+                    ContentFrame.Navigate(typeof(LibraryPage), selectedItem.Id);
+                    break;
+            }
         }
 
 
