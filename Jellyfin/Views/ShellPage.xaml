@@ -33,7 +33,7 @@
                             ItemsSource="{Binding SuggestBoxItems}"
                             UpdateTextOnSelect="True"
                             QueryIcon="Find" 
-                            Text="{Binding SearchTerm, Mode=TwoWay}" />
+                            Text="{Binding SearchTerm, Mode=TwoWay}" SuggestionChosen="SuggestBox_SuggestionChosen" />
         </NavigationView.AutoSuggestBox>
         <NavigationView.PaneHeader>
             <Grid>
@@ -45,9 +45,6 @@
                            FontSize="28"
                            VerticalAlignment="Center"
                            Text="Jellyfin" />
-                <AppBarButton Icon="Refresh"
-                              Command="{Binding RefreshCommand}"
-                              Grid.Column="1" />
             </Grid>
         </NavigationView.PaneHeader>
 

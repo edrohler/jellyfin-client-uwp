@@ -199,5 +199,10 @@ namespace Jellyfin.Views
                 ContentFrame.Navigate(typeof(ProfilePage));
             }
         }
+
+        private void SuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            // Navigate to specific page based on selection chosen.
+        }
     }
 }

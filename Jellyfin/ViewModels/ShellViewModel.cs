@@ -18,19 +18,14 @@ namespace Jellyfin.ViewModels
     {
         private string searchTerm;
 
+        private SearchClient searchClient = null;
+
         public ShellViewModel()
         {
             MenuItems = new ObservableCollection<MenuDataItem>();
             SuggestBoxItems = new ObservableCollection<string>();
             
             RefreshCommand = new DelegateCommand(Refresh);
-
-            //// This is only so you can see menu items at design time
-            //if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-            //{
-            //    LoadMenuItemsAsync(App.Current.AppUser.Id).ConfigureAwait(false);
-            //    //LoadSearchBoxNamesAsync().ConfigureAwait(false);
-            //}
         }
 
         public ObservableCollection<MenuDataItem> MenuItems { get; set; }
@@ -46,7 +41,7 @@ namespace Jellyfin.ViewModels
                 // (anything inside the if block will run if the value changed)
                 if (SetProperty(ref searchTerm, value))
                 {
-                    Search();
+                    SearchAsync();
                 }
             }
         }
@@ -95,23 +90,27 @@ namespace Jellyfin.ViewModels
                 MenuItems.Add(item);
             }
         }
-
-        //private async Task LoadSearchBoxNamesAsync()
-        //{
-        //    // I'm not sure if you want to keep this or not,
-        //    // but it's just how you'd add items to the AutosuggestBox
-        //    SuggestBoxItems.Add("Good Will Hunting");
-        //    SuggestBoxItems.Add("Avengers");
-        //    SuggestBoxItems.Add("when Harry Met Sally");
-        //    SuggestBoxItems.Add("Black Widow");
-        //    SuggestBoxItems.Add("Dune (1977)");
-        //    SuggestBoxItems.Add("dune (2021)");
-        //}
         
-        private void Search()
+        private async void SearchAsync()
         {
             // SEARCH with this.SearchTerm
-            // (note: you might want research how to add a delay before actually searching with the API)
+            // Debounce inputs
+            if (this.SearchTerm.Length > 3)
+            {
+                this.searchClient = new SearchClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+
+                SearchHintResult result = await searchClient.GetAsync(SearchTerm);
+                
+                // Clear Previous Search Items
+                SuggestBoxItems.Clear();
+
+                // Add search hints name and type to suggestions
+                foreach (SearchHint item in result.SearchHints)
+                {
+                    SuggestBoxItems.Add($"{item.Name} - {item.Type}");
+                }
+            }
+
         }
     }
 }
