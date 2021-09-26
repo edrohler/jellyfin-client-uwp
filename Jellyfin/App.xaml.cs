@@ -162,7 +162,7 @@ namespace Jellyfin
                 this.DefaultHttpClient);
 
             // Configure UserClient
-            UserClientService.Current.UserLibraryClient = new UserClient(
+            UserClientService.Current.UserClient = new UserClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 

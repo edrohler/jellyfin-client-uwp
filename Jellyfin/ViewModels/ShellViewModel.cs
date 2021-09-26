@@ -60,7 +60,7 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync()
         {
-            App.Current.AppUser = await UserClientService.Current.UserLibraryClient.GetCurrentUserAsync();
+            App.Current.AppUser = await UserClientService.Current.UserClient.GetCurrentUserAsync();
 
             await LoadMenuItemsAsync(App.Current.AppUser.Id);
 

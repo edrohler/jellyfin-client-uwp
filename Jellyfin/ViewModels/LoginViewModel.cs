@@ -96,7 +96,7 @@ namespace Jellyfin.ViewModels
             IsBusyMessage = "Logging in...";
 
             // Make a login request to the server
-            AuthenticationResult authenticationResult = await UserClientService.Current.UserLibraryClient.AuthenticateUserByNameAsync(
+            AuthenticationResult authenticationResult = await UserClientService.Current.UserClient.AuthenticateUserByNameAsync(
                 new AuthenticateUserByName
                 {
                     Username = this.Username,
@@ -133,7 +133,7 @@ namespace Jellyfin.ViewModels
             IsBusy = true;
             IsBusyMessage = "Resetting password...";
 
-            ForgotPasswordResult result = await UserClientService.Current.UserLibraryClient.ForgotPasswordAsync(new ForgotPasswordDto
+            ForgotPasswordResult result = await UserClientService.Current.UserClient.ForgotPasswordAsync(new ForgotPasswordDto
             {
                 EnteredUsername = this.Username
             });

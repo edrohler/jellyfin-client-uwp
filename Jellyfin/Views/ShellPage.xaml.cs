@@ -51,10 +51,6 @@ namespace Jellyfin.Views
                     // Navigate to the Home Page
                     ContentFrame.Navigate(typeof(HomePage));
                     break;
-                case "Profile":
-                    //// Navigate to the Profile Page
-                    //ContentFrame.Navigate(typeof(ProfilePage));
-                    break;
                 default:
                     // Naviagte to the Grid Content Page and Pass Library Id
                     ContentFrame.Navigate(typeof(LibraryPage), selectedItem.Id);
@@ -180,12 +176,27 @@ namespace Jellyfin.Views
             AttemptLogoutAsync();
         }
 
-        // Catch if Logout Selected with Enter Key
+        // Catch if Logout selected with Enter key
         private void LogoutNavViewItem_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 AttemptLogoutAsync();
+            }
+        }
+
+        // Catch if Profile Tapped or Clicked
+        private void AccountNavViewItem_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            ContentFrame.Navigate(typeof(ProfilePage));
+        }
+
+        // Catch if Logout selected with Enter key
+        private void AccountNavViewItem_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if(e.Key == Windows.System.VirtualKey.Enter)
+            {
+                ContentFrame.Navigate(typeof(ProfilePage));
             }
         }
     }

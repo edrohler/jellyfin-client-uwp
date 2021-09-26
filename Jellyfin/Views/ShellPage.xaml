@@ -66,7 +66,9 @@
                     <NavigationViewItem x:Name="AccountNavViewItem"
                                         Grid.Column="1"
                                         Width="280"
-                                        Margin="-5, 0, 0, 0">
+                                        Margin="-5, 0, 0, 0"
+                                        Tapped="AccountNavViewItem_Tapped"
+                                        KeyUp="AccountNavViewItem_KeyUp">
                     </NavigationViewItem>
                 </Grid>
                 <NavigationViewItem x:Name="LogoutNavViewItem"
