@@ -10,12 +10,11 @@ namespace Jellyfin.Views
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
+           base.OnNavigatedTo(e);
 
-            // Will use this for Home Page Content Loading
-            //await ViewModel.PageReadyAsync();
+           await ViewModel.PageReadyAsync();
         }
     }
 }

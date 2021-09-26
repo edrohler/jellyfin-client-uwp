@@ -41,6 +41,8 @@ namespace Jellyfin
 
         public HttpClient DefaultHttpClient { get; private set; }
 
+        public UserDto AppUser { get; set; } = null;
+
         // For access to the shell's navigation Frame from the LoginViewModel
         public ShellPage Shell { get; set; }
 
@@ -111,7 +113,7 @@ namespace Jellyfin
                 // Set the known BaseUrl if any
                 sdkSettings.BaseUrl = json["BaseUrl"].ToString();
 
-                // Checks if AccessToken exists and set the SDK Settings AccessToken from storage
+                // Checks if AccessToken exists and sets the SDK Settings AccessToken from storage
                 // If not, will continue to LoginPage
                 if(!string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)))
                 {

@@ -17,7 +17,6 @@ namespace Jellyfin.ViewModels
     public class ShellViewModel : ViewModelBase
     {
         private string searchTerm;
-        private UserDto userDto = null;
 
         public ShellViewModel()
         {
@@ -29,8 +28,8 @@ namespace Jellyfin.ViewModels
             //// This is only so you can see menu items at design time
             //if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             //{
-            //    LoadMenuItemsAsync().ConfigureAwait(false);
-            //    LoadSearchBoxNamesAsync().ConfigureAwait(false);
+            //    LoadMenuItemsAsync(App.Current.AppUser.Id).ConfigureAwait(false);
+            //    //LoadSearchBoxNamesAsync().ConfigureAwait(false);
             //}
         }
 
@@ -61,9 +60,9 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync()
         {
-            this.userDto = await UserClientService.Current.UserLibraryClient.GetCurrentUserAsync();
+            App.Current.AppUser = await UserClientService.Current.UserLibraryClient.GetCurrentUserAsync();
 
-            await LoadMenuItemsAsync(userDto.Id);
+            await LoadMenuItemsAsync(App.Current.AppUser.Id);
 
             //await LoadSearchBoxNamesAsync();
         }
