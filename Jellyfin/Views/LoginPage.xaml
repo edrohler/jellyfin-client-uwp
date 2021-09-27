@@ -51,7 +51,7 @@
         <Button x:Name="LoginButton"
                 Command="{Binding LoginCommand}"
                 Width="75"
-                IsEnabled="{x:Bind ViewModel.IsValidServerUrl, Mode=TwoWay}"
+                IsEnabled="{Binding IsValidServerUrl, Mode=TwoWay}"
                 Content="Login"
                 Margin="0,10,0,0"
                 Grid.Row="3" />

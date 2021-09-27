@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -224,7 +225,12 @@ namespace Jellyfin.ViewModels
                 else
                 {
                     ServerUrlHeader = "Not a valid URI";
-                    ExceptionLogger.LogException(new Exception("Server URL Not Valid"));
+
+                    ExceptionLogger.LogException(new Exception(ServerUrlHeader)
+                    {
+                        Source = $"{AppDomain.CurrentDomain.FriendlyName} - {GetType().Name} - {MethodBase.GetCurrentMethod()}"
+                    });
+
                     App.Current.SdkClientSettings.BaseUrl = "";
                     this.IsValidServerUrl = false;
                 }
@@ -232,7 +238,11 @@ namespace Jellyfin.ViewModels
             else
             {
                 ServerUrlHeader = "URI is Empty";
-                ExceptionLogger.LogException(new Exception("Server URL is Null"));
+
+                ExceptionLogger.LogException(new Exception(ServerUrlHeader)
+                { 
+                    Source = $"{AppDomain.CurrentDomain.FriendlyName} - {GetType().Name} - {MethodBase.GetCurrentMethod()}"
+                });
                 App.Current.SdkClientSettings.BaseUrl = "";
                 this.IsValidServerUrl = false;
             }

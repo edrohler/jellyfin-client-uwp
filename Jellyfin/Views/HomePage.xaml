@@ -5,14 +5,72 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:Jellyfin.ViewModels"
+      xmlns:telerik="using:Telerik.UI.Xaml.Controls.Data"
+      xmlns:slideHubTile="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:telerikData="using:Telerik.Data.Core"
+      xmlns:loopingList="using:Telerik.UI.Xaml.Controls.Primitives.LoopingList"
+      xmlns:listview="using:Telerik.UI.Xaml.Controls.Data.ListView"
+      xmlns:listViewPrimitives="using:Telerik.UI.Xaml.Controls.Data.ListView.Primitives"
+      xmlns:listviewCommands="using:Telerik.UI.Xaml.Controls.Data.ListView.Commands"
+      xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives.LoopingList"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
-        <viewModels:HomeViewModel x:Name="ViewModel"/>
+        <viewModels:HomeViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="My Media" FontSize="32" Grid.Column="0"></TextBlock>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="MyMediaBackNav" Click="MyMediaBackNav_Click">
+                        <SymbolIcon Symbol="Back" />
+                    </Button>
+                    <Button x:Name="MyMediaForwardNav" Click="MyMediaForwardNav_Click">
+                        <SymbolIcon Symbol="Forward"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <ListView x:Name="MyMediaList"
+                      ItemsSource="{Binding Libraries}"
+                      VerticalAlignment="Top"
+                      Grid.Row="0">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel Orientation="Horizontal">
+                        </ItemsStackPanel>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <slideHubTile:RadSlideHubTile UpdateInterval="{Binding UpdateInterval}"
+                                                      Height="405"
+                                                      Width="720"
+                                                      Tapped="RadSlideHubTile_Tapped">
+                            <slideHubTile:RadSlideHubTile.TopContent>
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="96"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Bottom" />
+                            </slideHubTile:RadSlideHubTile.TopContent>
+                            <slideHubTile:RadSlideHubTile.BottomContent>
+                                <Image Source="{Binding ImgSource}"
+                                       Stretch="Uniform" />
+                            </slideHubTile:RadSlideHubTile.BottomContent>
+                        </slideHubTile:RadSlideHubTile>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
     </Grid>
 </Page>

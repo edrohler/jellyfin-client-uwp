@@ -58,8 +58,6 @@ namespace Jellyfin.ViewModels
             App.Current.AppUser = await UserClientService.Current.UserClient.GetCurrentUserAsync();
 
             await LoadMenuItemsAsync(App.Current.AppUser.Id);
-
-            //await LoadSearchBoxNamesAsync();
         }
 
         private async Task LoadMenuItemsAsync(Guid userId)

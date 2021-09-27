@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Jellyfin.Models;
 using Windows.UI.Xaml.Media.Imaging;
+using System.Linq;
 
 namespace Jellyfin.Views
 {
@@ -29,7 +30,7 @@ namespace Jellyfin.Views
 
 
             // Profile Image
-            BitmapImage profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tage={App.Current.AppUser.PrimaryImageTag}"));
+            BitmapImage profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tag={App.Current.AppUser.PrimaryImageTag}"));
             this.ProfileImage.Source = profileImage;
             this.ProfileImage.Width = 40;
             this.ProfileImage.Height = 40;
@@ -39,6 +40,15 @@ namespace Jellyfin.Views
             
             // Setting the initial page
             this.ContentFrame.Navigate(typeof(HomePage));
+        }
+
+        // Navigate from outside of the ShellPage
+        // i.e. the Home Page Content or Library Page
+        public void ChangeMenuSelection(Guid Id)
+        {
+            MenuDataItem menuItem = ViewModel.MenuItems.Where(i => i.Id == Id).FirstOrDefault();
+
+            NavView.SelectedItem = menuItem;
         }
 
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

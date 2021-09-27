@@ -260,6 +260,9 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>
+    <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
+      <Version>1.0.2.5</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Fonts\NotoSans-Regular.ttf" />
