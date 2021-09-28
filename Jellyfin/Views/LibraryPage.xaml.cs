@@ -17,5 +17,10 @@ namespace Jellyfin.Views
 
             await ViewModel.PageReadyAsync((Guid)e.Parameter);
         }
+
+        private void LibNavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        {
+
+        }
     }
 }

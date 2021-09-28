@@ -11,13 +11,25 @@
     <Page.DataContext>
         <viewModels:LibraryViewModel x:Name="ViewModel" />
     </Page.DataContext>
-    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{Binding LibraryTitle, Mode=TwoWay}" FontSize="64" />
-        <GridView Grid.Row="1" ItemsSource="{Binding LibraryItems}"></GridView>
+    <TextBlock Grid.Row="0"
+               Text="{Binding LibraryTitle}"
+               FontSize="32"/>
+    <NavigationView Grid.Row="1" x:Name="LibNavView"
+                    PaneDisplayMode="Top"
+                    IsBackButtonVisible="Collapsed"
+                    IsSettingsVisible="False"
+                    MenuItemsSource="{Binding MenuItems}"
+                    ItemInvoked="LibNavView_ItemInvoked">
+        <NavigationView.MenuItemTemplate>
+            <DataTemplate>
+                <NavigationViewItem Content="{Binding Name}" />
+            </DataTemplate>
+        </NavigationView.MenuItemTemplate>
+    </NavigationView>
     </Grid>
 </Page>

@@ -14,6 +14,12 @@
     </Page.DataContext>
 
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <TextBlock Text="UserName:" Margin="0,0,10,0" />
+            <TextBlock Text="{Binding UserDto.Name}" />
+        </StackPanel>
     </Grid>
 </Page>

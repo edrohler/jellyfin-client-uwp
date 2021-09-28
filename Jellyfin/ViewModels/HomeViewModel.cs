@@ -3,24 +3,22 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommonHelpers.Common;
-using CommonHelpers.Mvvm;
+using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
-using Jellyfin.Views;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.ViewModels
 {
     public class HomeViewModel : ViewModelBase
     {
-        public ObservableCollection<LatestMediaModel> LatestMedia { get; set; }
-        public ObservableCollection<LibrariesModel> Libraries { get; set; }
+        public ObservableCollection<LatestMediaDataItems> LatestMedia { get; set; }
+        public ObservableCollection<LibraryDataItems> Libraries { get; set; }
 
         public HomeViewModel()
         {
-            LatestMedia = new ObservableCollection<LatestMediaModel>();
-            Libraries = new ObservableCollection<LibrariesModel>();
+            LatestMedia = new ObservableCollection<LatestMediaDataItems>();
+            Libraries = new ObservableCollection<LibraryDataItems>();
         }
 
         //Load Home Page Content
@@ -35,7 +33,7 @@ namespace Jellyfin.ViewModels
         {
             foreach (var item in App.Current.UserViews.Items)
             {
-                Libraries.Add(new LibrariesModel
+                Libraries.Add(new LibraryDataItems
                 {
                     Id = item.Id,
                     Name = item.Name,
@@ -53,11 +51,11 @@ namespace Jellyfin.ViewModels
                 IReadOnlyList<BaseItemDto> LibraryLatestMedia = await UserLibraryClientService.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id, item.Id);
                 if (item.Type != "boxsets")
                 {
-                    List<LatestMediaItemModel> ltmiList = new List<LatestMediaItemModel>();
+                    List<LatestMediaDataItem> ltmiList = new List<LatestMediaDataItem>();
 
                     foreach (var LatestMediaItem in LibraryLatestMedia)
                     {
-                        ltmiList.Add(new LatestMediaItemModel
+                        ltmiList.Add(new LatestMediaDataItem
                         {
                             Id = LatestMediaItem.Id,
                             Name = LatestMediaItem.Name,
@@ -65,7 +63,7 @@ namespace Jellyfin.ViewModels
                         });
                     }
 
-                    LatestMedia.Add(new LatestMediaModel
+                    LatestMedia.Add(new LatestMediaDataItems
                     {
                         Name = $"Latest {item.Name}",
                         Id = item.Id,
@@ -74,28 +72,5 @@ namespace Jellyfin.ViewModels
                 }
             }
         }
-    }
-
-    public class LatestMediaItemModel
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public ImageSource ImageSrc { get; set; }
-    }
-
-    public class LibrariesModel
-    {
-        public string Name { get; set; }
-        public Guid Id { get; set; }
-        public ImageSource ImageSrc { get; set; }
-        public string Type { get; set; }
-        public TimeSpan UpdateInterval { get; set; }
-    }
-
-    public class LatestMediaModel
-    {
-        public string Name { get; set; }
-        public Guid Id { get; set; }
-        public List<LatestMediaItemModel> LatestItems { get; set; }
     }
 }

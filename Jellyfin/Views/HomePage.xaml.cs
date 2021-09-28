@@ -1,4 +1,5 @@
-﻿using Jellyfin.ViewModels;
+﻿using Jellyfin.Models;
+using Jellyfin.ViewModels;
 using System;
 using Telerik.UI.Xaml.Controls.Primitives;
 using Telerik.UI.Xaml.Controls.Primitives.LoopingList;
@@ -23,14 +24,14 @@ namespace Jellyfin.Views
 
         private void RadSlideHubTile_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            LibrariesModel library = (LibrariesModel)((RadSlideHubTile)sender).DataContext;
+            LibraryDataItems library = (LibraryDataItems)((RadSlideHubTile)sender).DataContext;
 
             App.Current.Shell.ChangeMenuSelection(library.Id);
         }
 
         private void Grid_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            LatestMediaItemModel LatestItem = (LatestMediaItemModel)((Grid)sender).DataContext;
+            LatestMediaDataItem LatestItem = (LatestMediaDataItem)((Grid)sender).DataContext;
 
             App.Current.Shell.ChangeMenuSelection(LatestItem.Id);
 
