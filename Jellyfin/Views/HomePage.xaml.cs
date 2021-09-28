@@ -27,5 +27,12 @@ namespace Jellyfin.Views
 
             App.Current.Shell.ChangeMenuSelection(library.Id);
         }
+
+        private void Grid_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            LatestMediaItemModel LatestItem = (LatestMediaItemModel)((Grid)sender).DataContext;
+
+            Frame.Navigate(typeof(ItemPage), LatestItem.Id);
+        }
     }
 }
