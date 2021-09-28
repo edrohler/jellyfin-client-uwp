@@ -17,7 +17,8 @@ namespace Jellyfin.ViewModels
     public class ShellViewModel : ViewModelBase
     {
         private string searchTerm;
-        private UserDto userDto = null;
+
+        private SearchClient searchClient = null;
 
         public ShellViewModel()
         {
@@ -25,13 +26,6 @@ namespace Jellyfin.ViewModels
             SuggestBoxItems = new ObservableCollection<string>();
             
             RefreshCommand = new DelegateCommand(Refresh);
-
-            //// This is only so you can see menu items at design time
-            //if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-            //{
-            //    LoadMenuItemsAsync().ConfigureAwait(false);
-            //    LoadSearchBoxNamesAsync().ConfigureAwait(false);
-            //}
         }
 
         public ObservableCollection<MenuDataItem> MenuItems { get; set; }
@@ -47,7 +41,7 @@ namespace Jellyfin.ViewModels
                 // (anything inside the if block will run if the value changed)
                 if (SetProperty(ref searchTerm, value))
                 {
-                    Search();
+                    SearchAsync();
                 }
             }
         }
@@ -61,17 +55,15 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync()
         {
-            this.userDto = await UserClientService.Current.UserLibraryClient.GetCurrentUserAsync();
+            App.Current.AppUser = await UserClientService.Current.UserClient.GetCurrentUserAsync();
 
-            await LoadMenuItemsAsync(userDto.Id);
-
-            //await LoadSearchBoxNamesAsync();
+            await LoadMenuItemsAsync(App.Current.AppUser.Id);
         }
 
         private async Task LoadMenuItemsAsync(Guid userId)
         {
             // Get User Collections for Menu
-            BaseItemDtoQueryResult userViews = await UserViewsClientService.Current.UserViewsClient.GetUserViewsAsync(userId);
+            App.Current.UserViews = await UserViewsClientService.Current.UserViewsClient.GetUserViewsAsync(userId);
 
             // In case this is a refresh
             MenuItems.Clear();
@@ -84,34 +76,39 @@ namespace Jellyfin.ViewModels
             });
 
             // Iterate over the API results for the libraries, and create additional menu items
-            foreach (BaseItemDto libraryItem in userViews.Items)
+            foreach (BaseItemDto libraryItem in App.Current.UserViews.Items)
             {
                 MenuDataItem item = new MenuDataItem
                 {
                     Name = libraryItem.Name,
-                    Icon = IconHelper.GetIconForItem(libraryItem.CollectionType)
+                    Icon = IconHelper.GetIconForItem(libraryItem.CollectionType),
+                    Id = libraryItem.Id
                 };
 
                 MenuItems.Add(item);
             }
         }
-
-        //private async Task LoadSearchBoxNamesAsync()
-        //{
-        //    // I'm not sure if you want to keep this or not,
-        //    // but it's just how you'd add items to the AutosuggestBox
-        //    SuggestBoxItems.Add("Good Will Hunting");
-        //    SuggestBoxItems.Add("Avengers");
-        //    SuggestBoxItems.Add("when Harry Met Sally");
-        //    SuggestBoxItems.Add("Black Widow");
-        //    SuggestBoxItems.Add("Dune (1977)");
-        //    SuggestBoxItems.Add("dune (2021)");
-        //}
         
-        private void Search()
+        private async void SearchAsync()
         {
             // SEARCH with this.SearchTerm
-            // (note: you might want research how to add a delay before actually searching with the API)
+            // Debounce inputs
+            if (this.SearchTerm.Length > 3)
+            {
+                this.searchClient = new SearchClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+
+                SearchHintResult result = await searchClient.GetAsync(SearchTerm);
+                
+                // Clear Previous Search Items
+                SuggestBoxItems.Clear();
+
+                // Add search hints name and type to suggestions
+                foreach (SearchHint item in result.SearchHints)
+                {
+                    SuggestBoxItems.Add($"{item.Name} - {item.Type}");
+                }
+            }
+
         }
     }
 }

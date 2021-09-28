@@ -1,4 +1,8 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using Jellyfin.ViewModels;
+using System;
+using Telerik.UI.Xaml.Controls.Primitives;
+using Telerik.UI.Xaml.Controls.Primitives.LoopingList;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin.Views
@@ -10,12 +14,18 @@ namespace Jellyfin.Views
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
+           base.OnNavigatedTo(e);
 
-            // Will use this for Home Page Content Loading
-            //await ViewModel.PageReadyAsync();
+           await ViewModel.PageReadyAsync();
+        }
+
+        private void RadSlideHubTile_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            LibrariesModel library = (LibrariesModel)((RadSlideHubTile)sender).DataContext;
+
+            App.Current.Shell.ChangeMenuSelection(library.Id);
         }
     }
 }

@@ -7,6 +7,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Jellyfin.Models;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Linq;
 
 namespace Jellyfin.Views
 {
@@ -26,34 +28,43 @@ namespace Jellyfin.Views
 
             await ViewModel.PageReadyAsync();
 
+
+            // Profile Image
+            BitmapImage profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tag={App.Current.AppUser.PrimaryImageTag}"));
+            this.ProfileImage.Source = profileImage;
+            this.ProfileImage.Width = 40;
+            this.ProfileImage.Height = 40;
+
+            // Profile Name
+            this.AccountNavViewItem.Content = App.Current.AppUser.Name;
+            
             // Setting the initial page
             this.ContentFrame.Navigate(typeof(HomePage));
         }
 
+        // Navigate from outside of the ShellPage
+        // i.e. the Home Page Content or Library Page
+        public void ChangeMenuSelection(Guid Id)
+        {
+            MenuDataItem menuItem = ViewModel.MenuItems.Where(i => i.Id == Id).FirstOrDefault();
+
+            NavView.SelectedItem = menuItem;
+        }
+
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            // This is how you'd navigate when the selection changes in the NavigationView
-            // Will need to be more dynamic. Use a single content collection page that queries the collection on load.
-            if (args.SelectedItem is NavigationViewItem selectedItem)
+            MenuDataItem selectedItem = args.SelectedItem as MenuDataItem;
+
+            switch (selectedItem.Name)
             {
-                switch (selectedItem.Content)
-                {
-                    case "Movies":
-                        //ContentFrame.Navigate(typeof(MoviesPage));
-                        break;
-                    case "Music":
-                        //ContentFrame.Navigate(typeof(MusicPage));
-                        break;
-                    case "Photos":
-                        //ContentFrame.Navigate(typeof(PhotosPage));
-                        break;
-                    case "Games":
-                        //ContentFrame.Navigate(typeof(GamesPage));
-                        break;
-                    default:
-                        ContentFrame.Navigate(typeof(HomePage));
-                        break;
-                }
+                case "Home":
+                    // Navigate to the Home Page
+                    ContentFrame.Navigate(typeof(HomePage));
+                    break;
+                default:
+                    // Naviagte to the Grid Content Page and Pass Library Id
+                    ContentFrame.Navigate(typeof(LibraryPage), selectedItem.Id);
+                    break;
             }
         }
 
@@ -175,13 +186,33 @@ namespace Jellyfin.Views
             AttemptLogoutAsync();
         }
 
-        // Catch if Logout Selected with Enter Key
+        // Catch if Logout selected with Enter key
         private void LogoutNavViewItem_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 AttemptLogoutAsync();
             }
+        }
+
+        // Catch if Profile Tapped or Clicked
+        private void AccountNavViewItem_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            ContentFrame.Navigate(typeof(ProfilePage));
+        }
+
+        // Catch if Logout selected with Enter key
+        private void AccountNavViewItem_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if(e.Key == Windows.System.VirtualKey.Enter)
+            {
+                ContentFrame.Navigate(typeof(ProfilePage));
+            }
+        }
+
+        private void SuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            // Navigate to specific page based on selection chosen.
         }
     }
 }

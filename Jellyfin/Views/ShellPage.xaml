@@ -13,6 +13,7 @@
     </Page.DataContext>
 
     <NavigationView x:Name="NavView" 
+                    IsSettingsVisible="False"
                     SelectionChanged="NavView_OnSelectionChanged"
                     Loaded="NavView_OnLoaded"
                     MenuItemsSource="{Binding MenuItems}"
@@ -32,7 +33,7 @@
                             ItemsSource="{Binding SuggestBoxItems}"
                             UpdateTextOnSelect="True"
                             QueryIcon="Find" 
-                            Text="{Binding SearchTerm, Mode=TwoWay}" />
+                            Text="{Binding SearchTerm, Mode=TwoWay}" SuggestionChosen="SuggestBox_SuggestionChosen" />
         </NavigationView.AutoSuggestBox>
         <NavigationView.PaneHeader>
             <Grid>
@@ -44,15 +45,33 @@
                            FontSize="28"
                            VerticalAlignment="Center"
                            Text="Jellyfin" />
-                <AppBarButton Icon="Refresh"
-                              Command="{Binding RefreshCommand}"
-                              Grid.Column="1" />
             </Grid>
         </NavigationView.PaneHeader>
 
         <NavigationView.PaneFooter>
             <Grid>
-                <NavigationViewItem x:Name="LogoutNavViewItem" Content="Logout"
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Height="Auto">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Image x:Name="ProfileImage" Grid.Column="0" />
+                    <NavigationViewItem x:Name="AccountNavViewItem"
+                                        Grid.Column="1"
+                                        Width="280"
+                                        Margin="-5, 0, 0, 0"
+                                        Tapped="AccountNavViewItem_Tapped"
+                                        KeyUp="AccountNavViewItem_KeyUp">
+                    </NavigationViewItem>
+                </Grid>
+                <NavigationViewItem x:Name="LogoutNavViewItem"
+                                    Grid.Row="1"
+                                    Content="Logout"
+                                    Icon="Switch"
                                     Tapped="LogoutNavViewItem_Tapped"
                                     KeyUp="LogoutNavViewItem_KeyUp">
                 </NavigationViewItem>

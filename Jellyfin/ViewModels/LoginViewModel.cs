@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -96,7 +97,7 @@ namespace Jellyfin.ViewModels
             IsBusyMessage = "Logging in...";
 
             // Make a login request to the server
-            AuthenticationResult authenticationResult = await UserClientService.Current.UserLibraryClient.AuthenticateUserByNameAsync(
+            AuthenticationResult authenticationResult = await UserClientService.Current.UserClient.AuthenticateUserByNameAsync(
                 new AuthenticateUserByName
                 {
                     Username = this.Username,
@@ -133,7 +134,7 @@ namespace Jellyfin.ViewModels
             IsBusy = true;
             IsBusyMessage = "Resetting password...";
 
-            ForgotPasswordResult result = await UserClientService.Current.UserLibraryClient.ForgotPasswordAsync(new ForgotPasswordDto
+            ForgotPasswordResult result = await UserClientService.Current.UserClient.ForgotPasswordAsync(new ForgotPasswordDto
             {
                 EnteredUsername = this.Username
             });
@@ -224,7 +225,12 @@ namespace Jellyfin.ViewModels
                 else
                 {
                     ServerUrlHeader = "Not a valid URI";
-                    ExceptionLogger.LogException(new Exception("Server URL Not Valid"));
+
+                    ExceptionLogger.LogException(new Exception(ServerUrlHeader)
+                    {
+                        Source = $"{AppDomain.CurrentDomain.FriendlyName} - {GetType().Name} - {MethodBase.GetCurrentMethod()}"
+                    });
+
                     App.Current.SdkClientSettings.BaseUrl = "";
                     this.IsValidServerUrl = false;
                 }
@@ -232,7 +238,11 @@ namespace Jellyfin.ViewModels
             else
             {
                 ServerUrlHeader = "URI is Empty";
-                ExceptionLogger.LogException(new Exception("Server URL is Null"));
+
+                ExceptionLogger.LogException(new Exception(ServerUrlHeader)
+                { 
+                    Source = $"{AppDomain.CurrentDomain.FriendlyName} - {GetType().Name} - {MethodBase.GetCurrentMethod()}"
+                });
                 App.Current.SdkClientSettings.BaseUrl = "";
                 this.IsValidServerUrl = false;
             }

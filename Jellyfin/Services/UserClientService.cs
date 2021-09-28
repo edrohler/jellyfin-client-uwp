@@ -14,7 +14,7 @@ namespace Jellyfin.Services
 
         #region Instance Members
 
-        public UserClient UserLibraryClient { get; set; }
+        public UserClient UserClient { get; set; }
 
         #endregion
     }

@@ -124,15 +124,20 @@
     <Compile Include="Helpers\ExceptionLogger.cs" />
     <Compile Include="Helpers\IconHelper.cs" />
     <Compile Include="Helpers\StorageHelpers.cs" />
-    <Compile Include="Models\LogoutType.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
+    <Compile Include="Services\ItemsClientService.cs" />
     <Compile Include="Services\SystemClientService.cs" />
     <Compile Include="Services\UserClientService.cs" />
     <Compile Include="Services\UserLibraryClientService.cs" />
     <Compile Include="Services\UserViewsClientService.cs" />
+    <Compile Include="ViewModels\LibraryViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
+    <Compile Include="ViewModels\ProfileViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\LibraryPage.xaml.cs">
+      <DependentUpon>LibraryPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
@@ -140,6 +145,9 @@
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\ProfilePage.xaml.cs">
+      <DependentUpon>ProfilePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ShellPage.xaml.cs">
       <DependentUpon>ShellPage.xaml</DependentUpon>
     </Compile>
@@ -218,6 +226,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\LibraryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -225,6 +237,10 @@
     <Page Include="Views\HomePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProfilePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ShellPage.xaml">
       <SubType>Designer</SubType>
@@ -243,6 +259,9 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
+      <Version>1.0.2.5</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
