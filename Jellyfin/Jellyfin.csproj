@@ -130,11 +130,7 @@
     <Compile Include="Models\LibraryDataItem.cs" />
     <Compile Include="Models\LibraryDataItems.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
-    <Compile Include="Services\ItemsClientService.cs" />
-    <Compile Include="Services\SystemClientService.cs" />
-    <Compile Include="Services\UserClientService.cs" />
-    <Compile Include="Services\UserLibraryClientService.cs" />
-    <Compile Include="Services\UserViewsClientService.cs" />
+    <Compile Include="Services\JellyfinClientsServices.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\LibraryViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />

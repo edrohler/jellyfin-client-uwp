@@ -55,7 +55,7 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync()
         {
-            App.Current.AppUser = await UserClientService.Current.UserClient.GetCurrentUserAsync();
+            App.Current.AppUser = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync();
 
             await LoadMenuItemsAsync(App.Current.AppUser.Id);
         }
@@ -63,7 +63,7 @@ namespace Jellyfin.ViewModels
         private async Task LoadMenuItemsAsync(Guid userId)
         {
             // Get User Collections for Menu
-            App.Current.UserViews = await UserViewsClientService.Current.UserViewsClient.GetUserViewsAsync(userId);
+            App.Current.UserViews = await JellyfinClientServices.Current.UserViewsClient.GetUserViewsAsync(userId);
 
             // In case this is a refresh
             MenuItems.Clear();

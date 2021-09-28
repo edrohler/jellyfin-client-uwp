@@ -48,7 +48,7 @@ namespace Jellyfin.ViewModels
         {
             foreach (var item in this.Libraries)
             {
-                IReadOnlyList<BaseItemDto> LibraryLatestMedia = await UserLibraryClientService.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id, item.Id);
+                IReadOnlyList<BaseItemDto> LibraryLatestMedia = await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id, item.Id);
                 if (item.Type != "boxsets")
                 {
                     List<LatestMediaDataItem> ltmiList = new List<LatestMediaDataItem>();

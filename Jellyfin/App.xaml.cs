@@ -157,27 +157,27 @@ namespace Jellyfin
         private void ConfigureServices()
         {
             // Configure SystemClient
-            SystemClientService.Current.SystemClient = new SystemClient(
+            JellyfinClientServices.Current.SystemClient = new SystemClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
             // Configure UserClient
-            UserClientService.Current.UserClient = new UserClient(
+            JellyfinClientServices.Current.UserClient = new UserClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
             // Configure UserLibraryClient
-            UserLibraryClientService.Current.UserLibraryClient = new UserLibraryClient(
+            JellyfinClientServices.Current.UserLibraryClient = new UserLibraryClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
             // Configure UserViewsClient
-            UserViewsClientService.Current.UserViewsClient = new UserViewsClient(
+            JellyfinClientServices.Current.UserViewsClient = new UserViewsClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
             // Configure ItemsClient
-            ItemsClientService.Current.ItemsClient = new ItemsClient(
+            JellyfinClientServices.Current.ItemsClient = new ItemsClient(
                 this.SdkClientSettings,
                 this.DefaultHttpClient);
 
@@ -191,7 +191,7 @@ namespace Jellyfin
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             // Create an Httpclient using the handler
-            var client = new HttpClient(handler);
+            HttpClient client = new HttpClient(handler);
 
             // Set the HttpClient's headers
             client.DefaultRequestHeaders.UserAgent.Add(

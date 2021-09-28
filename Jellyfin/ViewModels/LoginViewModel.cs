@@ -82,7 +82,7 @@ namespace Jellyfin.ViewModels
             else
             {
 
-                ServerSystemInfo = await SystemClientService.Current.SystemClient.GetPublicSystemInfoAsync();
+                ServerSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
                 if (!string.IsNullOrEmpty(ServerSystemInfo.Id))
                 {
                     this.IsValidServerUrl = true;
@@ -97,7 +97,7 @@ namespace Jellyfin.ViewModels
             IsBusyMessage = "Logging in...";
 
             // Make a login request to the server
-            AuthenticationResult authenticationResult = await UserClientService.Current.UserClient.AuthenticateUserByNameAsync(
+            AuthenticationResult authenticationResult = await JellyfinClientServices.Current.UserClient.AuthenticateUserByNameAsync(
                 new AuthenticateUserByName
                 {
                     Username = this.Username,
@@ -134,7 +134,7 @@ namespace Jellyfin.ViewModels
             IsBusy = true;
             IsBusyMessage = "Resetting password...";
 
-            ForgotPasswordResult result = await UserClientService.Current.UserClient.ForgotPasswordAsync(new ForgotPasswordDto
+            ForgotPasswordResult result = await JellyfinClientServices.Current.UserClient.ForgotPasswordAsync(new ForgotPasswordDto
             {
                 EnteredUsername = this.Username
             });
@@ -202,7 +202,7 @@ namespace Jellyfin.ViewModels
                         {
                             // Update ValidServerUrl on Successful GetPublicSyInfo call
                             // Will throw if a Jellyfin server is not available
-                            PublicSystemInfo ServerInfo = await SystemClientService.Current.SystemClient.GetPublicSystemInfoAsync();
+                            PublicSystemInfo ServerInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
 
                             // Update settings to local storage on Successful GetPublicSysInfo call
                             File.WriteAllText(Constants.JellyfinSettingsFile, json.ToString());
