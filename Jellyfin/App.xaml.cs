@@ -29,10 +29,10 @@ namespace Jellyfin
             DefaultHttpClient = ConfigureDefaultHttpClient();
 
             // Configure Jellyfin Services
-            ConfigureServices();
+            ConfigureJellyfinServices();
 
-            this.InitializeComponent();
-            this.Suspending += OnSuspending;
+            InitializeComponent();
+            Suspending += OnSuspending;
         }
 
         public new static App Current => (App)Application.Current;
@@ -117,7 +117,7 @@ namespace Jellyfin
 
                 // Checks if AccessToken exists and sets the SDK Settings AccessToken from storage
                 // If not, will continue to LoginPage
-                if(!string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)))
+                if (!string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)))
                 {
                     sdkSettings.AccessToken = StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey);
                 }
@@ -154,32 +154,37 @@ namespace Jellyfin
             }
         }
 
-        private void ConfigureServices()
+        private void ConfigureJellyfinServices()
         {
             // Configure SystemClient
             JellyfinClientServices.Current.SystemClient = new SystemClient(
-                this.SdkClientSettings,
-                this.DefaultHttpClient);
+                SdkClientSettings,
+                DefaultHttpClient);
 
             // Configure UserClient
             JellyfinClientServices.Current.UserClient = new UserClient(
-                this.SdkClientSettings,
-                this.DefaultHttpClient);
+                SdkClientSettings,
+                DefaultHttpClient);
 
             // Configure UserLibraryClient
             JellyfinClientServices.Current.UserLibraryClient = new UserLibraryClient(
-                this.SdkClientSettings,
-                this.DefaultHttpClient);
+                SdkClientSettings,
+                DefaultHttpClient);
 
             // Configure UserViewsClient
             JellyfinClientServices.Current.UserViewsClient = new UserViewsClient(
-                this.SdkClientSettings,
-                this.DefaultHttpClient);
+                SdkClientSettings,
+                DefaultHttpClient);
 
             // Configure ItemsClient
             JellyfinClientServices.Current.ItemsClient = new ItemsClient(
-                this.SdkClientSettings,
-                this.DefaultHttpClient);
+                SdkClientSettings,
+                DefaultHttpClient);
+
+            // Configure ImagesClient
+            JellyfinClientServices.Current.ImageClient = new ImageClient(
+                SdkClientSettings,
+                DefaultHttpClient);
 
         }
         
@@ -196,8 +201,8 @@ namespace Jellyfin
             // Set the HttpClient's headers
             client.DefaultRequestHeaders.UserAgent.Add(
                 new ProductInfoHeaderValue(
-                    this.SdkClientSettings.ClientName,
-                    this.SdkClientSettings.ClientVersion));
+                    SdkClientSettings.ClientName,
+                    SdkClientSettings.ClientVersion));
 
             // Add Default Headers
             client.DefaultRequestHeaders.Accept.Add(

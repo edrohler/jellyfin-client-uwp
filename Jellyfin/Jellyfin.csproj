@@ -123,6 +123,7 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ExceptionLogger.cs" />
     <Compile Include="Helpers\IconHelper.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\NavViewHelper.cs" />
     <Compile Include="Helpers\StorageHelpers.cs" />
     <Compile Include="Models\LatestMediaDataItem.cs" />

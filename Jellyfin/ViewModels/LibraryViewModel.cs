@@ -15,6 +15,7 @@ namespace Jellyfin.ViewModels
     public class LibraryViewModel : ViewModelBase
     {
         public string LibraryTitle { get; set; }
+        public bool IsPaneVisible { get; set; } = true;
         BaseItemDto BaseItem { get; set; }
         public ObservableCollection<LibraryDataItem> LibraryItems { get; set; }
         public ObservableCollection<MenuDataItem> MenuItems { get; set; }
@@ -27,30 +28,31 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync(Guid LibraryId)
         {
-            BaseItem = App.Current.UserViews.Items.Where(i => i.Id == LibraryId).FirstOrDefault();
-            LoadMenuItems(LibraryId, BaseItem.CollectionType);
+            BaseItem = App.Current.UserViews.Items.FirstOrDefault(i => i.Id == LibraryId);
+            LoadMenuItems(BaseItem.CollectionType);
             await LoadLibraryItemsAsync(LibraryId);
         }
 
-        private void LoadMenuItems(Guid libraryId, string collectionType)
+        private void LoadMenuItems(string collectionType)
         {
             switch (collectionType)
             {
                 case "tvshows":
                     LibraryTitle = BaseItem.Name;
                     string[] tvshowsMenuItems = { "Shows", "Suggestions", "Upcoming", "Genres", "Networks", "Episodes" };
-                    foreach (var item in tvshowsMenuItems)
+                    foreach (string item in tvshowsMenuItems)
                     {
                         MenuItems.Add(new MenuDataItem
                         {
                             Name = item
                         });
                     }
+
                     break;
                 case "movies":
                     LibraryTitle = BaseItem.Name;
                     string[] moviesMenuItems = { "Movies", "Suggestions", "Trailers", "Favorites", "Collections", "Genres" };
-                    foreach (var item in moviesMenuItems)
+                    foreach (string item in moviesMenuItems)
                     {
                         MenuItems.Add(new MenuDataItem
                         {
@@ -61,7 +63,7 @@ namespace Jellyfin.ViewModels
                 case "music":
                     LibraryTitle = BaseItem.Name;
                     string[] musicMenuItems = { "Albums", "Suggestions", "Album Artists", "Artists", "Playlists", "Songs", "Genres" };
-                    foreach (var item in musicMenuItems)
+                    foreach (string item in musicMenuItems)
                     {
                         MenuItems.Add(new MenuDataItem
                         {
@@ -72,6 +74,7 @@ namespace Jellyfin.ViewModels
                 default:
                     // No Menu Items for Audiobooks, Videos, Photos, Collections
                     LibraryTitle = BaseItem.Name;
+                    IsPaneVisible = false;
                     // Play All, Shuffle, Sort, Filter
                     break;
             }

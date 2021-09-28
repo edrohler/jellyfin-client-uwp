@@ -1,13 +1,4 @@
-﻿using Jellyfin.Common;
-using Jellyfin.Models;
-using Jellyfin.Sdk;
-using Jellyfin.ViewModels;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin.Views

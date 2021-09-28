@@ -2,15 +2,14 @@
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Jellyfin.ViewModels
 {
     public class ItemViewModel : ViewModelBase
     {
+        public BaseItemDto BaseItem;
+
         public ItemViewModel()
         {
 
@@ -18,7 +17,7 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync(Guid id)
         {
-            BaseItemDto Item = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.Id, id);
+            BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.Id, id);
         }
     }
 }

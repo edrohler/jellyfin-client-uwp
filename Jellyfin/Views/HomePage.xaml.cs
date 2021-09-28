@@ -1,8 +1,5 @@
 ﻿using Jellyfin.Models;
-using Jellyfin.ViewModels;
-using System;
 using Telerik.UI.Xaml.Controls.Primitives;
-using Telerik.UI.Xaml.Controls.Primitives.LoopingList;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 

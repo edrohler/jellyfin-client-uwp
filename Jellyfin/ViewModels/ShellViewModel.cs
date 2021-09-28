@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using CommonHelpers.Common;
 using Jellyfin.Models;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using CommonHelpers.Mvvm;
 using Jellyfin.Helpers;
 using Jellyfin.Sdk;
-using Jellyfin.Common;
-using Jellyfin.Views;
 using Jellyfin.Services;
 
 namespace Jellyfin.ViewModels

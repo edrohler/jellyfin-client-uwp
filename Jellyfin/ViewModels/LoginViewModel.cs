@@ -7,12 +7,10 @@ using Jellyfin.Services;
 using Jellyfin.Views;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
 
 namespace Jellyfin.ViewModels
 {

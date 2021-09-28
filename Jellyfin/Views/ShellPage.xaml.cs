@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Windows.Foundation.Metadata;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Jellyfin.Models;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Linq;
-using Jellyfin.Sdk;
-using Jellyfin.Services;
 using Jellyfin.Helpers;
 
 namespace Jellyfin.Views
@@ -31,7 +26,6 @@ namespace Jellyfin.Views
 
             await ViewModel.PageReadyAsync();
 
-
             // Profile Image
             BitmapImage profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tag={App.Current.AppUser.PrimaryImageTag}"));
             ProfileImage.Source = profileImage;
@@ -40,7 +34,7 @@ namespace Jellyfin.Views
 
             // Profile Name
             AccountNavViewItem.Content = App.Current.AppUser.Name;
-            
+
             // Setting the initial page
             ContentFrame.Navigate(typeof(HomePage));
         }
@@ -49,7 +43,7 @@ namespace Jellyfin.Views
         // i.e. the Home Page Content or Library Page
         public void ChangeMenuSelection(Guid Id)
         {
-            MenuDataItem menuItem = ViewModel.MenuItems.Where(i => i.Id == Id).FirstOrDefault();
+            MenuDataItem menuItem = ViewModel.MenuItems.FirstOrDefault(i => i.Id == Id);
 
             if (menuItem == null)
             {
@@ -68,9 +62,7 @@ namespace Jellyfin.Views
 
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            MenuDataItem selectedItem = args.SelectedItem as MenuDataItem;
-
-            if (selectedItem != null)
+            if (args.SelectedItem is MenuDataItem selectedItem)
             {
                 switch (selectedItem.Name)
                 {
@@ -137,7 +129,7 @@ namespace Jellyfin.Views
         // Catch if Logout selected with Enter key
         private void AccountNavViewItem_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
-            if(e.Key == Windows.System.VirtualKey.Enter)
+            if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 NavView.SelectedItem = null;
                 ContentFrame.Navigate(typeof(ProfilePage));

@@ -23,6 +23,7 @@
                     PaneDisplayMode="Top"
                     IsBackButtonVisible="Collapsed"
                     IsSettingsVisible="False"
+                    IsPaneVisible="{Binding IsPaneVisible}"
                     MenuItemsSource="{Binding MenuItems}"
                     ItemInvoked="LibNavView_ItemInvoked">
         <NavigationView.MenuItemTemplate>

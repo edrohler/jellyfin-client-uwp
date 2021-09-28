@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using CommonHelpers.Common;
 using Jellyfin.Models;
@@ -31,7 +32,7 @@ namespace Jellyfin.ViewModels
 
         private void LoadLibraries()
         {
-            foreach (var item in App.Current.UserViews.Items)
+            foreach (BaseItemDto item in App.Current.UserViews.Items)
             {
                 Libraries.Add(new LibraryDataItems
                 {

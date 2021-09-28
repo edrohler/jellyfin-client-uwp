@@ -1,11 +1,5 @@
 ﻿using CommonHelpers.Common;
 using Jellyfin.Sdk;
-using Jellyfin.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jellyfin.ViewModels
 {
