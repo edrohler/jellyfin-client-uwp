@@ -32,6 +32,8 @@ namespace Jellyfin.Views
         {
             LatestMediaItemModel LatestItem = (LatestMediaItemModel)((Grid)sender).DataContext;
 
+            App.Current.Shell.ChangeMenuSelection(LatestItem.Id);
+
             Frame.Navigate(typeof(ItemPage), LatestItem.Id);
         }
     }

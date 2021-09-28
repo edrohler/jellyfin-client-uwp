@@ -13,7 +13,11 @@
     </Page.DataContext>
     
     <Grid>
-        <TextBlock Text="Library Page" />
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{Binding LibraryTitle, Mode=TwoWay}" FontSize="64" />
+        <GridView Grid.Row="1" ItemsSource="{Binding LibraryItems}"></GridView>
     </Grid>
 </Page>

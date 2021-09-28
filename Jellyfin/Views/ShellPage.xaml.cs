@@ -9,6 +9,8 @@ using Windows.UI.Xaml.Navigation;
 using Jellyfin.Models;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Linq;
+using Jellyfin.Sdk;
+using Jellyfin.Services;
 
 namespace Jellyfin.Views
 {
@@ -16,7 +18,7 @@ namespace Jellyfin.Views
     {
         public ShellPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // We want to set the app-wide Shell reference right away
             App.Current.Shell = this;
@@ -31,15 +33,15 @@ namespace Jellyfin.Views
 
             // Profile Image
             BitmapImage profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tag={App.Current.AppUser.PrimaryImageTag}"));
-            this.ProfileImage.Source = profileImage;
-            this.ProfileImage.Width = 40;
-            this.ProfileImage.Height = 40;
+            ProfileImage.Source = profileImage;
+            ProfileImage.Width = 40;
+            ProfileImage.Height = 40;
 
             // Profile Name
-            this.AccountNavViewItem.Content = App.Current.AppUser.Name;
+            AccountNavViewItem.Content = App.Current.AppUser.Name;
             
             // Setting the initial page
-            this.ContentFrame.Navigate(typeof(HomePage));
+            ContentFrame.Navigate(typeof(HomePage));
         }
 
         // Navigate from outside of the ShellPage
@@ -48,23 +50,37 @@ namespace Jellyfin.Views
         {
             MenuDataItem menuItem = ViewModel.MenuItems.Where(i => i.Id == Id).FirstOrDefault();
 
-            NavView.SelectedItem = menuItem;
+            if (menuItem == null)
+            {
+                // Null up the selected Item cause we're not on a menu item
+                NavView.SelectedItem = null;
+                // Navigate to the Item ID
+                ContentFrame.Navigate(typeof(ItemPage), Id);
+            }
+            else
+            {
+                // Navigate to the Menu Item
+                NavView.SelectedItem = menuItem;
+            }
         }
 
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             MenuDataItem selectedItem = args.SelectedItem as MenuDataItem;
 
-            switch (selectedItem.Name)
+            if (selectedItem != null)
             {
-                case "Home":
-                    // Navigate to the Home Page
-                    ContentFrame.Navigate(typeof(HomePage));
-                    break;
-                default:
-                    // Naviagte to the Grid Content Page and Pass Library Id
-                    ContentFrame.Navigate(typeof(LibraryPage), selectedItem.Id);
-                    break;
+                switch (selectedItem.Name)
+                {
+                    case "Home":
+                        // Navigate to the Home Page
+                        ContentFrame.Navigate(typeof(HomePage));
+                        break;
+                    default:
+                        // Naviagte to the Grid Content Page and Pass Library Id
+                        ContentFrame.Navigate(typeof(LibraryPage), selectedItem.Id);
+                        break;
+                }
             }
         }
 

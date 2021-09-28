@@ -14,15 +14,24 @@ namespace Jellyfin.ViewModels
 {
     public class HomeViewModel : ViewModelBase
     {
-        public ObservableCollection<LatestMediaModel> LatestMedia { get; set; } = new ObservableCollection<LatestMediaModel>();
-        public ObservableCollection<LibrariesModel> Libraries { get; set; } = new ObservableCollection<LibrariesModel>();
+        public ObservableCollection<LatestMediaModel> LatestMedia { get; set; }
+        public ObservableCollection<LibrariesModel> Libraries { get; set; }
 
         public HomeViewModel()
         {
+            LatestMedia = new ObservableCollection<LatestMediaModel>();
+            Libraries = new ObservableCollection<LibrariesModel>();
         }
 
         //Load Home Page Content
         public async Task PageReadyAsync()
+        {
+            LoadLibraries();
+
+            await LoadLatestMedia();
+        }
+
+        private void LoadLibraries()
         {
             foreach (var item in App.Current.UserViews.Items)
             {
@@ -32,14 +41,17 @@ namespace Jellyfin.ViewModels
                     Name = item.Name,
                     ImageSrc = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.DisplayPreferencesId}/Images/Primary")),
                     Type = item.CollectionType,
-                    UpdateInterval = new TimeSpan(0,0,new Random().Next(2,9))
+                    UpdateInterval = new TimeSpan(0, 0, new Random().Next(2, 9))
                 });
             }
+        }
 
+        private async Task LoadLatestMedia()
+        {
             foreach (var item in this.Libraries)
             {
                 IReadOnlyList<BaseItemDto> LibraryLatestMedia = await UserLibraryClientService.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id, item.Id);
-                if(item.Type != "boxsets")
+                if (item.Type != "boxsets")
                 {
                     List<LatestMediaItemModel> ltmiList = new List<LatestMediaItemModel>();
 
