@@ -27,15 +27,5 @@ namespace Jellyfin.Views
 
             App.Current.Shell.ChangeMenuSelection(library.Id);
         }
-
-        private void MyMediaBackNav_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            //MyMediaList.ScrollIntoView(0); // Go to front of list
-        }
-
-        private void MyMediaForwardNav_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            //MyMediaList.ScrollIntoView(App.Current.UserViews.Items.Count); //Go to end of list
-        }
     }
 }

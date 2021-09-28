@@ -30,10 +30,10 @@ namespace Jellyfin.ViewModels
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    ImgSource = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.DisplayPreferencesId}/Images/Primary")),
+                    ImageSrc = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.DisplayPreferencesId}/Images/Primary")),
                     Type = item.CollectionType,
                     UpdateInterval = new TimeSpan(0,0,new Random().Next(2,9))
-                }); 
+                });
             }
 
             foreach (var item in this.Libraries)
@@ -41,22 +41,41 @@ namespace Jellyfin.ViewModels
                 IReadOnlyList<BaseItemDto> LibraryLatestMedia = await UserLibraryClientService.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id, item.Id);
                 if(item.Type != "boxsets")
                 {
+                    List<LatestMediaItemModel> ltmiList = new List<LatestMediaItemModel>();
+
+                    foreach (var LatestMediaItem in LibraryLatestMedia)
+                    {
+                        ltmiList.Add(new LatestMediaItemModel
+                        {
+                            Id = LatestMediaItem.Id,
+                            Name = LatestMediaItem.Name,
+                            ImageSrc = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{LatestMediaItem.Id}/Images/Primary"))
+                        });
+                    }
+
                     LatestMedia.Add(new LatestMediaModel
                     {
-                        Name = item.Name,
+                        Name = $"Latest {item.Name}",
                         Id = item.Id,
-                        LatestItems = LibraryLatestMedia
+                        LatestItems = ltmiList
                     });
                 }
             }
         }
     }
 
+    public class LatestMediaItemModel
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public ImageSource ImageSrc { get; set; }
+    }
+
     public class LibrariesModel
     {
         public string Name { get; set; }
         public Guid Id { get; set; }
-        public ImageSource ImgSource { get; set; }
+        public ImageSource ImageSrc { get; set; }
         public string Type { get; set; }
         public TimeSpan UpdateInterval { get; set; }
     }
@@ -65,6 +84,6 @@ namespace Jellyfin.ViewModels
     {
         public string Name { get; set; }
         public Guid Id { get; set; }
-        public IReadOnlyList<BaseItemDto> LatestItems { get; set; }
+        public List<LatestMediaItemModel> LatestItems { get; set; }
     }
 }
