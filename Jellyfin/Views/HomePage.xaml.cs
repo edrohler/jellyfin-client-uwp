@@ -19,16 +19,16 @@ namespace Jellyfin.Views
            await ViewModel.PageReadyAsync();
         }
 
-        private void RadSlideHubTile_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void MyMediaHubtile_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             LibraryDataItems library = (LibraryDataItems)((RadSlideHubTile)sender).DataContext;
 
             App.Current.Shell.ChangeMenuSelection(library.Id);
         }
 
-        private void Grid_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void LatestMediaHubTile_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            LatestMediaDataItem LatestItem = (LatestMediaDataItem)((Grid)sender).DataContext;
+            LatestMediaDataItem LatestItem = (LatestMediaDataItem)((RadHubTile)sender).DataContext;
 
             App.Current.Shell.ChangeMenuSelection(LatestItem.Id);
 

@@ -6,13 +6,12 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:Jellyfin.ViewModels"
       xmlns:telerik="using:Telerik.UI.Xaml.Controls.Data"
-      xmlns:slideHubTile="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:telerikData="using:Telerik.Data.Core"
       xmlns:loopingList="using:Telerik.UI.Xaml.Controls.Primitives.LoopingList"
       xmlns:listview="using:Telerik.UI.Xaml.Controls.Data.ListView"
       xmlns:listViewPrimitives="using:Telerik.UI.Xaml.Controls.Data.ListView.Primitives"
       xmlns:listviewCommands="using:Telerik.UI.Xaml.Controls.Data.ListView.Commands"
-      xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives.LoopingList"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -52,21 +51,21 @@
                         </ListView.ItemsPanel>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <slideHubTile:RadSlideHubTile UpdateInterval="{Binding UpdateInterval}"
+                            <telerikPrimitives:RadSlideHubTile x:Name="MyMediaHubtile" UpdateInterval="{Binding UpdateInterval}"
                                                               Height="405"
                                                               Width="720"
-                                                              Tapped="RadSlideHubTile_Tapped">
-                                    <slideHubTile:RadSlideHubTile.TopContent>
+                                                              Tapped="MyMediaHubtile_Tapped">
+                                <telerikPrimitives:RadSlideHubTile.TopContent>
                                         <TextBlock Text="{Binding Name}"
                                                    FontSize="96"
                                                    HorizontalAlignment="Stretch"
                                                    VerticalAlignment="Bottom" />
-                                    </slideHubTile:RadSlideHubTile.TopContent>
-                                    <slideHubTile:RadSlideHubTile.BottomContent>
+                                    </telerikPrimitives:RadSlideHubTile.TopContent>
+                                <telerikPrimitives:RadSlideHubTile.BottomContent>
                                         <Image Source="{Binding ImageSrc}"
                                                Stretch="Uniform" />
-                                    </slideHubTile:RadSlideHubTile.BottomContent>
-                                </slideHubTile:RadSlideHubTile>
+                                    </telerikPrimitives:RadSlideHubTile.BottomContent>
+                                </telerikPrimitives:RadSlideHubTile>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -97,7 +96,8 @@
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="{Binding Name}"
                                            FontSize="32"
-                                           Grid.Row="0"/>
+                                           Grid.Row="0"
+                                           Margin="0,25,0,25"/>
                                 <ListView x:Name="LatestMediaItemList"
                                           ItemsSource="{Binding LatestItems}"
                                           ScrollViewer.HorizontalScrollMode="Enabled"
@@ -105,22 +105,6 @@
                                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
                                           Grid.Row="1">
-                                    <ListView.ItemContainerStyle>
-                                        <Style TargetType="ListViewItem">
-                                            <Setter Property="MinHeight"
-                                                    Value="200" />
-                                            <Setter Property="MinWidth"
-                                                    Value="200" />
-                                            <Setter Property="MaxHeight"
-                                                    Value="500" />
-                                            <Setter Property="MaxWidth"
-                                                    Value="500" />
-                                            <Setter Property="VerticalContentAlignment"
-                                                    Value="Stretch" />
-                                            <Setter Property="HorizontalContentAlignment"
-                                                    Value="Stretch" />
-                                        </Style>
-                                    </ListView.ItemContainerStyle>
                                     <ListView.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <ItemsStackPanel Background="Transparent"
@@ -130,14 +114,46 @@
                                     </ListView.ItemsPanel>
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid Tapped="Grid_Tapped">
-                                                <Grid.Background>
-                                                    <ImageBrush ImageSource="{Binding ImageSrc}" Stretch="UniformToFill" />
-                                                </Grid.Background>
-                                                <StackPanel VerticalAlignment="Bottom">
-                                                    <TextBlock Text="{Binding Name}" />
-                                                </StackPanel>
-                                            </Grid>
+                                            <StackPanel Orientation="Vertical">
+                                                <telerikPrimitives:RadHubTile x:Name="LatestMediaHubTile"
+                                                                              Tapped="LatestMediaHubTile_Tapped"
+                                                                              Width="{Binding Width}"
+                                                                              Height="{Binding Height}"
+                                                                              IsFrozen="True"
+                                                                              IsFlipped="True">
+                                                    <telerikPrimitives:RadHubTile.BackContentTemplate>
+                                                        <DataTemplate>
+                                                                <Image Source="{Binding ImageSrc}"
+                                                                       Stretch="Uniform">
+                                                                </Image>
+                                                        </DataTemplate>
+                                                    </telerikPrimitives:RadHubTile.BackContentTemplate>
+                                                </telerikPrimitives:RadHubTile>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button x:Name="TitlePlayButton"
+                                                            Grid.Row="0"
+                                                            Grid.Column="1"
+                                                            HorizontalAlignment="Right"
+                                                            FontFamily="Segoe MDL2 Assets">
+                                                        <SymbolIcon Symbol="Play">
+                                                        </SymbolIcon>
+                                                    </Button>
+                                                    <TextBlock Text="{Binding Name}"
+                                                               Grid.Row="0"
+                                                               Grid.Column="0"
+                                                               FontSize="24"
+                                                               MaxWidth="{Binding Width}"
+                                                               TextWrapping="WrapWholeWords"
+                                                               TextAlignment="Left"/>
+                                                </Grid>
+                                            </StackPanel>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>

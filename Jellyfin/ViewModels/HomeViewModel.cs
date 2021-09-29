@@ -40,27 +40,48 @@ namespace Jellyfin.ViewModels
                     Name = item.Name,
                     ImageSrc = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.DisplayPreferencesId}/Images/Primary")),
                     Type = item.CollectionType,
-                    UpdateInterval = new TimeSpan(0, 0, new Random().Next(2, 9))
+                    UpdateInterval = new TimeSpan(0, 0, new Random().Next(5, 15))
                 });
             }
         }
 
         private async Task LoadLatestMedia()
         {
-            foreach (var item in this.Libraries)
+            foreach (LibraryDataItems item in this.Libraries)
             {
                 IReadOnlyList<BaseItemDto> LibraryLatestMedia = await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id, item.Id);
                 if (item.Type != "boxsets")
                 {
                     List<LatestMediaDataItem> ltmiList = new List<LatestMediaDataItem>();
 
-                    foreach (var LatestMediaItem in LibraryLatestMedia)
+                    foreach (BaseItemDto LatestMediaItem in LibraryLatestMedia)
                     {
+
+                        int h, w;
+                        switch (item.Type)
+                        {
+                            case "tvshows":
+                                h = 486;
+                                w = 324;
+                                break;
+                            case "movies":
+                                h = 486;
+                                w = 324;
+                                break;
+                            default:
+                                h = 300;
+                                w = 300;
+                                break;
+                        }
+
                         ltmiList.Add(new LatestMediaDataItem
                         {
                             Id = LatestMediaItem.Id,
                             Name = LatestMediaItem.Name,
-                            ImageSrc = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{LatestMediaItem.Id}/Images/Primary"))
+                            ImageSrc = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{LatestMediaItem.Id}/Images/Primary")),
+                            Height = h,
+                            Width = w,
+                            UpdateInterval = new TimeSpan(0, 0, new Random().Next(5, 35))
                         });
                     }
 
