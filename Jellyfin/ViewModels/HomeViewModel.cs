@@ -68,6 +68,10 @@ namespace Jellyfin.ViewModels
                                 h = 486;
                                 w = 324;
                                 break;
+                            case "homevideos":
+                                h = 486;
+                                w = 324;
+                                break;
                             default:
                                 h = 300;
                                 w = 300;

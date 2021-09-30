@@ -24,7 +24,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-            <ScrollViewer x:Name="MyMediaListScrollViewer" Grid.Row="0">
+        <ScrollViewer x:Name="MyMediaListScrollViewer"
+                      Grid.Row="0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -33,42 +34,45 @@
                 <TextBlock Text="My Media"
                            FontSize="32"
                            Grid.Row="0"
-                           Margin="12,0,0,0"></TextBlock>
+                           Margin="12,15,0,15"></TextBlock>
                 <ListView x:Name="MyMediaList"
-                              ItemsSource="{Binding Libraries}"
-                              VerticalAlignment="Top"
-                              Grid.Row="1"
-                              ScrollViewer.HorizontalScrollMode="Enabled"
-                              ScrollViewer.VerticalScrollMode="Disabled"
-                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                              ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ItemsStackPanel Background="Transparent"
-                                                 Orientation="Horizontal">
-                                </ItemsStackPanel>
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                            <telerikPrimitives:RadSlideHubTile x:Name="MyMediaHubtile" UpdateInterval="{Binding UpdateInterval}"
-                                                              Height="405"
-                                                              Width="720"
-                                                              Tapped="MyMediaHubtile_Tapped">
+                          ItemsSource="{Binding Libraries}"
+                          VerticalAlignment="Top"
+                          Grid.Row="1"
+                          ScrollViewer.HorizontalScrollMode="Enabled"
+                          ScrollViewer.VerticalScrollMode="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                          Margin="15">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel Background="Transparent"
+                                             Orientation="Horizontal"
+                                             Margin="15">
+                            </ItemsStackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <telerikPrimitives:RadSlideHubTile x:Name="MyMediaHubtile"
+                                                               UpdateInterval="{Binding UpdateInterval}"
+                                                               Height="405"
+                                                               Width="720"
+                                                               Tapped="MyMediaHubtile_Tapped">
                                 <telerikPrimitives:RadSlideHubTile.TopContent>
-                                        <TextBlock Text="{Binding Name}"
-                                                   FontSize="96"
-                                                   HorizontalAlignment="Stretch"
-                                                   VerticalAlignment="Bottom" />
-                                    </telerikPrimitives:RadSlideHubTile.TopContent>
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="96"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Bottom" />
+                                </telerikPrimitives:RadSlideHubTile.TopContent>
                                 <telerikPrimitives:RadSlideHubTile.BottomContent>
-                                        <Image Source="{Binding ImageSrc}"
-                                               Stretch="Uniform" />
-                                    </telerikPrimitives:RadSlideHubTile.BottomContent>
-                                </telerikPrimitives:RadSlideHubTile>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                                    <Image Source="{Binding ImageSrc}"
+                                           Stretch="Uniform" />
+                                </telerikPrimitives:RadSlideHubTile.BottomContent>
+                            </telerikPrimitives:RadSlideHubTile>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
         </ScrollViewer>
         <ScrollViewer Grid.Row="1"
@@ -76,7 +80,7 @@
             <ListView x:Name="LatestMediaList"
                       ScrollViewer.HorizontalScrollMode="Disabled"
                       ScrollViewer.VerticalScrollMode="Enabled"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ItemsSource="{Binding LatestMedia}">
                 <ListView.ItemsPanel>
@@ -97,24 +101,27 @@
                                 <TextBlock Text="{Binding Name}"
                                            FontSize="32"
                                            Grid.Row="0"
-                                           Margin="0,25,0,25"/>
+                                           Margin="0,25,0,25" />
                                 <ListView x:Name="LatestMediaItemList"
                                           ItemsSource="{Binding LatestItems}"
                                           ScrollViewer.HorizontalScrollMode="Enabled"
                                           ScrollViewer.VerticalScrollMode="Disabled"
                                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                          Grid.Row="1">
+                                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                          Grid.Row="1"
+                                          Margin="15">
                                     <ListView.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <ItemsStackPanel Background="Transparent"
-                                                             Orientation="Horizontal">
+                                                             Orientation="Horizontal"
+                                                             Margin="15">
                                             </ItemsStackPanel>
                                         </ItemsPanelTemplate>
                                     </ListView.ItemsPanel>
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Vertical">
+                                            <StackPanel Orientation="Vertical"
+                                                        Margin="15">
                                                 <telerikPrimitives:RadHubTile x:Name="LatestMediaHubTile"
                                                                               Tapped="LatestMediaHubTile_Tapped"
                                                                               Width="{Binding Width}"
@@ -123,20 +130,30 @@
                                                                               IsFlipped="True">
                                                     <telerikPrimitives:RadHubTile.BackContentTemplate>
                                                         <DataTemplate>
-                                                                <Image Source="{Binding ImageSrc}"
-                                                                       Stretch="Uniform">
-                                                                </Image>
+                                                            <Image Source="{Binding ImageSrc}"
+                                                                   Stretch="Uniform">
+                                                            </Image>
                                                         </DataTemplate>
                                                     </telerikPrimitives:RadHubTile.BackContentTemplate>
                                                 </telerikPrimitives:RadHubTile>
-                                                <Grid>
+                                                <Grid x:Name="MediaTitleMarquee">
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition />
                                                     </Grid.RowDefinitions>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*" />
                                                     </Grid.ColumnDefinitions>
+                                                    <Grid.Resources>
+                                                        <Storyboard x:Name="MarqueeAnimation">
+                                                            <DoubleAnimation Storyboard.TargetName="TitleScrollerCanvas"
+                                                                             Storyboard.TargetProperty="(Canvas.Left)"
+                                                                             Duration="0:0:10"
+                                                                             From="295"
+                                                                             To="-600"
+                                                                             RepeatBehavior="Forever" />
+                                                        </Storyboard>
+                                                    </Grid.Resources>
                                                     <Button x:Name="TitlePlayButton"
                                                             Grid.Row="0"
                                                             Grid.Column="1"
@@ -145,13 +162,18 @@
                                                         <SymbolIcon Symbol="Play">
                                                         </SymbolIcon>
                                                     </Button>
-                                                    <TextBlock Text="{Binding Name}"
-                                                               Grid.Row="0"
-                                                               Grid.Column="0"
-                                                               FontSize="24"
-                                                               MaxWidth="{Binding Width}"
-                                                               TextWrapping="WrapWholeWords"
-                                                               TextAlignment="Left"/>
+                                                    <Canvas x:Name="TitleScrollerCanvas"
+                                                            Width="295"
+                                                            Loaded="TitleScrollerCanvas_Loaded">
+                                                        <Canvas.Clip>
+                                                            <RectangleGeometry Rect="0,0,295,100" />
+                                                        </Canvas.Clip>
+                                                        <TextBlock x:Name="TitleText"
+                                                                   Text="{Binding Name}"
+                                                                   FontSize="24"
+                                                                   MaxWidth="{Binding Width}"
+                                                                   TextAlignment="Left" />
+                                                    </Canvas>
                                                 </Grid>
                                             </StackPanel>
                                         </DataTemplate>
