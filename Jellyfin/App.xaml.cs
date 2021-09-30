@@ -44,6 +44,7 @@ namespace Jellyfin
         // Jellyfin Global Objects
         public UserDto AppUser { get; set; } = null;
         public BaseItemDtoQueryResult UserViews { get; set; } = null;
+        public DeviceIdentification DviceIdentification { get; set; } = null;
 
         // For access to the shell's navigation Frame from the LoginViewModel
         public ShellPage Shell { get; set; }
@@ -51,7 +52,7 @@ namespace Jellyfin
         // For navigation outside of the ShellPage
         public Frame RootFrame { get; set; }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
             RootFrame = Window.Current.Content as Frame;
             
@@ -74,10 +75,27 @@ namespace Jellyfin
                 if (RootFrame.Content == null)
                 {
                     // Condition 1 - If there is no token stored, go to LoginPage
-                    // Condition 2 - If the user is authenticated, go to ShellPage
-                    RootFrame.Navigate(string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)) 
-                        ? typeof(LoginPage)
-                        : typeof(ShellPage), e.Arguments);
+                    if (string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)))
+                    {
+                        RootFrame.Navigate(typeof(LoginPage));
+                    }
+
+                    try
+                    {
+                        // Condition 2 - If there is a token user has authenticated
+                        // Test if it is a good Token by getting Current User.
+                        // If 200 retuls, go to ShellPage
+                        // Else catch and log the error
+                        AppUser = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync();
+                        RootFrame.Navigate(typeof(ShellPage), e.Arguments);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Condition 3 - Bad token, clear settings toekn and re-auth.
+                        ExceptionLogger.LogException(ex);
+                        SdkClientSettings.AccessToken = null;
+                        RootFrame.Navigate(typeof(LoginPage));
+                    }
                 }
 
                 Window.Current.Activate();
@@ -183,6 +201,11 @@ namespace Jellyfin
 
             // Configure ImagesClient
             JellyfinClientServices.Current.ImageClient = new ImageClient(
+                SdkClientSettings,
+                DefaultHttpClient);
+
+            //Configure DevicesClient
+            JellyfinClientServices.Current.DevicesClient = new DevicesClient(
                 SdkClientSettings,
                 DefaultHttpClient);
 

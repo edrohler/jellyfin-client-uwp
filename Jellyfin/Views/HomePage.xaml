@@ -158,7 +158,8 @@
                                                             Grid.Row="0"
                                                             Grid.Column="1"
                                                             HorizontalAlignment="Right"
-                                                            FontFamily="Segoe MDL2 Assets">
+                                                            FontFamily="Segoe MDL2 Assets"
+                                                            Click="TitlePlayButton_Click">
                                                         <SymbolIcon Symbol="Play">
                                                         </SymbolIcon>
                                                     </Button>
