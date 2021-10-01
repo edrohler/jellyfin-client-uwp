@@ -128,10 +128,7 @@
     <Compile Include="Helpers\IconHelper.cs" />
     <Compile Include="Helpers\NavViewHelper.cs" />
     <Compile Include="Helpers\StorageHelpers.cs" />
-    <Compile Include="Models\LatestMediaDataItem.cs" />
-    <Compile Include="Models\LatestMediaDataItems.cs" />
-    <Compile Include="Models\LibraryDataItem.cs" />
-    <Compile Include="Models\LibraryDataItems.cs" />
+    <Compile Include="Models\MediaDataItem.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
     <Compile Include="Services\JellyfinClientsServices.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />

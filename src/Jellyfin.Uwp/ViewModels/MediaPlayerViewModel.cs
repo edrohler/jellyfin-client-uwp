@@ -1,10 +1,13 @@
 ﻿using CommonHelpers.Common;
+using Jellyfin.Helpers;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
+using Jellyfin.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.Core;
@@ -43,7 +46,6 @@ namespace Jellyfin.ViewModels
             SessionClient = new SessionClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
             PlayStateClient = new PlaystateClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
             VideoClient = new VideosClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
-            TvShowClient = new TvShowsClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
             MovieClient = new MoviesClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
         }
 
@@ -54,41 +56,39 @@ namespace Jellyfin.ViewModels
 
             BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.Id, Id);
 
-            //FileResponse fr = await VideoClient.HeadVideoStreamAsync(BaseItem.Id);
+            if (string.IsNullOrEmpty(BaseItem.MediaType))
+            {
+                switch (BaseItem.Type)
+                {
+                    case "Series":
+                        //// Find first unwatched episode of the series and set stream uri
+                        TvShowClient = new TvShowsClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+                        var series = await TvShowClient.GetEpisodesAsync(BaseItem.Id);
+                        Console.WriteLine();
+                        break;
+                    case "Album":
+                        Console.WriteLine();
+                        break;
+                }
+            }
 
-
-            //using (MemoryStream ms = new MemoryStream())
-            //{
-            //    await fr.Stream.CopyToAsync(ms);
-            //    ms.Position = 0;
-
-            //    MediaSource.CreateFromStream(ms.AsRandomAccessStream(), "application/octet-stream");
-            //}
-
-            StreamUri = new Uri( $"{App.Current.SdkClientSettings.BaseUrl}/Videos/{Id}/Stream?static=true");
-
-            //MediaSource.CreateFromUri(StreamUri);
-
-            //switch (BaseItem.Type)
-            //{
-            //    case "Series":
-
-            //        break;
-            //    case "Movie":
-                    
-            //        break;
-            //    case "AudioBook":
-
-            //        break;
-            //    case "MusicAlbum":
-
-            //        break;
-            //    case "Video":
-
-            //        break;
-            //    default:
-            //        break;
-            //}
+            switch (BaseItem.MediaType)
+            {
+                case "Video":
+                    StreamUri = new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Videos/{Id}/stream?static=true");
+                    break;
+                case "Audio":
+                    StreamUri = new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Audio/{Id}/stream?static=true");
+                    break;
+                default:
+                    // Something Happened Log it and go back to Shell Page
+                    ExceptionLogger.LogException(new Exception($"Navigation to Media {BaseItem.Name} Failed")
+                    {
+                        Source = $"{AppDomain.CurrentDomain.FriendlyName} - {GetType().Name} - {MethodBase.GetCurrentMethod()}"
+                    });
+                    App.Current.RootFrame.Navigate(typeof(ShellPage)); ;
+                    break;
+            }
 
             ////var streamUrl = $"{App.Current.SdkClientSettings.BaseUrl}/Videos/{Id}";
 
