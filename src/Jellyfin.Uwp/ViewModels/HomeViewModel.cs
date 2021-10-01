@@ -66,7 +66,7 @@ namespace Jellyfin.ViewModels
                     {
                         case "tvshows":
                             LatestMediaItems =
-                                (IReadOnlyList<BaseItemDto>)await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
+                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
                                     App.Current.AppUser.Id,
                                     parentId: item.BaseItem.Id,
                                     fields: new ItemFields[] {
