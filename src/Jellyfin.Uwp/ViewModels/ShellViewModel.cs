@@ -7,6 +7,10 @@ using CommonHelpers.Mvvm;
 using Jellyfin.Helpers;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
+using System.Collections.Generic;
+using System.Linq;
+using Jellyfin.Common;
+using Microsoft.Toolkit.Uwp.Helpers;
 
 namespace Jellyfin.ViewModels
 {
@@ -51,6 +55,25 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync()
         {
+            ICollection<SessionInfo> CurrentSessions = (ICollection<SessionInfo>)await JellyfinClientServices.Current.SessionClient.GetSessionsAsync();
+
+            if (CurrentSessions.Count > 0)
+            {
+                App.Current.SessionInfo = CurrentSessions.FirstOrDefault(i => i.DeviceId == App.Current.SdkClientSettings.DeviceId);
+            } else
+            {
+                App.Current.SessionInfo = new SessionInfo
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ApplicationVersion = Constants.AppVersion,
+                    Client = SystemInformation.Instance.DeviceFamily,
+                    DeviceId = App.Current.SdkClientSettings.DeviceId,
+                    DeviceName = App.Current.SdkClientSettings.DeviceName,
+                    IsActive = true,
+                    DeviceType = SystemInformation.Instance.OperatingSystemArchitecture.ToString()
+                };
+            }
+
             await LoadMenuItemsAsync(App.Current.AppUser.Id);
         }
 

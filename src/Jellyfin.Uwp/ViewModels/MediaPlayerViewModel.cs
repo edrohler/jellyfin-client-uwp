@@ -61,10 +61,16 @@ namespace Jellyfin.ViewModels
                 switch (BaseItem.Type)
                 {
                     case "Series":
-                        //// Find first unwatched episode of the series and set stream uri
+                        ////Find first unwatched episode of the series and set stream uri
+                        /// Create the TvShowsClient
                         TvShowClient = new TvShowsClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
-                        var series = await TvShowClient.GetEpisodesAsync(BaseItem.Id);
-                        Console.WriteLine();
+                        // Query the Seasons
+                        BaseItemDtoQueryResult seasons = await TvShowClient.GetSeasonsAsync(BaseItem.Id);
+                        // Get the SeriesId
+                        Guid seriesId = (Guid)seasons.Items.First().SeriesId;
+                        // Get the NextUp (First Unwatched item)
+                        BaseItemDtoQueryResult nextup = await TvShowClient.GetNextUpAsync(userId: App.Current.AppUser.Id, seriesId: seriesId.ToString());
+                        BaseItem = nextup.Items.First();
                         break;
                     case "Album":
                         Console.WriteLine();
@@ -75,10 +81,10 @@ namespace Jellyfin.ViewModels
             switch (BaseItem.MediaType)
             {
                 case "Video":
-                    StreamUri = new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Videos/{Id}/stream?static=true");
+                    StreamUri = new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Videos/{BaseItem.Id}/stream?static=true");
                     break;
                 case "Audio":
-                    StreamUri = new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Audio/{Id}/stream?static=true");
+                    StreamUri = new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Audio/{BaseItem.Id}/stream?static=true");
                     break;
                 default:
                     // Something Happened Log it and go back to Shell Page

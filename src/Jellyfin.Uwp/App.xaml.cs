@@ -3,6 +3,7 @@ using Jellyfin.Helpers;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
+using Microsoft.Toolkit.Uwp.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -44,7 +45,9 @@ namespace Jellyfin
         // Jellyfin Global Objects
         public UserDto AppUser { get; set; } = null;
         public BaseItemDtoQueryResult UserViews { get; set; } = null;
-        public DeviceIdentification DviceIdentification { get; set; } = null;
+        public DeviceIdentification DeviceIdentification { get; set; } = null;
+        public PublicSystemInfo PublicSystemInfo { get; set; } = null;
+        public SessionInfo SessionInfo { get; set; } = null;
 
         // For access to the shell's navigation Frame from the LoginViewModel
         public ShellPage Shell { get; set; }
@@ -55,7 +58,17 @@ namespace Jellyfin
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
             RootFrame = Window.Current.Content as Frame;
-            
+
+            // Server Info
+            PublicSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
+            // Client Info
+            DeviceIdentification = new DeviceIdentification
+            {
+                FriendlyName = Current.SdkClientSettings.DeviceName,
+                Manufacturer = SystemInformation.Instance.DeviceManufacturer,
+                ModelName = SystemInformation.Instance.DeviceModel
+            };
+
             if (RootFrame == null)
             {
                 RootFrame = new Frame();
@@ -206,6 +219,11 @@ namespace Jellyfin
 
             //Configure DevicesClient
             JellyfinClientServices.Current.DevicesClient = new DevicesClient(
+                SdkClientSettings,
+                DefaultHttpClient);
+
+            // Configure SeesionsCLient
+            JellyfinClientServices.Current.SessionClient = new SessionClient(
                 SdkClientSettings,
                 DefaultHttpClient);
 
