@@ -1,0 +1,28 @@
+﻿<Page x:Class="Jellyfin.Views.MediaPlayerPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:Jellyfin.Views"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:viewModels="using:Jellyfin.ViewModels"
+      mc:Ignorable="d"
+      Background="Black">
+
+    <Page.DataContext>
+        <viewModels:MediaPlayerViewModel x:Name="ViewModel" />
+    </Page.DataContext>
+
+    <Grid>
+        <MediaPlayerElement x:Name="MediaPlayer"
+                            AreTransportControlsEnabled="True">
+            <MediaPlayerElement.TransportControls>
+                <MediaTransportControls IsZoomButtonVisible="False"
+                                        IsFastForwardButtonVisible="False"
+                                        IsVolumeButtonVisible="False"
+                                        IsStopButtonVisible="True"
+                                        IsFullWindowButtonVisible="True">
+                </MediaTransportControls>
+            </MediaPlayerElement.TransportControls>
+        </MediaPlayerElement>
+    </Grid>
+</Page>
