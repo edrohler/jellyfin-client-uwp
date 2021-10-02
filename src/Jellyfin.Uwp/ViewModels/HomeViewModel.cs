@@ -131,7 +131,6 @@ namespace Jellyfin.ViewModels
                                         ItemFields.Path
                                     },
                                     imageTypeLimit: 1,
-                                    includeItemTypes: new string[] { "Album" },
                                     enableImages: true,
                                     enableImageTypes: new ImageType[] { ImageType.Primary },
                                     limit: 20

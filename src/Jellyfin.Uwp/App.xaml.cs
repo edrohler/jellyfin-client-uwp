@@ -59,16 +59,6 @@ namespace Jellyfin
         {
             RootFrame = Window.Current.Content as Frame;
 
-            // Server Info
-            PublicSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
-            // Client Info
-            DeviceIdentification = new DeviceIdentification
-            {
-                FriendlyName = Current.SdkClientSettings.DeviceName,
-                Manufacturer = SystemInformation.Instance.DeviceManufacturer,
-                ModelName = SystemInformation.Instance.DeviceModel
-            };
-
             if (RootFrame == null)
             {
                 RootFrame = new Frame();
@@ -104,7 +94,7 @@ namespace Jellyfin
                     }
                     catch (Exception ex)
                     {
-                        // Condition 3 - Bad token, clear settings toekn and re-auth.
+                        // Condition 3 - Bad token, clear settings token and re-auth.
                         ExceptionLogger.LogException(ex);
                         SdkClientSettings.AccessToken = null;
                         RootFrame.Navigate(typeof(LoginPage));
@@ -124,6 +114,9 @@ namespace Jellyfin
             //StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 #endif
 
+            // New up and SdkClientSettings
+            SdkClientSettings sdkSettings = new SdkClientSettings();
+
             if (File.Exists(Constants.JellyfinSettingsFile))
             {
                 // ************************************************************ //
@@ -132,9 +125,6 @@ namespace Jellyfin
 
                 // Load the existing file
                 JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
-
-                // New up and SdkClientSettings
-                SdkClientSettings sdkSettings = new SdkClientSettings();
 
                 // Initialize the SdkClientSettings object
                 sdkSettings.InitializeClientSettings(
@@ -152,16 +142,12 @@ namespace Jellyfin
                 {
                     sdkSettings.AccessToken = StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey);
                 }
-
-                return sdkSettings;
             }
             else
             {
                 // ********************************************************************************* //
                 // Sdk Setting Scenario: This is the first run (or PC Settings -> Reset App was used)
                 // ********************************************************************************* //
-
-                SdkClientSettings sdkSettings = new SdkClientSettings();
 
                 // Initialize the SdkClientSettings object
                 sdkSettings.InitializeClientSettings(
@@ -180,11 +166,13 @@ namespace Jellyfin
 
                 // Save the file to local storage
                 File.WriteAllText(Constants.JellyfinSettingsFile, serializedSettings.ToString());
-
-                return sdkSettings;
             }
+
+            return sdkSettings;
         }
 
+        // Configure the Most Used Services here.
+        // Other uses as needed.
         private void ConfigureJellyfinServices()
         {
             // Configure SystemClient
@@ -217,13 +205,18 @@ namespace Jellyfin
                 SdkClientSettings,
                 DefaultHttpClient);
 
-            //Configure DevicesClient
+            // Configure DevicesClient
             JellyfinClientServices.Current.DevicesClient = new DevicesClient(
                 SdkClientSettings,
                 DefaultHttpClient);
 
             // Configure SeesionsCLient
             JellyfinClientServices.Current.SessionClient = new SessionClient(
+                SdkClientSettings,
+                DefaultHttpClient);
+
+            // Configure ScheduledTasksClient
+            JellyfinClientServices.Current.ScheduledTasksClient = new ScheduledTasksClient(
                 SdkClientSettings,
                 DefaultHttpClient);
 

@@ -130,6 +130,10 @@ namespace Jellyfin.Views
             // Get selected media item
             MediaDataItem MediaDataItem = (MediaDataItem)((Button)sender).DataContext;
 
+            //// Switch on MediaType for Navigation
+            /// Photos, Videos, Audio, etc.
+            //if(MediaDataItem.BaseItem.Type == )
+
             // Set root frame to media player
             App.Current.RootFrame.Navigate(typeof(MediaPlayerPage), MediaDataItem.BaseItem.Id);
         }

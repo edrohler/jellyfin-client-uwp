@@ -74,6 +74,17 @@ namespace Jellyfin.ViewModels
                 };
             }
 
+            // Query Server Info
+            App.Current.PublicSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
+
+            // Set Client Info
+            App.Current.DeviceIdentification = new DeviceIdentification
+            {
+                FriendlyName = App.Current.SdkClientSettings.DeviceName,
+                Manufacturer = SystemInformation.Instance.DeviceManufacturer,
+                ModelName = SystemInformation.Instance.DeviceModel
+            };
+
             await LoadMenuItemsAsync(App.Current.AppUser.Id);
         }
 

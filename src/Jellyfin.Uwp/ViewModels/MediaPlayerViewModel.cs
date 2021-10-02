@@ -17,12 +17,10 @@ namespace Jellyfin.ViewModels
     public class MediaPlayerViewModel : ViewModelBase
     {
         public MediaInfoClient MediaInfoClient;
-        public SessionClient SessionClient;
         public PlaystateClient PlayStateClient;
-        public MoviesClient MovieClient;
         public VideosClient VideoClient;
         public TvShowsClient TvShowClient;
-
+        public ArtistsClient ArtistsClient;
 
         public BaseItemDto BaseItem;
         public ChapterInfo BaseItemChapterInfo;
@@ -31,29 +29,18 @@ namespace Jellyfin.ViewModels
         public PlaybackStartInfo PlaybackStartInfo;
         public PlaybackStopInfo PlaybackStopInfo;
         public PlaybackInfoResponse PlaybackInfo;
-        public Guid SessionId;
-
-        public MediaStreamSource MediaStreamSource {get;set;}
-        public MediaSource MediaSource { get; set; }
-
-        public byte[] StreamBuffer;
 
         public Uri StreamUri { get; set; }
 
         public MediaPlayerViewModel()
         {
             MediaInfoClient = new MediaInfoClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
-            SessionClient = new SessionClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
             PlayStateClient = new PlaystateClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
             VideoClient = new VideosClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
-            MovieClient = new MoviesClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
         }
 
         public async Task PageReadyAsync(Guid Id)
         {
-            // For testing, stop all sessions.
-            //await StopAllDeviceSessions(App.Current.SdkClientSettings.DeviceId.ToString());
-
             BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.Id, Id);
 
             if (string.IsNullOrEmpty(BaseItem.MediaType))
@@ -72,8 +59,13 @@ namespace Jellyfin.ViewModels
                         BaseItemDtoQueryResult nextup = await TvShowClient.GetNextUpAsync(userId: App.Current.AppUser.Id, seriesId: seriesId.ToString());
                         BaseItem = nextup.Items.First();
                         break;
-                    case "Album":
-                        Console.WriteLine();
+                    case "MusicAlbum":
+                        //// Get Album songs from Id on Homepage
+                        // Get album
+                        BaseItemDtoQueryResult album = await JellyfinClientServices.Current.ItemsClient.GetItemsAsync(userId:App.Current.AppUser.Id, parentId: BaseItem.Id);
+                        // Get first song
+                        BaseItemDto firstsong = album.Items.First();
+                        BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.Id, firstsong.Id);
                         break;
                 }
             }
@@ -138,28 +130,6 @@ namespace Jellyfin.ViewModels
 
 
             Console.WriteLine();
-        }
-
-        public async Task StopAllDeviceSessions(string deviceId)
-        {
-            ICollection<SessionInfo> sessionsInfo = (ICollection<SessionInfo>)await SessionClient.GetSessionsAsync();
-
-            SessionInfo session = sessionsInfo.FirstOrDefault(i => i.DeviceId == deviceId);
-
-            if (session.NowPlayingItem != null)
-            {
-                foreach (SessionInfo item in sessionsInfo)
-                {
-                    PlaybackStopInfo = new PlaybackStopInfo
-                    {
-                        Item = session.NowPlayingItem,
-                        ItemId = session.NowPlayingItem.Id,
-                        SessionId = session.Id
-                    };
-
-                    await PlayStateClient.ReportPlaybackStoppedAsync(PlaybackStopInfo);
-                }
-            }
         }
     }
 }
