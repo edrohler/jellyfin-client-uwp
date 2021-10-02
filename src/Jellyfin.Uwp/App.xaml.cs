@@ -3,6 +3,7 @@ using Jellyfin.Helpers;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
+using Microsoft.Toolkit.Uwp.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -44,6 +45,9 @@ namespace Jellyfin
         // Jellyfin Global Objects
         public UserDto AppUser { get; set; } = null;
         public BaseItemDtoQueryResult UserViews { get; set; } = null;
+        public DeviceIdentification DeviceIdentification { get; set; } = null;
+        public PublicSystemInfo PublicSystemInfo { get; set; } = null;
+        public SessionInfo SessionInfo { get; set; } = null;
 
         // For access to the shell's navigation Frame from the LoginViewModel
         public ShellPage Shell { get; set; }
@@ -51,10 +55,10 @@ namespace Jellyfin
         // For navigation outside of the ShellPage
         public Frame RootFrame { get; set; }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
             RootFrame = Window.Current.Content as Frame;
-            
+
             if (RootFrame == null)
             {
                 RootFrame = new Frame();
@@ -74,10 +78,27 @@ namespace Jellyfin
                 if (RootFrame.Content == null)
                 {
                     // Condition 1 - If there is no token stored, go to LoginPage
-                    // Condition 2 - If the user is authenticated, go to ShellPage
-                    RootFrame.Navigate(string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)) 
-                        ? typeof(LoginPage)
-                        : typeof(ShellPage), e.Arguments);
+                    if (string.IsNullOrEmpty(StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey)))
+                    {
+                        RootFrame.Navigate(typeof(LoginPage));
+                    }
+
+                    try
+                    {
+                        // Condition 2 - If there is a token user has authenticated
+                        // Test if it is a good Token by getting Current User.
+                        // If 200 retuls, go to ShellPage
+                        // Else catch and log the error
+                        AppUser = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync();
+                        RootFrame.Navigate(typeof(ShellPage), e.Arguments);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Condition 3 - Bad token, clear settings token and re-auth.
+                        ExceptionLogger.LogException(ex);
+                        SdkClientSettings.AccessToken = null;
+                        RootFrame.Navigate(typeof(LoginPage));
+                    }
                 }
 
                 Window.Current.Activate();
@@ -93,6 +114,9 @@ namespace Jellyfin
             //StorageHelpers.Instance.DeleteToken(Constants.AccessTokenKey);
 #endif
 
+            // New up and SdkClientSettings
+            SdkClientSettings sdkSettings = new SdkClientSettings();
+
             if (File.Exists(Constants.JellyfinSettingsFile))
             {
                 // ************************************************************ //
@@ -101,9 +125,6 @@ namespace Jellyfin
 
                 // Load the existing file
                 JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
-
-                // New up and SdkClientSettings
-                SdkClientSettings sdkSettings = new SdkClientSettings();
 
                 // Initialize the SdkClientSettings object
                 sdkSettings.InitializeClientSettings(
@@ -121,16 +142,12 @@ namespace Jellyfin
                 {
                     sdkSettings.AccessToken = StorageHelpers.Instance.LoadToken(Constants.AccessTokenKey);
                 }
-
-                return sdkSettings;
             }
             else
             {
                 // ********************************************************************************* //
                 // Sdk Setting Scenario: This is the first run (or PC Settings -> Reset App was used)
                 // ********************************************************************************* //
-
-                SdkClientSettings sdkSettings = new SdkClientSettings();
 
                 // Initialize the SdkClientSettings object
                 sdkSettings.InitializeClientSettings(
@@ -149,11 +166,13 @@ namespace Jellyfin
 
                 // Save the file to local storage
                 File.WriteAllText(Constants.JellyfinSettingsFile, serializedSettings.ToString());
-
-                return sdkSettings;
             }
+
+            return sdkSettings;
         }
 
+        // Configure the Most Used Services here.
+        // Other uses as needed.
         private void ConfigureJellyfinServices()
         {
             // Configure SystemClient
@@ -183,6 +202,21 @@ namespace Jellyfin
 
             // Configure ImagesClient
             JellyfinClientServices.Current.ImageClient = new ImageClient(
+                SdkClientSettings,
+                DefaultHttpClient);
+
+            // Configure DevicesClient
+            JellyfinClientServices.Current.DevicesClient = new DevicesClient(
+                SdkClientSettings,
+                DefaultHttpClient);
+
+            // Configure SeesionsCLient
+            JellyfinClientServices.Current.SessionClient = new SessionClient(
+                SdkClientSettings,
+                DefaultHttpClient);
+
+            // Configure ScheduledTasksClient
+            JellyfinClientServices.Current.ScheduledTasksClient = new ScheduledTasksClient(
                 SdkClientSettings,
                 DefaultHttpClient);
 

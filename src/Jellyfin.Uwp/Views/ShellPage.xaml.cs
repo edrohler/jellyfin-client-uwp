@@ -27,7 +27,21 @@ namespace Jellyfin.Views
             await ViewModel.PageReadyAsync();
 
             // Profile Image
-            BitmapImage profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tag={App.Current.AppUser.PrimaryImageTag}"));
+            BitmapImage profileImage;
+
+            try
+            {
+                // Check if a profile image exists
+                profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tag={App.Current.AppUser.PrimaryImageTag}"));
+            }
+            catch (Exception ex)
+            {
+                // If not, log the exception and load the deafult in Assets
+                profileImage = new BitmapImage(new Uri("ms-appx:///Assets/default-profile.jpg"));
+                ExceptionLogger.LogException(ex);
+            }
+            
+            
             ProfileImage.Source = profileImage;
             ProfileImage.Width = 40;
             ProfileImage.Height = 40;

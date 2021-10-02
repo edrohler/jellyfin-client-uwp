@@ -108,6 +108,9 @@ namespace Jellyfin.ViewModels
             // Encrypot and save the token
             StorageHelpers.Instance.StoreToken(Constants.AccessTokenKey, authenticationResult.AccessToken);
 
+            // Set the App Current User
+            App.Current.AppUser = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync();
+
             // Navigate to the ShellPage passing in the UserDto
             App.Current.RootFrame.Navigate(typeof(ShellPage));
 

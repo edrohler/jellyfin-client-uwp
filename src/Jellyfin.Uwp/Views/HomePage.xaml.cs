@@ -1,4 +1,5 @@
 ﻿using Jellyfin.Models;
+using Jellyfin.ViewModels;
 using System;
 using Telerik.UI.Xaml.Controls.Primitives;
 using Windows.Foundation;
@@ -31,18 +32,30 @@ namespace Jellyfin.Views
 
         private void MyMediaHubtile_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            LibraryDataItems library = (LibraryDataItems)((RadSlideHubTile)sender).DataContext;
-
-            App.Current.Shell.ChangeMenuSelection(library.Id);
+            MediaDataItem library = (MediaDataItem)((RadSlideHubTile)sender).DataContext;
+             
+            App.Current.Shell.ChangeMenuSelection(library.BaseItem.Id);
         }
 
         private void LatestMediaHubTile_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            LatestMediaDataItem LatestItem = (LatestMediaDataItem)((RadHubTile)sender).DataContext;
+            MediaDataItem LatestItem = (MediaDataItem)((RadHubTile)sender).DataContext;
 
-            App.Current.Shell.ChangeMenuSelection(LatestItem.Id);
+            NavigateToItemPage(LatestItem.BaseItem.Id);
+        }
 
-            Frame.Navigate(typeof(ItemPage), LatestItem.Id);
+        private void LatestMediaItemList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MediaDataItem SelectedItem = (MediaDataItem)((ListView)sender).SelectedItem;
+
+            NavigateToItemPage(SelectedItem.BaseItem.Id);
+        }
+
+        private void NavigateToItemPage(Guid id)
+        {
+            App.Current.Shell.ChangeMenuSelection(id);
+
+            Frame.Navigate(typeof(ItemPage), id);
         }
 
         //
@@ -108,10 +121,21 @@ namespace Jellyfin.Views
 
         private void TitleScrollerCanvas_Loaded(object sender, RoutedEventArgs e)
         {
-            //Canvas canvas = (Canvas)sender;
+            //Canvas canvas = (Canvas)sender;            
 
-            
+        }
 
+        private void TitlePlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Get selected media item
+            MediaDataItem MediaDataItem = (MediaDataItem)((Button)sender).DataContext;
+
+            //// Switch on MediaType for Navigation
+            /// Photos, Videos, Audio, etc.
+            //if(MediaDataItem.BaseItem.Type == )
+
+            // Set root frame to media player
+            App.Current.RootFrame.Navigate(typeof(MediaPlayerPage), MediaDataItem.BaseItem.Id);
         }
     }
 }

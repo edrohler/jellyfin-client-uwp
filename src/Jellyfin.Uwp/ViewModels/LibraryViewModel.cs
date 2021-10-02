@@ -17,12 +17,12 @@ namespace Jellyfin.ViewModels
         public string LibraryTitle { get; set; }
         public bool IsPaneVisible { get; set; } = true;
         BaseItemDto BaseItem { get; set; }
-        public ObservableCollection<LibraryDataItem> LibraryItems { get; set; }
+        public ObservableCollection<MediaDataItem> LibraryItems { get; set; }
         public ObservableCollection<MenuDataItem> MenuItems { get; set; }
 
         public LibraryViewModel()
         {
-            LibraryItems = new ObservableCollection<LibraryDataItem>();
+            LibraryItems = new ObservableCollection<MediaDataItem>();
             MenuItems = new ObservableCollection<MenuDataItem>();
         }
 
@@ -88,11 +88,10 @@ namespace Jellyfin.ViewModels
             // Creates GridView Collection
             foreach (BaseItemDto item in items.Items)
             {
-                LibraryItems.Add(new LibraryDataItem
+                LibraryItems.Add(new MediaDataItem
                 {
-                    Id = item.Id,
-                    Name = item.Name,
-                    ImageSrc = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.Id}/Images/Primary"))
+                    BaseItem = item,
+                    ImageSource = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.Id}/Images/Primary"))
                 });
             }
         }
