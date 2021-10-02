@@ -222,15 +222,17 @@ namespace Jellyfin.Helpers
         {
             try
             {
-                logContent = $"--****-- {DateTime.Now:G} --****-- \r\n";
+                string timestamp = $"{DateTime.Now:G}----------------------------------; \r\n";
+
+                StringBuilder content = new StringBuilder(timestamp).Append(logContent);
 
                 if (File.Exists(filePath))
                 {
-                    File.AppendAllText(filePath, logContent);
+                    File.AppendAllText(filePath, content.ToString());
                 }
                 else
                 {
-                    File.WriteAllText(filePath, logContent);
+                    File.WriteAllText(filePath, content.ToString());
                 }
 
                 return true;
