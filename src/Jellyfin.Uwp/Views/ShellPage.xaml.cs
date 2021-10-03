@@ -37,7 +37,7 @@ namespace Jellyfin.Views
             catch (Exception ex)
             {
                 // If not, log the exception and load the deafult in Assets
-                profileImage = new BitmapImage(new Uri("ms-appx:///Assets/default-profile.jpg"));
+                profileImage = new BitmapImage(new Uri("ms-appx:///Jelyfin/Assets/default-profile.png"));
                 ExceptionLogger.LogException(ex);
             }
             
