@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Jellyfin.Common;
 using Microsoft.Toolkit.Uwp.Helpers;
+using Windows.UI.Xaml.Media.Imaging;
+using System.IO;
 
 namespace Jellyfin.ViewModels
 {

@@ -51,23 +51,15 @@
         <NavigationView.PaneFooter>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Height="Auto">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Image x:Name="ProfileImage" Grid.Column="0" />
-                    <NavigationViewItem x:Name="AccountNavViewItem"
-                                        Grid.Column="1"
-                                        Width="280"
-                                        Margin="-5, 0, 0, 0"
-                                        Tapped="AccountNavViewItem_Tapped"
-                                        KeyUp="AccountNavViewItem_KeyUp">
-                    </NavigationViewItem>
-                </Grid>
+                <NavigationViewItem x:Name="AccountNavViewItem"
+                                    Grid.Row="0"
+                                    Icon="Contact"
+                                    Tapped="AccountNavViewItem_Tapped"
+                                    KeyUp="AccountNavViewItem_KeyUp">
+                </NavigationViewItem>
                 <NavigationViewItem x:Name="LogoutNavViewItem"
                                     Grid.Row="1"
                                     Content="Logout"

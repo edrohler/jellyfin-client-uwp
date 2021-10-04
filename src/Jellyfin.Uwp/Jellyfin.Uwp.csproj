@@ -167,9 +167,6 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\default-profile.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\LargeTile.scale-100.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -402,6 +399,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Fonts\Quicksand-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

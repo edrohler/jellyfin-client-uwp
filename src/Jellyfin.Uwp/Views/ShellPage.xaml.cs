@@ -4,7 +4,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Jellyfin.Models;
-using Windows.UI.Xaml.Media.Imaging;
 using System.Linq;
 using Jellyfin.Helpers;
 
@@ -26,28 +25,8 @@ namespace Jellyfin.Views
 
             await ViewModel.PageReadyAsync();
 
-            // Profile Image
-            BitmapImage profileImage;
-
-            try
-            {
-                // Check if a profile image exists
-                profileImage = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Users/{App.Current.AppUser.Id}/Images/Primary?tag={App.Current.AppUser.PrimaryImageTag}"));
-            }
-            catch (Exception ex)
-            {
-                // If not, log the exception and load the deafult in Assets
-                profileImage = new BitmapImage(new Uri("ms-appx:///Jelyfin/Assets/default-profile.png"));
-                ExceptionLogger.LogException(ex);
-            }
-            
-            
-            ProfileImage.Source = profileImage;
-            ProfileImage.Width = 40;
-            ProfileImage.Height = 40;
-
             // Profile Name
-            AccountNavViewItem.Content = App.Current.AppUser.Name;
+            AccountNavViewItem.Content = $"User: {App.Current.AppUser.Name}";
 
             // Setting the initial page
             ContentFrame.Navigate(typeof(HomePage));
