@@ -1,13 +1,16 @@
 ﻿using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using Jellyfin.Common;
+using Jellyfin.Helpers;
 using Jellyfin.Sdk;
+using Jellyfin.Services;
 using Jellyfin.Views;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.ViewModels
 {
@@ -22,6 +25,8 @@ namespace Jellyfin.ViewModels
         public string AppName { get; set; }
         public string DeviceName { get; set; }
         public string DeviceId { get; set; }
+
+        public BitmapImage ProfileImageSource { get; set; }
 
         public DelegateCommand ChangeServerCommand { get; set; }
 
@@ -41,7 +46,36 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync()
         {
+            await GetProfileImageAsync();
+        }
 
+        private async Task GetProfileImageAsync()
+        {
+
+            ProfileImageSource = new BitmapImage
+            {
+                DecodePixelHeight = 200,
+                DecodePixelWidth = 200
+            };
+
+            try
+            {
+                FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetUserImageAsync(
+                    App.Current.AppUser.Id, ImageType.Primary);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await fr.Stream.CopyToAsync(ms);
+                    ms.Position = 0;
+
+                    await ProfileImageSource.SetSourceAsync(ms.AsRandomAccessStream());
+                }
+            }
+            catch (Exception ex)
+            {
+                ProfileImageSource.UriSource = new Uri("ms-appx:///Images/default-profile.png");
+                ExceptionLogger.LogException(ex);
+            }
         }
 
         private async Task AttemptServerChangeAsync()

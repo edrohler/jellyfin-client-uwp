@@ -36,7 +36,10 @@
                     Grid.Row="1"
                     Margin="15">
             <TextBlock Text="Profile Image:"></TextBlock>
-            <Image Source="/Images/default-profile.png" Width="200" Height="200" HorizontalAlignment="Left"/>
+            <Image Source="{Binding ProfileImageSource}"
+                   HorizontalAlignment="Left"
+                   Width="200"
+                   Height="242"/>
             <Button Content="Change Profile Image" />
         </StackPanel>
         <StackPanel Orientation="Vertical"
