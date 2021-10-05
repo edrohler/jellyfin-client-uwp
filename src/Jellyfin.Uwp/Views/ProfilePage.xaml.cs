@@ -1,4 +1,5 @@
 ﻿using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin.Views
 {
@@ -9,11 +10,11 @@ namespace Jellyfin.Views
             this.InitializeComponent();
         }
 
-        //protected override async void OnNavigatedTo(NavigationEventArgs e)
-        //{
-        //    base.OnNavigatedTo(e);
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
 
-        //    //await ViewModel.PageReadyAsync();
-        //}
+            await ViewModel.PageReadyAsync();
+        }
     }
 }
