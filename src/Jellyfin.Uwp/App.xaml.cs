@@ -1,5 +1,6 @@
 ﻿using Jellyfin.Common;
 using Jellyfin.Helpers;
+using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
@@ -43,7 +44,7 @@ namespace Jellyfin
         public HttpClient DefaultHttpClient { get; private set; }
 
         // Jellyfin Global Objects
-        public UserDto AppUser { get; set; } = null;
+        public AppUser AppUser { get; set; }
         public BaseItemDtoQueryResult UserViews { get; set; } = null;
         public DeviceIdentification DeviceIdentification { get; set; } = null;
         public PublicSystemInfo PublicSystemInfo { get; set; } = null;
@@ -89,7 +90,11 @@ namespace Jellyfin
                         // Test if it is a good Token by getting Current User.
                         // If 200 retuls, go to ShellPage
                         // Else catch and log the error
-                        AppUser = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync();
+                        AppUser = new AppUser
+                        {
+                            User = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync()
+                        };
+
                         RootFrame.Navigate(typeof(ShellPage), e.Arguments);
                     }
                     catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using CommonHelpers.Common;
 using Jellyfin.Models;
 using System.Collections.ObjectModel;
@@ -18,21 +19,8 @@ namespace Jellyfin.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {
-        private string searchTerm;
-
-        private SearchClient searchClient = null;
-
-        public ShellViewModel()
-        {
-            MenuItems = new ObservableCollection<MenuDataItem>();
-            SuggestBoxItems = new ObservableCollection<string>();
-            
-            RefreshCommand = new DelegateCommand(Refresh);
-        }
-
-        public ObservableCollection<MenuDataItem> MenuItems { get; set; }
-
-        public ObservableCollection<string> SuggestBoxItems { get; set; }
+        public BitmapImage ProfileImageSource { get; set; }
+        public string UserName { get; set; }
 
         public string SearchTerm
         {
@@ -48,15 +36,29 @@ namespace Jellyfin.ViewModels
             }
         }
 
-        public DelegateCommand RefreshCommand { get; set; }
+        private string searchTerm;
+        private SearchClient searchClient = null;
 
-        private void Refresh()
+        public ShellViewModel()
         {
+            MenuItems = new ObservableCollection<MenuDataItem>();
+            SuggestBoxItems = new ObservableCollection<string>();
             
+            RefreshCommand = new DelegateCommand(Refresh);
         }
+
+        public ObservableCollection<MenuDataItem> MenuItems { get; set; }
+
+        public ObservableCollection<string> SuggestBoxItems { get; set; }
+
+        public DelegateCommand RefreshCommand { get; set; }
 
         public async Task PageReadyAsync()
         {
+            // Set UserName
+            UserName = App.Current.AppUser.User.Name;
+
+            // Get/Create Session Info
             ICollection<SessionInfo> CurrentSessions = (ICollection<SessionInfo>)await JellyfinClientServices.Current.SessionClient.GetSessionsAsync();
 
             if (CurrentSessions.Count > 0)
@@ -87,8 +89,45 @@ namespace Jellyfin.ViewModels
                 ModelName = SystemInformation.Instance.DeviceModel
             };
 
-            await LoadMenuItemsAsync(App.Current.AppUser.Id);
+            await LoadMenuItemsAsync(App.Current.AppUser.User.Id);
+
+            await GetProfileImageAsync();
         }
+
+        private void Refresh()
+        {
+
+        }
+
+        private async Task GetProfileImageAsync()
+        {
+
+            ProfileImageSource = new BitmapImage
+            {
+                DecodePixelHeight = 200,
+                DecodePixelWidth = 200
+            };
+
+            try
+            {
+                FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetUserImageAsync(
+                    App.Current.AppUser.User.Id, ImageType.Primary);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await fr.Stream.CopyToAsync(ms);
+                    ms.Position = 0;
+
+                    await ProfileImageSource.SetSourceAsync(ms.AsRandomAccessStream());
+                }
+            }
+            catch (Exception ex)
+            {
+                ProfileImageSource.UriSource = new Uri("ms-appx:///Images/default-profile.png");
+                ExceptionLogger.LogException(ex);
+            }
+        }
+
 
         private async Task LoadMenuItemsAsync(Guid userId)
         {

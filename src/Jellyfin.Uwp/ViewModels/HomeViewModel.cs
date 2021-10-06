@@ -67,7 +67,7 @@ namespace Jellyfin.ViewModels
                         case "tvshows":
                             LatestMediaItems =
                                 await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
-                                    App.Current.AppUser.Id,
+                                    App.Current.AppUser.User.Id,
                                     parentId: item.BaseItem.Id,
                                     fields: new ItemFields[] {
                                         ItemFields.PrimaryImageAspectRatio,
@@ -90,7 +90,7 @@ namespace Jellyfin.ViewModels
                         case "movies":
                             LatestMediaItems =
                                 await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
-                                    App.Current.AppUser.Id,
+                                    App.Current.AppUser.User.Id,
                                     parentId: item.BaseItem.Id,
                                     fields: new ItemFields[] {
                                         ItemFields.PrimaryImageAspectRatio,
@@ -107,7 +107,7 @@ namespace Jellyfin.ViewModels
                             break;
                         case "homevideos":
                             LatestMediaItems =
-                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id,
+                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.User.Id,
                                     parentId: item.BaseItem.Id,
                                     fields: new ItemFields[] {
                                         ItemFields.PrimaryImageAspectRatio,
@@ -123,7 +123,7 @@ namespace Jellyfin.ViewModels
                         case "music":
                             LatestMediaItems =
                                 await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
-                                    App.Current.AppUser.Id,
+                                    App.Current.AppUser.User.Id,
                                     parentId: item.BaseItem.Id,
                                     fields: new ItemFields[] {
                                         ItemFields.PrimaryImageAspectRatio,
@@ -138,7 +138,7 @@ namespace Jellyfin.ViewModels
                             break;
                         case "books":
                             LatestMediaItems =
-                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id,
+                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.User.Id,
                                     parentId: item.BaseItem.Id,
                                     fields: new ItemFields[] {
                                         ItemFields.PrimaryImageAspectRatio,
@@ -153,7 +153,7 @@ namespace Jellyfin.ViewModels
                             break;
                         default:
                             LatestMediaItems =
-                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.Id,
+                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.User.Id,
                                     parentId: item.BaseItem.Id,
                                     fields: new ItemFields[] {
                                         ItemFields.PrimaryImageAspectRatio,

@@ -26,13 +26,13 @@ namespace Jellyfin.ViewModels
         public string DeviceName { get; set; }
         public string DeviceId { get; set; }
 
-        public BitmapImage ProfileImageSource { get; set; }
-
         public DelegateCommand ChangeServerCommand { get; set; }
+
+        public BitmapImage ProfileImageSource {get;set;}
 
         public ProfileViewModel()
         {
-            UserDto = App.Current.AppUser;
+            UserDto = App.Current.AppUser.User;
             UserConfiguration = UserDto.Configuration;
             UserPolicy = UserDto.Policy;
             PublicServerInfo = App.Current.PublicSystemInfo;
@@ -42,41 +42,15 @@ namespace Jellyfin.ViewModels
             DeviceName = Constants.DeviceName;
             DeviceId = Constants.DeviceId.ToString();
             ChangeServerCommand = new DelegateCommand(async () => await AttemptServerChangeAsync());
+
+            
         }
 
-        public async Task PageReadyAsync()
-        {
-            await GetProfileImageAsync();
-        }
+        //public async Task PageReadyAsync()
+        //{
+            
+        //}
 
-        private async Task GetProfileImageAsync()
-        {
-
-            ProfileImageSource = new BitmapImage
-            {
-                DecodePixelHeight = 200,
-                DecodePixelWidth = 200
-            };
-
-            try
-            {
-                FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetUserImageAsync(
-                    App.Current.AppUser.Id, ImageType.Primary);
-
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    await fr.Stream.CopyToAsync(ms);
-                    ms.Position = 0;
-
-                    await ProfileImageSource.SetSourceAsync(ms.AsRandomAccessStream());
-                }
-            }
-            catch (Exception ex)
-            {
-                ProfileImageSource.UriSource = new Uri("ms-appx:///Images/default-profile.png");
-                ExceptionLogger.LogException(ex);
-            }
-        }
 
         private async Task AttemptServerChangeAsync()
         {

@@ -26,7 +26,9 @@ namespace Jellyfin.Views
             await ViewModel.PageReadyAsync();
 
             // Profile Name
-            AccountNavViewItem.Content = $"User Name: {App.Current.AppUser.Name}";
+            //AccountNavViewItem.Content = $"User Name: {App.Current.AppUser.Name}";
+
+            ProfileIcon.ImageSource = ViewModel.ProfileImageSource;
 
             // Setting the initial page
             ContentFrame.Navigate(typeof(HomePage));

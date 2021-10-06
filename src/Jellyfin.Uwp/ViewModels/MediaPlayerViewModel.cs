@@ -41,7 +41,7 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync(Guid Id)
         {
-            BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.Id, Id);
+            BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.User.Id, Id);
 
             if (string.IsNullOrEmpty(BaseItem.MediaType))
             {
@@ -56,16 +56,16 @@ namespace Jellyfin.ViewModels
                         // Get the SeriesId
                         Guid seriesId = (Guid)seasons.Items.First().SeriesId;
                         // Get the NextUp (First Unwatched item)
-                        BaseItemDtoQueryResult nextup = await TvShowClient.GetNextUpAsync(userId: App.Current.AppUser.Id, seriesId: seriesId.ToString());
+                        BaseItemDtoQueryResult nextup = await TvShowClient.GetNextUpAsync(userId: App.Current.AppUser.User.Id, seriesId: seriesId.ToString());
                         BaseItem = nextup.Items.First();
                         break;
                     case "MusicAlbum":
                         //// Get Album songs from Id on Homepage
                         // Get album
-                        BaseItemDtoQueryResult album = await JellyfinClientServices.Current.ItemsClient.GetItemsAsync(userId:App.Current.AppUser.Id, parentId: BaseItem.Id);
+                        BaseItemDtoQueryResult album = await JellyfinClientServices.Current.ItemsClient.GetItemsAsync(userId:App.Current.AppUser.User.Id, parentId: BaseItem.Id);
                         // Get first song
                         BaseItemDto firstsong = album.Items.First();
-                        BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.Id, firstsong.Id);
+                        BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.User.Id, firstsong.Id);
                         break;
                 }
             }
