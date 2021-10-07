@@ -15,6 +15,8 @@ namespace Jellyfin.Views
             base.OnNavigatedTo(e);
 
             //await ViewModel.PageReadyAsync();
+
+            ProfileImage.Source = App.Current.AppUser.ProfileImage;
         }
     }
 }

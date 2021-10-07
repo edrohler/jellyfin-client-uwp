@@ -57,7 +57,8 @@
                 <NavigationViewItem x:Name="AccountNavViewItem"
                                     Grid.Row="0"
                                     Tapped="AccountNavViewItem_Tapped"
-                                    KeyUp="AccountNavViewItem_KeyUp">
+                                    KeyUp="AccountNavViewItem_KeyUp"
+                                    Template="{StaticResource MyNavViewItemControlTemplate}">
                     <NavigationViewItem.Content>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -65,14 +66,17 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                                 <Ellipse Grid.Column="0"
-                                         Width="40"
-                                         Height="40">
+                                         Width="30"
+                                         Height="30"
+                                         Margin="5">
                                 <Ellipse.Fill>
                                     <ImageBrush x:Name="ProfileIcon" />
                                 </Ellipse.Fill>
                             </Ellipse>
                             <TextBlock x:Name="UserName"
                                        Grid.Column="1"
+                                       Margin="7,0,0,0"
+                                       VerticalAlignment="Center"
                                        Text="{Binding UserName}"/>
                         </Grid>
                     </NavigationViewItem.Content>
