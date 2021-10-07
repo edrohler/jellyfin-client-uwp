@@ -3,7 +3,6 @@ using CommonHelpers.Mvvm;
 using Jellyfin.Common;
 using Jellyfin.Helpers;
 using Jellyfin.Sdk;
-using Jellyfin.Services;
 using Jellyfin.Views;
 using Newtonsoft.Json.Linq;
 using System;
@@ -41,9 +40,7 @@ namespace Jellyfin.ViewModels
             AppVersion = Constants.AppVersion;
             DeviceName = Constants.DeviceName;
             DeviceId = Constants.DeviceId.ToString();
-            ChangeServerCommand = new DelegateCommand(async () => await AttemptServerChangeAsync());
-
-            
+            ChangeServerCommand = new DelegateCommand(async () => await AttemptServerChangeAsync());            
         }
 
         //public async Task PageReadyAsync()
@@ -59,12 +56,8 @@ namespace Jellyfin.ViewModels
             md.Commands.Add(new UICommand("Change Server", (command) =>
             {
                 // Clear the Stored Base Url in AppData
-                // Load the existing file
-                JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
-                // Set the value to null
-                json["BaseUrl"] = "";
-                // Write out the new file contents
-                File.WriteAllText(Constants.JellyfinSettingsFile, json.ToString());
+                StorageHelpers.Instance.SaveSetting("BaseUrl", "", Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting("ProfileImageUri", "", Constants.JellyfinSettingsFile);
 
                 // Clear the SdkSettings
                 App.Current.SdkClientSettings.BaseUrl = null;

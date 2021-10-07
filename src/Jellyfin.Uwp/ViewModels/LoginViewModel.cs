@@ -2,6 +2,7 @@
 using CommonHelpers.Mvvm;
 using Jellyfin.Common;
 using Jellyfin.Helpers;
+using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
@@ -109,7 +110,10 @@ namespace Jellyfin.ViewModels
             StorageHelpers.Instance.StoreToken(Constants.AccessTokenKey, authenticationResult.AccessToken);
 
             // Set the App Current User
-            App.Current.AppUser.User = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync();
+            App.Current.AppUser = new AppUser
+            {
+                User = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync()
+            };
 
             // Navigate to the ShellPage passing in the UserDto
             App.Current.RootFrame.Navigate(typeof(ShellPage));

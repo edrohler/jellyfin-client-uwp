@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Jellyfin.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,7 +30,7 @@ namespace Jellyfin.Helpers
             _appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
             //Note: Generate your own private encryption key instead of this sample one: DsFZ3gWtpP5
-            var keyGenerator = new Rfc2898DeriveBytes("DsFZ3gWtpP5", Encoding.ASCII.GetBytes("DsFZ3gWtpP5"));
+            Rfc2898DeriveBytes keyGenerator = new Rfc2898DeriveBytes("DsFZ3gWtpP5", Encoding.ASCII.GetBytes("DsFZ3gWtpP5"));
             _symmetricKey = keyGenerator.GetBytes(32);
             _initializationVector = keyGenerator.GetBytes(16);
         }
@@ -38,7 +39,7 @@ namespace Jellyfin.Helpers
         {
             try
             {
-                var filePath = Path.Combine(_appDataFolder, fileName);
+                string filePath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalCacheFolder.Path, fileName);
                 File.WriteAllBytes(filePath, imageBytes);
                 return filePath;
             }
@@ -54,8 +55,8 @@ namespace Jellyfin.Helpers
         {
             try
             {
-                var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
-                var encryptedToken = EncryptString(value);
+                string filePath = Path.Combine(_appDataFolder, $"{key}.txt");
+                string encryptedToken = EncryptString(value);
 
                 File.WriteAllText(filePath, encryptedToken);
 
@@ -73,12 +74,12 @@ namespace Jellyfin.Helpers
         {
             try
             {
-                var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
+                string filePath = Path.Combine(_appDataFolder, $"{key}.txt");
 
                 if (File.Exists(filePath))
                 {
-                    var storedValue = File.ReadAllText(filePath);
-                    var decryptedToken = DecryptString(storedValue);
+                    string storedValue = File.ReadAllText(filePath);
+                    string decryptedToken = DecryptString(storedValue);
                     return decryptedToken;
                 }
                 else
@@ -98,7 +99,7 @@ namespace Jellyfin.Helpers
         {
             try
             {
-                var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
+                string filePath = Path.Combine(_appDataFolder, $"{key}.txt");
 
                 if (File.Exists(filePath))
                 {
@@ -115,17 +116,17 @@ namespace Jellyfin.Helpers
             }
         }
 
-        public bool SaveSetting(string key, string value)
+        public bool SaveSetting(string key, string value, string settingsFileName)
         {
             try
             {
-                var filePath = Path.Combine(_appDataFolder, "settings.json");
+                string filePath = Path.Combine(_appDataFolder, settingsFileName);
 
                 Dictionary<string, string> settings = null;
 
                 if (File.Exists(filePath))
                 {
-                    var json = "";
+                    string json = "";
                     json = File.ReadAllText(filePath);
                     settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 }
@@ -136,7 +137,7 @@ namespace Jellyfin.Helpers
 
                 settings[key] = value;
 
-                var updatedJson = JsonConvert.SerializeObject(settings);
+                string updatedJson = JsonConvert.SerializeObject(settings);
 
                 File.WriteAllText(filePath, updatedJson);
                 return true;
@@ -148,22 +149,22 @@ namespace Jellyfin.Helpers
             }
         }
 
-        public string LoadSetting(string key)
+        public string LoadSetting(string key, string settingsFileName)
         {
             try
             {
-                var filePath = Path.Combine(_appDataFolder, "settings.json");
+                string filePath = Path.Combine(_appDataFolder, settingsFileName);
 
                 if (File.Exists(filePath))
                 {
-                    var json = File.ReadAllText(filePath);
-                    var settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    string json = File.ReadAllText(filePath);
+                    Dictionary<string, string> settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                     return settings.ContainsKey(key) ? settings[key] : null;
                 }
                 else
                 {
-                    var settings = new Dictionary<string, string>();
-                    var json = JsonConvert.SerializeObject(settings);
+                    Dictionary<string, string> settings = new Dictionary<string, string>();
+                    string json = JsonConvert.SerializeObject(settings);
                     File.WriteAllText(filePath, json);
                     return null;
                 }
@@ -179,9 +180,9 @@ namespace Jellyfin.Helpers
         {
             try
             {
-                var encryptedBytes = EncryptBytes(unencryptedBytes);
+                byte[] encryptedBytes = EncryptBytes(unencryptedBytes);
 
-                var filePath = Path.Combine(_appDataFolder, $".{key}.bin");
+                string filePath = Path.Combine(_appDataFolder, $".{key}.bin");
 
                 File.WriteAllBytes(filePath, encryptedBytes);
 
@@ -198,12 +199,12 @@ namespace Jellyfin.Helpers
         {
             try
             {
-                var filePath = Path.Combine(_appDataFolder, $".{key}.bin");
+                string filePath = Path.Combine(_appDataFolder, $".{key}.bin");
 
                 if (File.Exists(filePath))
                 {
-                    var encryptedBytes = File.ReadAllBytes(filePath);
-                    var decryptedBytes = DecryptBytes(encryptedBytes);
+                    byte[] encryptedBytes = File.ReadAllBytes(filePath);
+                    byte[] decryptedBytes = DecryptBytes(encryptedBytes);
                     return decryptedBytes;
                 }
                 else
@@ -250,8 +251,8 @@ namespace Jellyfin.Helpers
 
         private string EncryptString(string inputText)
         {
-            var textBytes = Encoding.Unicode.GetBytes(inputText);
-            var encryptedBytes = EncryptBytes(textBytes);
+            byte[] textBytes = Encoding.Unicode.GetBytes(inputText);
+            byte[] encryptedBytes = EncryptBytes(textBytes);
 
             Debug.WriteLine($"EncryptString complete: {encryptedBytes.Length} bytes");
             return Convert.ToBase64String(encryptedBytes);
@@ -260,8 +261,8 @@ namespace Jellyfin.Helpers
         private string DecryptString(string encryptedText)
         {
             // NOTE: This string is encrypted first, THEN converted to Base64 (not just obfuscated as Base64)
-            var encryptedBytes = Convert.FromBase64String(encryptedText);
-            var decryptedBytes = DecryptBytes(encryptedBytes);
+            byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
+            byte[] decryptedBytes = DecryptBytes(encryptedBytes);
 
             Debug.WriteLine($"DecryptString complete: {decryptedBytes.Length} bytes");
             return Encoding.Unicode.GetString(decryptedBytes, 0, decryptedBytes.Length);
@@ -270,14 +271,14 @@ namespace Jellyfin.Helpers
         private byte[] EncryptBytes(byte[] unencryptedData)
         {
             // I chose Rijndael instead of AES because of it's support for larger block size (AES only support 128)
-            using (var cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector })
-            using (var cryptoTransform = cipher.CreateEncryptor())
-            using (var memoryStream = new MemoryStream())
-            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
+            using (RijndaelManaged cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector })
+            using (ICryptoTransform cryptoTransform = cipher.CreateEncryptor())
+            using (MemoryStream memoryStream = new MemoryStream())
+            using (CryptoStream cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
             {
                 cryptoStream.Write(unencryptedData, 0, unencryptedData.Length);
                 cryptoStream.FlushFinalBlock();
-                var encryptedBytes = memoryStream.ToArray();
+                byte[] encryptedBytes = memoryStream.ToArray();
                 Debug.WriteLine($"EncryptBytes complete: {encryptedBytes.Length} bytes");
                 return encryptedBytes;
             }
@@ -285,10 +286,10 @@ namespace Jellyfin.Helpers
 
         private byte[] DecryptBytes(byte[] encryptedBytes)
         {
-            using (var cipher = new RijndaelManaged())
-            using (var cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector))
-            using (var memoryStream = new MemoryStream(encryptedBytes))
-            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
+            using (RijndaelManaged cipher = new RijndaelManaged())
+            using (ICryptoTransform cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector))
+            using (MemoryStream memoryStream = new MemoryStream(encryptedBytes))
+            using (CryptoStream cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
             {
                 byte[] decryptedBytes = new byte[encryptedBytes.Length];
                 int bytesRead = cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);

@@ -1,4 +1,5 @@
-﻿using Jellyfin.Sdk;
+﻿using CommonHelpers.Common;
+using Jellyfin.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,12 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.Models
 {
-    public class AppUser
+    public class AppUser : BindableBase
     {
-        public UserDto User { get; set; }
-        public BitmapImage ProfileImage { get; set; }
+        private BitmapImage profileImage;
+        private UserDto user;
+
+        public UserDto User { get => user; set => SetProperty(ref user, value); }
+        public BitmapImage ProfileImage { get => profileImage; set => SetProperty(ref profileImage, value); }
     }
 }

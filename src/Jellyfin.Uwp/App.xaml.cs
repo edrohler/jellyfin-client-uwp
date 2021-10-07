@@ -13,8 +13,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin
@@ -44,7 +46,7 @@ namespace Jellyfin
         public HttpClient DefaultHttpClient { get; private set; }
 
         // Jellyfin Global Objects
-        public AppUser AppUser { get; set; }
+        public AppUser AppUser { get; set; } = null;
         public BaseItemDtoQueryResult UserViews { get; set; } = null;
         public DeviceIdentification DeviceIdentification { get; set; } = null;
         public PublicSystemInfo PublicSystemInfo { get; set; } = null;
@@ -128,18 +130,15 @@ namespace Jellyfin
                 // Sdk Setting Scenario 1: the app has an existing SdkSettings
                 // ************************************************************ //
 
-                // Load the existing file
-                JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
-
                 // Initialize the SdkClientSettings object
                 sdkSettings.InitializeClientSettings(
-                    json[nameof(Constants.AppName)].ToString(),
-                    json[nameof(Constants.AppVersion)].ToString(),
-                    json[nameof(Constants.DeviceName)].ToString(),
-                    json[nameof(Constants.DeviceId)].ToString());
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.AppName), Constants.JellyfinSettingsFile),
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.AppVersion), Constants.JellyfinSettingsFile),
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.DeviceName), Constants.JellyfinSettingsFile),
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.DeviceId), Constants.JellyfinSettingsFile));
 
                 // Set the known BaseUrl if any
-                sdkSettings.BaseUrl = json["BaseUrl"].ToString();
+                sdkSettings.BaseUrl = StorageHelpers.Instance.LoadSetting("BaseUrl", Constants.JellyfinSettingsFile);
 
                 // Checks if AccessToken exists and sets the SDK Settings AccessToken from storage
                 // If not, will continue to LoginPage
@@ -167,7 +166,8 @@ namespace Jellyfin
                     new JProperty(nameof(Constants.AppVersion), Constants.AppVersion),
                     new JProperty(nameof(Constants.DeviceName), Constants.DeviceName),
                     new JProperty(nameof(Constants.DeviceId), Constants.DeviceId.ToString()),
-                    new JProperty("BaseUrl", ""));
+                    new JProperty("BaseUrl", ""),
+                    new JProperty("ProfileImageUri", ""));
 
                 // Save the file to local storage
                 File.WriteAllText(Constants.JellyfinSettingsFile, serializedSettings.ToString());
