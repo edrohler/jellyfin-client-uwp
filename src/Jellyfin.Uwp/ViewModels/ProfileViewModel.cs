@@ -2,6 +2,7 @@
 using CommonHelpers.Mvvm;
 using Jellyfin.Common;
 using Jellyfin.Helpers;
+using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Views;
 using Newtonsoft.Json.Linq;
@@ -15,32 +16,28 @@ namespace Jellyfin.ViewModels
 {
     public class ProfileViewModel : ViewModelBase
     {
-        public UserDto UserDto { get; set; }
-        public UserConfiguration UserConfiguration { get; set; }
-        public UserPolicy UserPolicy { get; set; }
-        public PublicSystemInfo PublicServerInfo { get; set; }
-        public string BaseUrl { get; set; }
-        public string AppVersion { get; set; }
-        public string AppName { get; set; }
-        public string DeviceName { get; set; }
-        public string DeviceId { get; set; }
+        public UserDto UserDto
+        => App.Current.AppUser.User;
+
+        public PublicSystemInfo PublicSystemInfo => App.Current.PublicSystemInfo;
+
+        public string BaseUrl => App.Current.SdkClientSettings.BaseUrl;
+
+        public string AppVersion => Constants.AppVersion;
+
+        public string AppName => Constants.AppName;
+
+        public string DeviceName => Constants.DeviceName;
+
+        public string DeviceId => Constants.DeviceId.ToString();
 
         public DelegateCommand ChangeServerCommand { get; set; }
 
-        public BitmapImage ProfileImageSource {get;set;}
+        public DelegateCommand ChangeProfilePicture { get; set; }
 
         public ProfileViewModel()
         {
-            UserDto = App.Current.AppUser.User;
-            UserConfiguration = UserDto.Configuration;
-            UserPolicy = UserDto.Policy;
-            PublicServerInfo = App.Current.PublicSystemInfo;
-            BaseUrl = App.Current.SdkClientSettings.BaseUrl;
-            AppName = Constants.AppName;
-            AppVersion = Constants.AppVersion;
-            DeviceName = Constants.DeviceName;
-            DeviceId = Constants.DeviceId.ToString();
-            ChangeServerCommand = new DelegateCommand(async () => await AttemptServerChangeAsync());            
+            ChangeServerCommand = new DelegateCommand(async () => await AttemptServerChangeAsync());
         }
 
         //public async Task PageReadyAsync()
@@ -57,6 +54,7 @@ namespace Jellyfin.ViewModels
             {
                 // Clear the Stored Base Url in AppData
                 StorageHelpers.Instance.SaveSetting("BaseUrl", "", Constants.JellyfinSettingsFile);
+                // Clear the Stored Profile Image in AppData
                 StorageHelpers.Instance.SaveSetting("ProfileImageUri", "", Constants.JellyfinSettingsFile);
 
                 // Clear the SdkSettings

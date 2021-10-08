@@ -30,21 +30,16 @@
                            Margin="0,0,10,0" />
                 <TextBlock Text="{Binding UserDto.Name}" />
             </StackPanel>
-            <Button Content="Change User Name" 
-                    Margin="0,10,0,10"
-                    Visibility="Collapsed"/>
         </StackPanel>
         <StackPanel Orientation="Vertical"
                     Grid.Row="1"
                     Margin="15">
-            <TextBlock Text="Profile Image:"></TextBlock>
             <Image x:Name="ProfileImage"
                    HorizontalAlignment="Left"
                    Width="200"
                    Height="200"/>
             <Button Content="Change Profile Image"
-                    Margin="0,10,0,10"
-                    Visibility="Collapsed"/>
+                    Margin="0,10,0,10"/>
         </StackPanel>
         <StackPanel Orientation="Vertical"
                     Grid.Row="2"
@@ -108,25 +103,25 @@
                 <TextBlock Text="Server Id:"
                            Grid.Row="0"
                            Grid.Column="0" />
-                <TextBlock Text="{Binding PublicServerInfo.Id}"
+                <TextBlock Text="{Binding PublicSystemInfo.Id}"
                            Grid.Row="0"
                            Grid.Column="1" />
                 <TextBlock Text="Server Version:"
                            Grid.Row="1"
                            Grid.Column="0" />
-                <TextBlock Text="{Binding PublicServerInfo.Version}"
+                <TextBlock Text="{Binding PublicSystemInfo.Version}"
                            Grid.Row="1"
                            Grid.Column="1" />
                 <TextBlock Text="Operating System:"
                            Grid.Row="2"
                            Grid.Column="0" />
-                <TextBlock Text="{Binding PublicServerInfo.OperatingSystem}"
+                <TextBlock Text="{Binding PublicSystemInfo.OperatingSystem}"
                            Grid.Row="2"
                            Grid.Column="1" />
                 <TextBlock Text="Prudct Name:"
                            Grid.Row="3"
                            Grid.Column="0" />
-                <TextBlock Text="{Binding PublicServerInfo.ProductName}"
+                <TextBlock Text="{Binding PublicSystemInfo.ProductName}"
                            Grid.Row="3"
                            Grid.Column="1" />
                 <TextBlock Text="Base Url:"
