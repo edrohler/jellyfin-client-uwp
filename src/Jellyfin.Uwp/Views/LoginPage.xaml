@@ -15,7 +15,8 @@
     <Grid x:Name="ContentArea"
           HorizontalAlignment="Center"
           VerticalAlignment="Center"
-          MinWidth="500">
+          MinWidth="500"
+          KeyUp="OnKeyUpHandler">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -48,13 +49,13 @@
                  Header="Username:"
                  Text="{Binding Username, Mode=TwoWay}"
                  Grid.Row="2"
-                 Margin="0,10,0,0" />
+                 Margin="0,10,0,0"/>
 
         <PasswordBox x:Name="PasswordTextBox"
                      Header="Password:"
                      Password="{Binding Password, Mode=TwoWay}"
                      Grid.Row="3"
-                     Margin="0,10,0,0" />
+                     Margin="0,10,0,0"/>
 
         <Button x:Name="LoginButton"
                 Command="{Binding LoginCommand}"
