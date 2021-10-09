@@ -1,4 +1,7 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using Jellyfin.Helpers;
+using Jellyfin.ViewModels;
+using System;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin.Views
@@ -15,6 +18,18 @@ namespace Jellyfin.Views
             base.OnNavigatedTo(e);
             
             await ViewModel.PageReadyAsync();
+        }
+
+        private void OnKeyUpHandler(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            // Capture Enter Key Up
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                // Get DataContext
+                LoginViewModel vm = (LoginViewModel)((Grid)sender).DataContext;
+                // Login
+                vm.LoginCommand.Execute(null);
+            }
         }
     }
 }

@@ -9,6 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/JellyfinStyleResources.xaml" />
+                <ResourceDictionary Source="Resources/JellyfinStyleResources.DeviceFamily-Desktop.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Converters -->
@@ -19,6 +20,913 @@
 
 
             <!-- Styles -->
+            <Thickness x:Key="NavigationViewItemBorderThickness">1</Thickness>
+            <Thickness x:Key="NavigationViewItemIconBoxMargin">0</Thickness>
+
+            <ControlTemplate x:Key="MyNavViewItemControlTemplate"
+                             TargetType="NavigationViewItem">
+                <NavigationViewItemPresenter x:Name="NavigationViewItemPresenter"
+                                             Icon="{TemplateBinding Icon}"
+                                             ContentTransitions="{TemplateBinding ContentTransitions}"
+                                             ContentTemplate="{TemplateBinding ContentTemplate}"
+                                             Margin="{TemplateBinding Margin}"
+                                             Padding="{TemplateBinding Padding}"
+                                             Foreground="{TemplateBinding Foreground}"
+                                             Background="{TemplateBinding Background}"
+                                             BorderBrush="{TemplateBinding BorderBrush}"
+                                             BorderThickness="{TemplateBinding BorderThickness}"
+                                             UseSystemFocusVisuals="{TemplateBinding UseSystemFocusVisuals}"
+                                             VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                             HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                             VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                             HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                             ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                             Content="{TemplateBinding Content}"
+                                             IsTabStop="False">
+
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="ItemOnNavigationViewListPositionStates">
+                            <VisualState x:Name="OnLeftNavigation">
+                                <VisualState.Setters>
+                                    <Setter Target="NavigationViewItemPresenter.Style"
+                                            Value="{StaticResource MyNoIconPresenterStyle}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="OnLeftNavigationReveal">
+                                <VisualState.Setters>
+                                    <Setter Target="NavigationViewItemPresenter.Style"
+                                            Value="{StaticResource NavigationViewItemPresenterStyleWhenOnLeftPaneWithRevealFocus}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="OnTopNavigationPrimary">
+                                <VisualState.Setters>
+                                    <Setter Target="NavigationViewItemPresenter.Style"
+                                            Value="{StaticResource NavigationViewItemPresenterStyleWhenOnTopPane}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="OnTopNavigationPrimaryReveal">
+                                <VisualState.Setters>
+                                    <Setter Target="NavigationViewItemPresenter.Style"
+                                            Value="{StaticResource NavigationViewItemPresenterStyleWhenOnTopPaneWithRevealFocus}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="OnTopNavigationOverflow">
+                                <VisualState.Setters>
+                                    <Setter Target="NavigationViewItemPresenter.Style"
+                                            Value="{StaticResource NavigationViewItemPresenterStyleWhenOnTopPaneOverflow}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                </NavigationViewItemPresenter>
+            </ControlTemplate>
+
+            <!-- Custom ItemPresenter that removes the icon padding -->
+            <Style TargetType="NavigationViewItemPresenter"
+                   x:Key="MyNoIconPresenterStyle">
+                <Setter Property="Foreground"
+                        Value="{ThemeResource NavigationViewItemForeground}" />
+                <Setter Property="Background"
+                        Value="{ThemeResource NavigationViewItemBackground}" />
+                <Setter Property="BorderBrush"
+                        Value="{ThemeResource NavigationViewItemBorderBrush}" />
+                <Setter Property="BorderThickness"
+                        Value="{StaticResource NavigationViewItemBorderThickness}" />
+                <Setter Property="UseSystemFocusVisuals"
+                        Value="True" />
+                <Setter Property="HorizontalContentAlignment"
+                        Value="Stretch" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="NavigationViewItemPresenter">
+                            <Grid x:Name="LayoutRoot"
+                                  Height="40"
+                                  Background="{TemplateBinding Background}"
+                                  Control.IsTemplateFocusTarget="True">
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="PointerStates">
+                                        <VisualState x:Name="Normal" />
+
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.(RevealBrush.State)"
+                                                        Value="PointerOver" />
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="RevealBorder.BorderBrush"
+                                                        Value="{ThemeResource NavigationViewItemBorderBrushPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.(RevealBrush.State)"
+                                                        Value="Pressed" />
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="RevealBorder.BorderBrush"
+                                                        Value="{ThemeResource NavigationViewItemBorderBrushPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelected}" />
+                                                <Setter Target="RevealBorder.BorderBrush"
+                                                        Value="{ThemeResource NavigationViewItemBorderBrushSelected}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundSelected}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PointerOverSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.(RevealBrush.State)"
+                                                        Value="PointerOver" />
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPointerOver}" />
+                                                <Setter Target="RevealBorder.BorderBrush"
+                                                        Value="{ThemeResource NavigationViewItemBorderBrushSelectedPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundSelectedPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PressedSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.(RevealBrush.State)"
+                                                        Value="Pressed" />
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPressed}" />
+                                                <Setter Target="RevealBorder.BorderBrush"
+                                                        Value="{ThemeResource NavigationViewItemBorderBrushSelectedPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundSelectedPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+
+                                    <VisualStateGroup x:Name="DisabledStates">
+                                        <VisualState x:Name="Enabled" />
+
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RevealBorder.BorderBrush"
+                                                        Value="{ThemeResource NavigationViewItemBorderBrushCheckedDisabled}" />
+                                                <Setter Target="LayoutRoot.Opacity"
+                                                        Value="{ThemeResource ListViewItemDisabledThemeOpacity}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+
+                                    <VisualStateGroup x:Name="IconStates">
+                                        <VisualState x:Name="IconVisible" />
+                                        <!-- CUSTOMIZATION 1: change the IconColumn.Width from 16 to 0-->
+                                        <VisualState x:Name="IconCollapsed">
+                                            <VisualState.Setters>
+                                                <Setter Target="IconBox.Visibility"
+                                                        Value="Collapsed" />
+                                                <Setter Target="IconColumn.Width"
+                                                        Value="0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+
+                                <Grid Margin="4,0,0,0"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Center">
+
+                                    <Rectangle x:Name="SelectionIndicator"
+                                               Width="2"
+                                               Height="24"
+                                               Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}"
+                                               Opacity="0.0" />
+                                </Grid>
+
+                                <Border x:Name="RevealBorder"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}" />
+
+                                <Grid Height="40"
+                                      HorizontalAlignment="Left"
+                                      x:Name="ContentGrid">
+
+                                    <!-- CUSTOMIZATION 2: Change IconColumn Width from 48 to 0 -->
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition x:Name="IconColumn"
+                                                          Width="0" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- CUSTOMIZATION 3: Set IconBox Visibility to Collapsed -->
+                                    <Viewbox x:Name="IconBox"
+                                             Visibility="Collapsed"
+                                             Margin="{ThemeResource NavigationViewItemIconBoxMargin}">
+                                        <ContentPresenter x:Name="Icon"
+                                                          Content="{TemplateBinding Icon}" />
+                                    </Viewbox>
+
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                                      Grid.Column="1"
+                                                      ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      Content="{TemplateBinding Content}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      AutomationProperties.AccessibilityView="Raw" />
+
+                                </Grid>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!--DEFAULT STYLES NEEDED FOR CONTROLTEMPLATE -->
+            <Style TargetType="NavigationViewItemPresenter"
+                   x:Key="NavigationViewItemPresenterStyleWhenOnLeftPaneWithRevealFocus">
+                <Setter Property="Foreground"
+                        Value="{ThemeResource NavigationViewItemForeground}" />
+                <Setter Property="Background"
+                        Value="{ThemeResource NavigationViewItemBackground}" />
+                <Setter Property="BorderBrush"
+                        Value="{ThemeResource NavigationViewItemBorderBrush}" />
+                <Setter Property="BorderThickness"
+                        Value="{StaticResource NavigationViewItemBorderThickness}" />
+                <Setter Property="UseSystemFocusVisuals"
+                        Value="True" />
+                <Setter Property="HorizontalContentAlignment"
+                        Value="Stretch" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="NavigationViewItemPresenter">
+                            <Grid x:Name="LayoutRoot"
+                                  Height="40"
+                                  Background="{TemplateBinding Background}"
+                                  Control.IsTemplateFocusTarget="True">
+
+                                <VisualStateManager.VisualStateGroups>
+
+                                    <VisualStateGroup x:Name="DisabledStates">
+                                        <VisualState x:Name="Enabled" />
+
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Opacity"
+                                                        Value="{ThemeResource ListViewItemDisabledThemeOpacity}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="FocusStates">
+                                        <VisualState x:Name="Focused">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource SystemControlHighlightAccentBrush}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource SystemControlHighlightAltChromeWhiteBrush}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource SystemControlHighlightAltChromeWhiteBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Unfocused" />
+                                        <VisualState x:Name="PointerFocused" />
+
+                                    </VisualStateGroup>
+
+                                    <VisualStateGroup x:Name="IconStates">
+                                        <VisualState x:Name="IconVisible" />
+                                        <VisualState x:Name="IconCollapsed">
+                                            <VisualState.Setters>
+                                                <Setter Target="IconBox.Visibility"
+                                                        Value="Collapsed" />
+                                                <Setter Target="IconColumn.Width"
+                                                        Value="16" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                </VisualStateManager.VisualStateGroups>
+
+                                <!-- Wrap SelectionIndicator in a grid so that its offset is 0,0 - this enables the offset animation. -->
+                                <Grid Margin="4,0,0,0"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Center">
+
+                                    <Rectangle x:Name="SelectionIndicator"
+                                               Width="2"
+                                               Height="24"
+                                               Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}"
+                                               Opacity="0.0" />
+
+                                </Grid>
+
+                                <Grid x:Name="ContentGrid"
+                                      Height="40"
+                                      HorizontalAlignment="Left">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition x:Name="IconColumn"
+                                                          Width="48" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Viewbox x:Name="IconBox"
+                                             Margin="{ThemeResource NavigationViewItemIconBoxMargin}">
+                                        <ContentPresenter x:Name="Icon"
+                                                          Foreground="{TemplateBinding Foreground}"
+                                                          Content="{TemplateBinding Icon}" />
+                                    </Viewbox>
+
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                                      Grid.Column="1"
+                                                      Foreground="{TemplateBinding Foreground}"
+                                                      ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      Content="{TemplateBinding Content}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      AutomationProperties.AccessibilityView="Raw" />
+
+                                </Grid>
+
+                            </Grid>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="NavigationViewItem"
+                   x:Key="NavigationViewSettingsItemStyleWhenOnTopPane">
+                <Setter Property="Foreground"
+                        Value="{ThemeResource NavigationViewItemForeground}" />
+                <Setter Property="Background"
+                        Value="{ThemeResource NavigationViewItemBackground}" />
+                <Setter Property="BorderBrush"
+                        Value="{ThemeResource NavigationViewItemBorderBrush}" />
+                <Setter Property="BorderThickness"
+                        Value="{StaticResource NavigationViewItemBorderThickness}" />
+                <Setter Property="FontFamily"
+                        Value="{ThemeResource ContentControlThemeFontFamily}" />
+                <Setter Property="FontWeight"
+                        Value="Normal" />
+                <Setter Property="FontSize"
+                        Value="{ThemeResource ControlContentThemeFontSize}" />
+                <Setter Property="UseSystemFocusVisuals"
+                        Value="True" />
+                <Setter Property="HorizontalContentAlignment"
+                        Value="Stretch" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="NavigationViewItem">
+                            <Grid x:Name="LayoutRoot"
+                                  Background="{TemplateBinding Background}"
+                                  Control.IsTemplateFocusTarget="True">
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="PointerStates">
+                                        <VisualState x:Name="Normal" />
+
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundSelected}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelected}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundSelected}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PointerOverSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPointerOver}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PressedSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPressed}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                    <VisualStateGroup x:Name="DisabledStates">
+                                        <VisualState x:Name="Enabled" />
+
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                </VisualStateManager.VisualStateGroups>
+                                <Rectangle x:Name="PointerRectangle"
+                                           Fill="Transparent" />
+                                <Grid x:Name="ContentGrid">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition x:Name="IconRow"
+                                                       Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Viewbox x:Name="IconBox"
+                                             Grid.Row="1"
+                                             Grid.Column="1"
+                                             Height="16"
+                                             Width="48"
+                                             Margin="0,0,0,0"
+                                             VerticalAlignment="Center"
+                                             HorizontalAlignment="Center">
+                                        <ContentPresenter x:Name="Icon"
+                                                          Content="{TemplateBinding Icon}"
+                                                          Foreground="{ThemeResource TopNavigationViewItemForeground}" />
+                                    </Viewbox>
+
+                                </Grid>
+
+                            </Grid>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="NavigationViewItemPresenter"
+                   x:Key="NavigationViewItemPresenterStyleWhenOnTopPane">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="NavigationViewItemPresenter">
+                            <Grid x:Name="LayoutRoot"
+                                  Background="{TemplateBinding Background}"
+                                  Control.IsTemplateFocusTarget="True">
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="PointerStates">
+                                        <VisualState x:Name="Normal" />
+
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundSelected}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelected}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundSelected}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundSelected}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PointerOverSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPointerOver}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PressedSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="PointerRectangle.Fill"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPressed}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                    <VisualStateGroup x:Name="DisabledStates">
+                                        <VisualState x:Name="Enabled" />
+
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="NavigationViewIconPositionStates">
+                                        <VisualState x:Name="IconOnLeft" />
+                                        <VisualState x:Name="IconOnly">
+                                            <VisualState.Setters>
+                                                <Setter Target="PointerRectangle.Visibility"
+                                                        Value="Visible" />
+                                                <Setter Target="LayoutRoot.Width"
+                                                        Value="48" />
+                                                <Setter Target="ContentPresenter.Visibility"
+                                                        Value="Collapsed" />
+                                                <Setter Target="SelectionIndicatorGrid.Margin"
+                                                        Value="4,0,4,4" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="ContentOnly">
+                                            <VisualState.Setters>
+                                                <Setter Target="IconBox.Visibility"
+                                                        Value="Collapsed" />
+                                                <Setter Target="ContentPresenter.Margin"
+                                                        Value="12,0" />
+                                                <Setter Target="SelectionIndicatorGrid.Margin"
+                                                        Value="12,0,12,4" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                </VisualStateManager.VisualStateGroups>
+                                <Rectangle x:Name="PointerRectangle"
+                                           Fill="Transparent"
+                                           Visibility="Collapsed" />
+                                <Grid x:Name="ContentGrid">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox x:Name="IconBox"
+                                             Height="16"
+                                             Width="16"
+                                             Margin="16,0,0,0"
+                                             VerticalAlignment="Center"
+                                             HorizontalAlignment="Center">
+                                        <ContentPresenter x:Name="Icon"
+                                                          Content="{TemplateBinding Icon}"
+                                                          Foreground="{ThemeResource TopNavigationViewItemForeground}" />
+                                    </Viewbox>
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                                      Grid.Column="1"
+                                                      Margin="8,0,16,0"
+                                                      Foreground="{ThemeResource TopNavigationViewItemForeground}"
+                                                      TextWrapping="NoWrap"
+                                                      ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      Content="{TemplateBinding Content}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                                      VerticalAlignment="Center"
+                                                      AutomationProperties.AccessibilityView="Raw" />
+
+                                </Grid>
+                                <Grid x:Name="SelectionIndicatorGrid"
+                                      Margin="16,0,16,4"
+                                      VerticalAlignment="Bottom">
+                                    <Rectangle x:Name="SelectionIndicator"
+                                               Height="2"
+                                               Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}"
+                                               Opacity="0" />
+
+                                </Grid>
+
+                            </Grid>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="NavigationViewItemPresenter"
+                   x:Key="NavigationViewItemPresenterStyleWhenOnTopPaneWithRevealFocus">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="NavigationViewItemPresenter">
+                            <Grid x:Name="LayoutRoot"
+                                  Background="{TemplateBinding Background}"
+                                  Control.IsTemplateFocusTarget="True">
+
+                                <VisualStateManager.VisualStateGroups>
+
+                                    <VisualStateGroup x:Name="DisabledStates">
+                                        <VisualState x:Name="Enabled" />
+
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="FocusStates">
+                                        <VisualState x:Name="Focused">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource TopNavigationViewItemRevealBackgroundFocused}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemRevealIconForegroundFocused}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemRevealContentForegroundFocused}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Unfocused" />
+                                        <VisualState x:Name="PointerFocused" />
+
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="NavigationViewIconPositionStates">
+                                        <VisualState x:Name="IconOnLeft" />
+                                        <VisualState x:Name="IconOnly">
+                                            <VisualState.Setters>
+                                                <Setter Target="PointerRectangle.Visibility"
+                                                        Value="Visible" />
+                                                <Setter Target="LayoutRoot.Width"
+                                                        Value="48" />
+                                                <Setter Target="ContentPresenter.Visibility"
+                                                        Value="Collapsed" />
+                                                <Setter Target="SelectionIndicatorGrid.Margin"
+                                                        Value="4,0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="ContentOnly">
+                                            <VisualState.Setters>
+                                                <Setter Target="IconBox.Visibility"
+                                                        Value="Collapsed" />
+                                                <Setter Target="ContentPresenter.Margin"
+                                                        Value="12,0" />
+                                                <Setter Target="SelectionIndicatorGrid.Margin"
+                                                        Value="12,0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                </VisualStateManager.VisualStateGroups>
+                                <Rectangle x:Name="PointerRectangle"
+                                           Fill="Transparent"
+                                           Visibility="Collapsed" />
+                                <Grid x:Name="ContentGrid">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox x:Name="IconBox"
+                                             Height="16"
+                                             Width="16"
+                                             Margin="16,0,0,0"
+                                             VerticalAlignment="Center"
+                                             HorizontalAlignment="Center">
+                                        <ContentPresenter x:Name="Icon"
+                                                          Content="{TemplateBinding Icon}"
+                                                          Foreground="{ThemeResource DefaultTextForegroundThemeBrush}" />
+                                    </Viewbox>
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                                      Grid.Column="1"
+                                                      Margin="8,0,16,0"
+                                                      Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"
+                                                      TextWrapping="NoWrap"
+                                                      ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      Content="{TemplateBinding Content}"
+                                                      VerticalAlignment="Center"
+                                                      AutomationProperties.AccessibilityView="Raw" />
+
+                                </Grid>
+                                <Grid x:Name="SelectionIndicatorGrid"
+                                      Margin="16,0,16,4"
+                                      VerticalAlignment="Bottom">
+                                    <Rectangle x:Name="SelectionIndicator"
+                                               Height="2"
+                                               Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}"
+                                               Opacity="0" />
+
+                                </Grid>
+
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="NavigationViewItemPresenter"
+                   x:Key="NavigationViewItemPresenterStyleWhenOnTopPaneOverflow">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="NavigationViewItemPresenter">
+                            <Grid x:Name="LayoutRoot"
+                                  Height="40"
+                                  Background="{TemplateBinding Background}"
+                                  Control.IsTemplateFocusTarget="True">
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="PointerStates">
+                                        <VisualState x:Name="Normal" />
+
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelected}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundSelected}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundSelected}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PointerOverSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPointerOver}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PressedSelected">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background"
+                                                        Value="{ThemeResource NavigationViewItemBackgroundSelectedPressed}" />
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                    <VisualStateGroup x:Name="DisabledStates">
+                                        <VisualState x:Name="Enabled" />
+
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Icon.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground"
+                                                        Value="{ThemeResource TopNavigationViewItemForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="NavigationViewIconPositionStates">
+                                        <VisualState x:Name="IconOnLeft" />
+                                        <VisualState x:Name="IconOnly" />
+                                        <VisualState x:Name="ContentOnly">
+                                            <VisualState.Setters>
+                                                <Setter Target="IconBox.Visibility"
+                                                        Value="Collapsed" />
+                                                <Setter Target="ContentPresenter.Margin"
+                                                        Value="16,0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                </VisualStateManager.VisualStateGroups>
+                                <Grid x:Name="ContentGrid">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox x:Name="IconBox"
+                                             Height="16"
+                                             Width="16"
+                                             Margin="16,0,0,0"
+                                             VerticalAlignment="Center"
+                                             HorizontalAlignment="Center">
+                                        <ContentPresenter x:Name="Icon"
+                                                          Content="{TemplateBinding Icon}"
+                                                          Foreground="{TemplateBinding Foreground}" />
+                                    </Viewbox>
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                                      Grid.Column="1"
+                                                      Margin="12,0,16,0"
+                                                      Foreground="{TemplateBinding Foreground}"
+                                                      TextWrapping="NoWrap"
+                                                      ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      Content="{TemplateBinding Content}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                                      VerticalAlignment="Center"
+                                                      AutomationProperties.AccessibilityView="Raw" />
+
+                                </Grid>
+
+                            </Grid>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 

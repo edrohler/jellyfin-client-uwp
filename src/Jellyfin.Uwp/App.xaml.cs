@@ -1,10 +1,9 @@
 ﻿using Jellyfin.Common;
 using Jellyfin.Helpers;
+using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
-using Microsoft.Toolkit.Uwp.Helpers;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
@@ -43,7 +42,7 @@ namespace Jellyfin
         public HttpClient DefaultHttpClient { get; private set; }
 
         // Jellyfin Global Objects
-        public UserDto AppUser { get; set; } = null;
+        public AppUser AppUser { get; set; } = null;
         public BaseItemDtoQueryResult UserViews { get; set; } = null;
         public DeviceIdentification DeviceIdentification { get; set; } = null;
         public PublicSystemInfo PublicSystemInfo { get; set; } = null;
@@ -69,7 +68,7 @@ namespace Jellyfin
                 {
                     //TODO: Load state from previously suspended application
                 }
-                
+
                 Window.Current.Content = RootFrame;
             }
 
@@ -89,7 +88,11 @@ namespace Jellyfin
                         // Test if it is a good Token by getting Current User.
                         // If 200 retuls, go to ShellPage
                         // Else catch and log the error
-                        AppUser = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync();
+                        AppUser = new AppUser
+                        {
+                            User = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync()
+                        };
+
                         RootFrame.Navigate(typeof(ShellPage), e.Arguments);
                     }
                     catch (Exception ex)
@@ -123,18 +126,15 @@ namespace Jellyfin
                 // Sdk Setting Scenario 1: the app has an existing SdkSettings
                 // ************************************************************ //
 
-                // Load the existing file
-                JObject json = JObject.Parse(File.ReadAllText(Constants.JellyfinSettingsFile));
-
                 // Initialize the SdkClientSettings object
                 sdkSettings.InitializeClientSettings(
-                    json[nameof(Constants.AppName)].ToString(),
-                    json[nameof(Constants.AppVersion)].ToString(),
-                    json[nameof(Constants.DeviceName)].ToString(),
-                    json[nameof(Constants.DeviceId)].ToString());
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.AppName), Constants.JellyfinSettingsFile),
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.AppVersion), Constants.JellyfinSettingsFile),
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.DeviceName), Constants.JellyfinSettingsFile),
+                    StorageHelpers.Instance.LoadSetting(nameof(Constants.DeviceId), Constants.JellyfinSettingsFile));
 
                 // Set the known BaseUrl if any
-                sdkSettings.BaseUrl = json["BaseUrl"].ToString();
+                sdkSettings.BaseUrl = StorageHelpers.Instance.LoadSetting("BaseUrl", Constants.JellyfinSettingsFile);
 
                 // Checks if AccessToken exists and sets the SDK Settings AccessToken from storage
                 // If not, will continue to LoginPage
@@ -156,16 +156,17 @@ namespace Jellyfin
                     Constants.DeviceName,
                     Constants.DeviceId.ToString());
 
-                // Serialize the values into JSON
-                JObject serializedSettings = new JObject(
-                    new JProperty(nameof(Constants.AppName), Constants.AppName),
-                    new JProperty(nameof(Constants.AppVersion), Constants.AppVersion),
-                    new JProperty(nameof(Constants.DeviceName), Constants.DeviceName),
-                    new JProperty(nameof(Constants.DeviceId), Constants.DeviceId.ToString()),
-                    new JProperty("BaseUrl", ""));
-
-                // Save the file to local storage
-                File.WriteAllText(Constants.JellyfinSettingsFile, serializedSettings.ToString());
+                // Save the settings to local storage
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.AppName),
+                    Constants.AppName, Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.AppVersion),
+                    Constants.AppVersion, Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.DeviceName),
+                    Constants.DeviceName, Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.DeviceId),
+                    Constants.DeviceId.ToString(), Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(SdkClientSettings.BaseUrl),
+                    "", Constants.JellyfinSettingsFile);
             }
 
             return sdkSettings;
@@ -221,7 +222,7 @@ namespace Jellyfin
                 DefaultHttpClient);
 
         }
-        
+
         public HttpClient ConfigureDefaultHttpClient()
         {
             // Set automatic decompression
@@ -247,7 +248,7 @@ namespace Jellyfin
 
             return client;
         }
-        
+
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
@@ -257,7 +258,7 @@ namespace Jellyfin
 
             deferral.Complete();
         }
-        
+
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);

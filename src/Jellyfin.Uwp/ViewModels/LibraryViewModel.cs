@@ -83,7 +83,7 @@ namespace Jellyfin.ViewModels
         public async Task LoadLibraryItemsAsync(Guid libId)
         {
             // Gets Library Items
-            BaseItemDtoQueryResult items = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(App.Current.AppUser.Id, parentId: libId);
+            BaseItemDtoQueryResult items = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(App.Current.AppUser.User.Id, parentId: libId);
 
             // Creates GridView Collection
             foreach (BaseItemDto item in items.Items)
