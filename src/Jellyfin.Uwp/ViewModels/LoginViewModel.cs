@@ -6,9 +6,7 @@ using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
-using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
@@ -154,7 +152,7 @@ namespace Jellyfin.ViewModels
                     User = await JellyfinClientServices.Current.UserClient.GetCurrentUserAsync()
                 };
 
-                // Navigate to the ShellPage passing in the UserDto
+                // Navigate to the ShellPage
                 App.Current.RootFrame.Navigate(typeof(ShellPage));
 
                 IsBusyMessage = "";
@@ -220,15 +218,15 @@ namespace Jellyfin.ViewModels
         {
             // Clear the Stored Base Url in AppData
             StorageHelpers.Instance.SaveSetting("BaseUrl", "", Constants.JellyfinSettingsFile);
-            // Clear the Stored Profile Image in AppData
-            StorageHelpers.Instance.SaveSetting("ProfileImageUri", "", Constants.JellyfinSettingsFile);
 
-            AuthErrorString = "";
-            ServerSystemInfo = null;
+            // Clear SdkClientSettings
             App.Current.SdkClientSettings.BaseUrl = null;
             App.Current.SdkClientSettings.AccessToken = null;
-            ServerUrl = "";
 
+            // Update local bindings
+            ServerUrl = "";
+            AuthErrorString = "";
+            ServerSystemInfo = null;
             IsValidServerUrl = false;
             IsServerUrlVisible = true;
             ShowServerConnectionChangeButton = false;

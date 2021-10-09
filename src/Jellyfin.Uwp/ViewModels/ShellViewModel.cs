@@ -1,20 +1,19 @@
 ﻿
-using System;
 using CommonHelpers.Common;
-using Jellyfin.Models;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using CommonHelpers.Mvvm;
+using Jellyfin.Common;
 using Jellyfin.Helpers;
+using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
-using System.Collections.Generic;
-using System.Linq;
-using Jellyfin.Common;
 using Microsoft.Toolkit.Uwp.Helpers;
-using Windows.UI.Xaml.Media.Imaging;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using Windows.Storage;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.ViewModels
 {
@@ -105,32 +104,15 @@ namespace Jellyfin.ViewModels
         {
             try
             {
-                // Check if LocalCache Contains ProfileImage
-                StorageFile ImageFile = await ApplicationData.Current.LocalCacheFolder.GetFileAsync(
-                    StorageHelpers.Instance.LoadSetting(
-                    "ProfileImageUri", Constants.JellyfinSettingsFile));
+                // Try to Get ProfileImage From Server
+                FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetUserImageAsync(
+                    App.Current.AppUser.User.Id, ImageType.Profile);
 
-                App.Current.AppUser.ProfileImage = new BitmapImage
+                using (Stream stream = fr.Stream)
                 {
-                    DecodePixelHeight = 200,
-                    DecodePixelWidth = 200,
-                    UriSource = new Uri(ImageFile.Path)
-                };
-            }
-            catch (Exception CacheException)
-            {
-                // Catch and Log No LocalCached ProfileImage
-                ExceptionLogger.LogException(CacheException);
-
-                try
-                {
-                    // Try to Get ProfileImage From Server
-                    FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetUserImageAsync(
-                        App.Current.AppUser.User.Id, ImageType.Profile);
-
                     using (MemoryStream ms = new MemoryStream())
                     {
-                        await fr.Stream.CopyToAsync(ms);
+                        await stream.CopyToAsync(ms);
                         ms.Position = 0;
 
                         App.Current.AppUser.ProfileImage = new BitmapImage
@@ -139,28 +121,23 @@ namespace Jellyfin.ViewModels
                             DecodePixelHeight = 200
                         };
 
+                        // Set ProfileImage Binding
                         await App.Current.AppUser.ProfileImage.SetSourceAsync(ms.AsRandomAccessStream());
-
-                        StorageHelpers.Instance.SaveImage(
-                            ms.ToArray(), $"{App.Current.AppUser.User.Id}.png");
-
-                        StorageHelpers.Instance.SaveSetting(
-                            "ProfileImageUri", $"{App.Current.AppUser.User.Id}.png", Constants.JellyfinSettingsFile);
                     }
                 }
-                catch (Exception RequestException)
-                {
-                    // Catch and Log No ProfileImage Available On Server
-                    ExceptionLogger.LogException(RequestException);
+            }
+            catch (Exception Ex)
+            {
+                // Catch and Log No ProfileImage Available On Server
+                ExceptionLogger.LogException(Ex);
 
-                    // Use the Default Instead
-                    App.Current.AppUser.ProfileImage = new BitmapImage
-                    {
-                        DecodePixelHeight = 200,
-                        DecodePixelWidth = 200,
-                        UriSource = new Uri("ms-appx:///Images/default-profile.png")
-                    };
-                }
+                // Use the Default Instead
+                App.Current.AppUser.ProfileImage = new BitmapImage
+                {
+                    DecodePixelHeight = 200,
+                    DecodePixelWidth = 200,
+                    UriSource = new Uri("ms-appx:///Images/default-profile.png")
+                };
             }
         }
 

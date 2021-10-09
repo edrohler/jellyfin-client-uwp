@@ -4,8 +4,6 @@ using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using Jellyfin.Views;
-using Microsoft.Toolkit.Uwp.Helpers;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
@@ -13,10 +11,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin
@@ -72,7 +68,7 @@ namespace Jellyfin
                 {
                     //TODO: Load state from previously suspended application
                 }
-                
+
                 Window.Current.Content = RootFrame;
             }
 
@@ -160,17 +156,17 @@ namespace Jellyfin
                     Constants.DeviceName,
                     Constants.DeviceId.ToString());
 
-                // Serialize the values into JSON
-                JObject serializedSettings = new JObject(
-                    new JProperty(nameof(Constants.AppName), Constants.AppName),
-                    new JProperty(nameof(Constants.AppVersion), Constants.AppVersion),
-                    new JProperty(nameof(Constants.DeviceName), Constants.DeviceName),
-                    new JProperty(nameof(Constants.DeviceId), Constants.DeviceId.ToString()),
-                    new JProperty("BaseUrl", ""),
-                    new JProperty("ProfileImageUri", ""));
-
-                // Save the file to local storage
-                File.WriteAllText(Constants.JellyfinSettingsFile, serializedSettings.ToString());
+                // Save the settings to local storage
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.AppName),
+                    Constants.AppName, Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.AppVersion),
+                    Constants.AppVersion, Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.DeviceName),
+                    Constants.DeviceName, Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(Constants.DeviceId),
+                    Constants.DeviceId.ToString(), Constants.JellyfinSettingsFile);
+                StorageHelpers.Instance.SaveSetting(nameof(SdkClientSettings.BaseUrl),
+                    "", Constants.JellyfinSettingsFile);
             }
 
             return sdkSettings;
@@ -226,7 +222,7 @@ namespace Jellyfin
                 DefaultHttpClient);
 
         }
-        
+
         public HttpClient ConfigureDefaultHttpClient()
         {
             // Set automatic decompression
@@ -252,7 +248,7 @@ namespace Jellyfin
 
             return client;
         }
-        
+
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
@@ -262,7 +258,7 @@ namespace Jellyfin
 
             deferral.Complete();
         }
-        
+
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);

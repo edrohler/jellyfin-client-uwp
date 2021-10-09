@@ -75,8 +75,7 @@ namespace Jellyfin.Views
             NavViewHelper.NavViewChecker(sender);
         }
 
-        //
-        // Will Prompt Logout
+        // Prompt Logout
         private async void AttemptLogoutAsync()
         {
             MessageDialog md = new MessageDialog("Are you sure you want to logout?", "Logout");
