@@ -9,8 +9,6 @@
              d:DesignWidth="400">
 
     <Grid>
-        <GridView x:Name="LibraryGrid" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-        </GridView>
     </Grid>
 </UserControl>

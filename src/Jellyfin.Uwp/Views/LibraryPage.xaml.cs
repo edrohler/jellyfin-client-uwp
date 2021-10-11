@@ -13,21 +13,26 @@ namespace Jellyfin.Views
             this.InitializeComponent();
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            await ViewModel.PageReadyAsync((Guid)e.Parameter);
+            ViewModel.PageReady((Guid)e.Parameter);
 
             LibNavView.SelectedItem = ViewModel.LibraryPageMenuItems.FirstOrDefault();
         }
 
         private void LibNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            //if (args.SelectedItem is MenuDataItem selectedItem)
-            //{
-            //    Console.WriteLine();
-            //}
+            if (args.SelectedItem is MenuDataItem selectedItem)
+            {
+                switch (selectedItem)
+                {
+                    default:
+                        LibraryContentFrame.Navigate(typeof(ItemsPage), selectedItem.Id);
+                        break;
+                }
+            }
         }
     }
 }

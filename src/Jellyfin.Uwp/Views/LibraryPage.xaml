@@ -16,21 +16,30 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-    <TextBlock Grid.Row="0"
-               Text="{Binding LibraryTitle}"
-               FontSize="32"/>
-    <NavigationView Grid.Row="1" x:Name="LibNavView"
-                    PaneDisplayMode="Top"
-                    IsBackButtonVisible="Collapsed"
-                    IsSettingsVisible="False"
-                    IsPaneVisible="{Binding IsPaneVisible}"
-                    MenuItemsSource="{Binding LibraryPageMenuItems}"
-                    SelectionChanged="LibNavView_SelectionChanged">
-        <NavigationView.MenuItemTemplate>
-            <DataTemplate>
-                <NavigationViewItem Content="{Binding Name}" />
-            </DataTemplate>
-        </NavigationView.MenuItemTemplate>
-    </NavigationView>
+        <TextBlock Grid.Row="0"
+                   Text="{Binding LibraryTitle}"
+                   FontSize="32" />
+        <NavigationView Grid.Row="1"
+                        x:Name="LibNavView"
+                        PaneDisplayMode="Top"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        IsPaneVisible="{Binding IsPaneVisible}"
+                        MenuItemsSource="{Binding LibraryPageMenuItems}"
+                        SelectionChanged="LibNavView_SelectionChanged">
+            <NavigationView.MenuItemTemplate>
+                <DataTemplate>
+                    <NavigationViewItem Content="{Binding Name}" />
+                </DataTemplate>
+            </NavigationView.MenuItemTemplate>
+            <Frame x:Name="LibraryContentFrame"
+                   Margin="24">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition />
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </NavigationView>
     </Grid>
 </Page>
