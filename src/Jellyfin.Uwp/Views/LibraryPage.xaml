@@ -24,8 +24,8 @@
                     IsBackButtonVisible="Collapsed"
                     IsSettingsVisible="False"
                     IsPaneVisible="{Binding IsPaneVisible}"
-                    MenuItemsSource="{Binding MenuItems}"
-                    ItemInvoked="LibNavView_ItemInvoked">
+                    MenuItemsSource="{Binding LibraryPageMenuItems}"
+                    SelectionChanged="LibNavView_SelectionChanged">
         <NavigationView.MenuItemTemplate>
             <DataTemplate>
                 <NavigationViewItem Content="{Binding Name}" />

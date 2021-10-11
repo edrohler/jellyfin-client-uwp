@@ -18,12 +18,12 @@ namespace Jellyfin.ViewModels
         public bool IsPaneVisible { get; set; } = true;
         BaseItemDto BaseItem { get; set; }
         public ObservableCollection<MediaDataItem> LibraryItems { get; set; }
-        public ObservableCollection<MenuDataItem> MenuItems { get; set; }
+        public ObservableCollection<MenuDataItem> LibraryPageMenuItems { get; set; }
 
         public LibraryViewModel()
         {
             LibraryItems = new ObservableCollection<MediaDataItem>();
-            MenuItems = new ObservableCollection<MenuDataItem>();
+            LibraryPageMenuItems = new ObservableCollection<MenuDataItem>();
         }
 
         public async Task PageReadyAsync(Guid LibraryId)
@@ -42,9 +42,10 @@ namespace Jellyfin.ViewModels
                     string[] tvshowsMenuItems = { "Shows", "Suggestions", "Upcoming", "Genres", "Networks", "Episodes" };
                     foreach (string item in tvshowsMenuItems)
                     {
-                        MenuItems.Add(new MenuDataItem
+                        LibraryPageMenuItems.Add(new MenuDataItem
                         {
-                            Name = item
+                            Name = item,
+                            Id = BaseItem.Id
                         });
                     }
 
@@ -54,9 +55,10 @@ namespace Jellyfin.ViewModels
                     string[] moviesMenuItems = { "Movies", "Suggestions", "Trailers", "Favorites", "Collections", "Genres" };
                     foreach (string item in moviesMenuItems)
                     {
-                        MenuItems.Add(new MenuDataItem
+                        LibraryPageMenuItems.Add(new MenuDataItem
                         {
-                            Name = item
+                            Name = item,
+                            Id = BaseItem.Id
                         });
                     }
                     break;
@@ -65,9 +67,10 @@ namespace Jellyfin.ViewModels
                     string[] musicMenuItems = { "Albums", "Suggestions", "Album Artists", "Artists", "Playlists", "Songs", "Genres" };
                     foreach (string item in musicMenuItems)
                     {
-                        MenuItems.Add(new MenuDataItem
+                        LibraryPageMenuItems.Add(new MenuDataItem
                         {
-                            Name = item
+                            Name = item,
+                            Id = BaseItem.Id
                         });
                     }
                     break;
@@ -82,17 +85,130 @@ namespace Jellyfin.ViewModels
 
         public async Task LoadLibraryItemsAsync(Guid libId)
         {
-            // Gets Library Items
-            BaseItemDtoQueryResult items = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(App.Current.AppUser.User.Id, parentId: libId);
+            BaseItemDto UserView = App.Current.UserViews.Items.FirstOrDefault(x => x.Id == libId);
+            BaseItemDtoQueryResult Query;
 
-            // Creates GridView Collection
-            foreach (BaseItemDto item in items.Items)
+            switch (UserView.CollectionType)
             {
-                LibraryItems.Add(new MediaDataItem
+                case "music":
+                    // Gets Music Library Items
+                    Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        App.Current.AppUser.User.Id,
+                        sortBy: new string[] { "SortName" },
+                        sortOrder: new SortOrder[] { SortOrder.Ascending },
+                        includeItemTypes: new string[]
+                        {
+                            "MusicAlbum"
+                        },
+                        recursive: true,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.SortName,
+                            ItemFields.BasicSyncInfo
+                        },
+                        imageTypeLimit: 1,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Banner,
+                            ImageType.Thumb
+                        },
+                        startIndex: 0,
+                        limit: 100,
+                        parentId: libId);
+                    break;
+                case "tvshows":
+                    Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        App.Current.AppUser.User.Id,
+                        sortBy: new string[] { "SortName" },
+                        sortOrder: new SortOrder[] { SortOrder.Ascending },
+                        includeItemTypes: new string[]
+                        {
+                            "Series"
+                        },
+                        recursive: true,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.BasicSyncInfo
+                        },
+                        imageTypeLimit: 1,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Banner,
+                            ImageType.Thumb
+                        },
+                        startIndex: 0,
+                        limit: 100,
+                        parentId: libId);
+                    break;
+                case "movies":
+                    Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        App.Current.AppUser.User.Id,
+                        sortBy: new string[] { "DateCreated", "SortName", "ProductionYear" },
+                        sortOrder: new SortOrder[] { SortOrder.Descending },
+                        includeItemTypes: new string[]
+                        {
+                            "Movie"
+                        },
+                        recursive: true,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.MediaSourceCount,
+                            ItemFields.BasicSyncInfo
+                        },
+                        imageTypeLimit: 1,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Banner,
+                            ImageType.Thumb
+                        },
+                        startIndex: 0,
+                        limit: 100,
+                        parentId: libId);
+                    break;
+                default:
+                    Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        App.Current.AppUser.User.Id,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.SortName,
+                            ItemFields.Path
+                        },
+                        imageTypeLimit: 1,
+                        parentId: libId,
+                        sortBy: new string[]
+                        {
+                            "IsFolder",
+                            "SortName"
+                        },
+                        sortOrder: new SortOrder[]
+                        {
+                            SortOrder.Ascending
+                        });
+                    break;
+            }
+
+
+            if (Query != null)
+            {
+                // Creates GridView Collection
+                foreach (BaseItemDto item in Query.Items)
                 {
-                    BaseItem = item,
-                    ImageSource = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.Id}/Images/Primary"))
-                });
+                    LibraryItems.Add(new MediaDataItem
+                    {
+                        BaseItem = item,
+                        ImageSource = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.Id}/Images/Primary"))
+                    });
+                }
             }
         }
     }

@@ -23,7 +23,7 @@ namespace Jellyfin.ViewModels
         private bool isServerUrlVisible;
         private bool showServerConnectionChangeButton;
         private string serverConnectionString;
-        private string authErrorString;
+        private string errorString;
 
         public LoginViewModel()
         {
@@ -38,10 +38,10 @@ namespace Jellyfin.ViewModels
             set => SetProperty(ref serverConnectionString, value);
         }
 
-        public string AuthErrorString
+        public string ErrorString
         {
-            get => authErrorString;
-            set => SetProperty(ref authErrorString, value);
+            get => errorString;
+            set => SetProperty(ref errorString, value);
         }
 
         public string ServerUrl
@@ -113,15 +113,24 @@ namespace Jellyfin.ViewModels
             }
             else
             {
-                ServerSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
-                if (!string.IsNullOrEmpty(ServerSystemInfo.Id))
+                try
                 {
+                    ServerSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
+                }
+                catch (Exception ex)
+                {
+                    ErrorString = ex.Message;
+                    ExceptionLogger.LogException(ex);
+                }
+
+                //if (!string.IsNullOrEmpty(ServerSystemInfo.Id))
+                //{
                     IsValidServerUrl = true;
                     IsServerUrlVisible = false;
                     ShowServerConnectionChangeButton = true;
                     ServerUrl = App.Current.SdkClientSettings.BaseUrl;
-                    ServerConnectionString = $"Change {ServerUrl} Connection?";
-                }
+                    ServerConnectionString = !string.IsNullOrEmpty(ErrorString) ? "Error Occured. Change Jellyfin Server Connection?" : $"Change {ServerUrl} Connection?";
+                //}
             }
         }
 
@@ -129,7 +138,7 @@ namespace Jellyfin.ViewModels
         {
             IsBusy = true;
             IsBusyMessage = "Logging in...";
-            AuthErrorString = "";
+            ErrorString = "";
             try
             {
                 // Make a login request to the server
@@ -160,7 +169,7 @@ namespace Jellyfin.ViewModels
             }
             catch (Exception ex)
             {
-                AuthErrorString = ex.Message;
+                ErrorString = ex.Message;
                 // Log Auth Error
                 ExceptionLogger.LogException(ex);
             }
@@ -225,7 +234,7 @@ namespace Jellyfin.ViewModels
 
             // Update local bindings
             ServerUrl = "";
-            AuthErrorString = "";
+            ErrorString = "";
             ServerSystemInfo = null;
             IsValidServerUrl = false;
             IsServerUrlVisible = true;

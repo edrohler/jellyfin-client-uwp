@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Jellyfin.Models;
+using System;
+using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -16,11 +18,16 @@ namespace Jellyfin.Views
             base.OnNavigatedTo(e);
 
             await ViewModel.PageReadyAsync((Guid)e.Parameter);
+
+            LibNavView.SelectedItem = ViewModel.LibraryPageMenuItems.FirstOrDefault();
         }
 
-        private void LibNavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        private void LibNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-
+            //if (args.SelectedItem is MenuDataItem selectedItem)
+            //{
+            //    Console.WriteLine();
+            //}
         }
     }
 }
