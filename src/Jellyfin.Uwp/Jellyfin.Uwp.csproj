@@ -120,8 +120,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\Constants.cs" />
-    <Compile Include="Controls\LibraryGridControl.xaml.cs">
-      <DependentUpon>LibraryGridControl.xaml</DependentUpon>
+    <Compile Include="Controls\MediaItemUserControl.xaml.cs">
+      <DependentUpon>MediaItemUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ExceptionLogger.cs" />
@@ -341,7 +341,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\LibraryGridControl.xaml">
+    <Page Include="Controls\MediaItemUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -4,7 +4,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:Jellyfin.ViewModels"
-      xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:customControls="using:Jellyfin.Controls"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -51,63 +51,7 @@
                           VerticalAlignment="Bottom">
                     <GridView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Vertical"
-                                        Margin="15,15,10,10">
-                                <telerikPrimitives:RadHubTile x:Name="MediaHubTile"
-                                                              Width="{Binding Width}"
-                                                              Height="{Binding Height}"
-                                                              IsFrozen="True"
-                                                              IsFlipped="True"
-                                                              Margin="15">
-                                    <telerikPrimitives:RadHubTile.BackContentTemplate>
-                                        <DataTemplate>
-                                            <Image Source="{Binding ImageSource}"
-                                                   Stretch="Uniform">
-                                            </Image>
-                                        </DataTemplate>
-                                    </telerikPrimitives:RadHubTile.BackContentTemplate>
-                                </telerikPrimitives:RadHubTile>
-                                <Grid x:Name="MediaTitleMarquee">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.Resources>
-                                        <Storyboard x:Name="MarqueeAnimation">
-                                            <DoubleAnimation Storyboard.TargetName="TitleScrollerCanvas"
-                                                             Storyboard.TargetProperty="(Canvas.Left)"
-                                                             Duration="0:0:10"
-                                                             From="295"
-                                                             To="-600"
-                                                             RepeatBehavior="Forever" />
-                                        </Storyboard>
-                                    </Grid.Resources>
-                                    <Button x:Name="TitlePlayButton"
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Right"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Click="TitlePlayButton_Click">
-                                        <SymbolIcon Symbol="Play">
-                                        </SymbolIcon>
-                                    </Button>
-                                    <Canvas x:Name="TitleScrollerCanvas"
-                                            Width="295"
-                                            Loaded="TitleScrollerCanvas_Loaded">
-                                        <Canvas.Clip>
-                                            <RectangleGeometry Rect="0,0,295,100" />
-                                        </Canvas.Clip>
-                                        <TextBlock x:Name="TitleText"
-                                                   Text="{Binding BaseItem.Name}"
-                                                   FontSize="24"
-                                                   MaxWidth="{Binding Width}"
-                                                   TextAlignment="Left" />
-                                    </Canvas>
-                                </Grid>
-                            </StackPanel>
+                            <customControls:MediaItemUserControl DataContext="{Binding}"/>
                         </DataTemplate>
                     </GridView.ItemTemplate>
                 </GridView>
