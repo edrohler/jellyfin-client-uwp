@@ -1,10 +1,12 @@
 ﻿using CommonHelpers.Common;
+using Jellyfin.Helpers;
 using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,6 +65,7 @@ namespace Jellyfin.ViewModels
                         parentId: libId);
                     break;
                 case "tvshows":
+                    // Get TV Shows Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
                         sortBy: new string[] { "SortName" },
@@ -90,6 +93,7 @@ namespace Jellyfin.ViewModels
                         parentId: libId);
                     break;
                 case "movies":
+                    // Get Movies Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
                         sortBy: new string[] { "DateCreated", "SortName", "ProductionYear" },
@@ -118,6 +122,7 @@ namespace Jellyfin.ViewModels
                         parentId: libId);
                     break;
                 default:
+                    // Get Audiobooks, Photos/Home Videos and Collections Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
                         fields: new ItemFields[]
@@ -146,10 +151,50 @@ namespace Jellyfin.ViewModels
                 // Creates GridView Collection
                 foreach (BaseItemDto item in Query.Items)
                 {
+                    int height, width;
+
+                    if (item.Type == "Series" ||
+                        item.Type == "Movie")
+                    {
+                        height = 450;
+                        width = 300;
+                    }
+                    else
+                    {
+                        height = 300;
+                        width = 300;
+                    }
+
+                    BitmapImage img = new BitmapImage
+                    {
+                        DecodePixelHeight = height,
+                        DecodePixelWidth = width
+                    };
+
+                    try
+                    {
+                        FileResponse fileResponse = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(item.Id, ImageType.Primary);
+
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            await fileResponse.Stream.CopyToAsync(ms);
+                            ms.Position = 0;
+
+                            await img.SetSourceAsync(ms.AsRandomAccessStream());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // TODO Load default image
+                        ExceptionLogger.LogException(ex);
+                    }
+
                     GridItems.Add(new MediaDataItem
                     {
                         BaseItem = item,
-                        ImageSource = new BitmapImage(new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.Id}/Images/Primary"))
+                        ImageSource = img,
+                        Width = width,
+                        Height = height
                     });
                 }
             }

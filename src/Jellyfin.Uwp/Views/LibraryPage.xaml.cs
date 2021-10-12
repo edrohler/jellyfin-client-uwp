@@ -19,7 +19,15 @@ namespace Jellyfin.Views
 
             ViewModel.PageReady((Guid)e.Parameter);
 
-            LibNavView.SelectedItem = ViewModel.LibraryPageMenuItems.FirstOrDefault();
+            object SelectedItem = ViewModel.LibraryPageMenuItems.FirstOrDefault();
+
+            if (SelectedItem != null)
+            {
+                LibNavView.SelectedItem = ViewModel.LibraryPageMenuItems.FirstOrDefault();
+            } else
+            {
+                LibraryContentFrame.Navigate(typeof(ItemsPage), (Guid)e.Parameter);
+            }
         }
 
         private void LibNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

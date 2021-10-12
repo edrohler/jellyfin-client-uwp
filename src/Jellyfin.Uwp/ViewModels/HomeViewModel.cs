@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Threading.Tasks;
-using CommonHelpers.Common;
+﻿using CommonHelpers.Common;
 using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
-using Windows.UI.Xaml.Media;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.ViewModels
