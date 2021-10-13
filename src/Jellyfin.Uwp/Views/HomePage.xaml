@@ -12,94 +12,103 @@
     <Page.DataContext>
         <viewModels:HomeViewModel x:Name="ViewModel" />
     </Page.DataContext>
-
-    <ScrollViewer x:Name="PageScrollViewer">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0">
-                <TextBlock Text="My Media"
-                           FontSize="32"
-                           Grid.Row="0"
-                           Margin="12,15,0,15"></TextBlock>
-                <ListView x:Name="MyMediaList"
-                          ItemsSource="{Binding Libraries}"
-                          VerticalAlignment="Top"
+    <Grid>
+        <ScrollViewer x:Name="PageScrollViewer"
+                      Visibility="{Binding IsBusy, Converter={StaticResource InvertedBoolToVisibilityConv}}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="My Media"
+                               FontSize="32"
+                               Grid.Row="0"
+                               Margin="12,15,0,15"></TextBlock>
+                    <ListView x:Name="MyMediaList"
+                              ItemsSource="{Binding Libraries}"
+                              VerticalAlignment="Top"
+                              Grid.Row="1"
+                              ScrollViewer.HorizontalScrollMode="Enabled"
+                              ScrollViewer.VerticalScrollMode="Disabled"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                              Margin="15"
+                              SelectionChanged="MyMediaList_SelectionChanged">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsStackPanel Background="Transparent"
+                                                 Orientation="Horizontal"
+                                                 Margin="15">
+                                </ItemsStackPanel>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <customControls:SlideHubTileUserControl DataContext="{Binding}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+                <ListView x:Name="LatestMediaList"
                           Grid.Row="1"
-                          ScrollViewer.HorizontalScrollMode="Enabled"
-                          ScrollViewer.VerticalScrollMode="Disabled"
-                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                          Margin="15"
-                          SelectionChanged="MyMediaList_SelectionChanged">
+                          ItemsSource="{Binding LatestMedia}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsStackPanel Background="Transparent"
-                                             Orientation="Horizontal"
-                                             Margin="15">
+                                             Orientation="Vertical">
                             </ItemsStackPanel>
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <customControls:SlideHubTileUserControl DataContext="{Binding}" />
+                            <ScrollViewer x:Name="LatestMediaItemScollViewer">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="32"
+                                               Grid.Row="0"
+                                               Margin="0,25,0,25" />
+                                    <ListView x:Name="LatestMediaItemList"
+                                              ItemsSource="{Binding LatestItems}"
+                                              ScrollViewer.HorizontalScrollMode="Enabled"
+                                              ScrollViewer.VerticalScrollMode="Disabled"
+                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              Grid.Row="1"
+                                              Margin="15"
+                                              SelectionChanged="LatestMediaItemList_SelectionChanged">
+                                        <ListView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <ItemsStackPanel Background="Transparent"
+                                                                 Orientation="Horizontal"
+                                                                 Margin="15"
+                                                                 GroupPadding="1">
+                                                </ItemsStackPanel>
+                                            </ItemsPanelTemplate>
+                                        </ListView.ItemsPanel>
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <customControls:MediaItemUserControl DataContext="{Binding}" />
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Grid>
+                            </ScrollViewer>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-            </StackPanel>
-            <ListView x:Name="LatestMediaList"
-                      Grid.Row="1"
-                      ItemsSource="{Binding LatestMedia}">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsStackPanel Background="Transparent"
-                                         Orientation="Vertical">
-                        </ItemsStackPanel>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ScrollViewer x:Name="LatestMediaItemScollViewer">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="{Binding Name}"
-                                           FontSize="32"
-                                           Grid.Row="0"
-                                           Margin="0,25,0,25" />
-                                <ListView x:Name="LatestMediaItemList"
-                                          ItemsSource="{Binding LatestItems}"
-                                          ScrollViewer.HorizontalScrollMode="Enabled"
-                                          ScrollViewer.VerticalScrollMode="Disabled"
-                                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                                          Grid.Row="1"
-                                          Margin="15"
-                                          SelectionChanged="LatestMediaItemList_SelectionChanged">
-                                    <ListView.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <ItemsStackPanel Background="Transparent"
-                                                             Orientation="Horizontal"
-                                                             Margin="15"
-                                                             GroupPadding="1">
-                                            </ItemsStackPanel>
-                                        </ItemsPanelTemplate>
-                                    </ListView.ItemsPanel>
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <customControls:MediaItemUserControl DataContext="{Binding}" />
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </Grid>
-                        </ScrollViewer>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Grid>
-    </ScrollViewer>
+            </Grid>
+        </ScrollViewer>
+        <ProgressRing Name="LoadingProgressRing"
+                      Height="100"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      Width="100"
+                      IsActive="True"
+                      Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}" />
+    </Grid>
 </Page>

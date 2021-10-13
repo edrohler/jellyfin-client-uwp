@@ -26,6 +26,11 @@ namespace Jellyfin.ViewModels
         private string limitAndCount;
         public string LimitAndCount { get => limitAndCount; set => SetProperty(ref limitAndCount, value); }
 
+        private bool isPageable;
+        public bool IsPageable { get => isPageable; set => SetProperty(ref isPageable, value); }
+
+        public bool BackButtonIsEnabled => StartIndex != 0;
+
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
 
         public ItemsViewModel()
@@ -42,6 +47,8 @@ namespace Jellyfin.ViewModels
 
         public async Task LoadLibraryItemsAsync(Guid libId)
         {
+            IsBusy = true;
+            IsBusyMessage = "Loading Content..";
             BaseItemDto UserView = App.Current.UserViews.Items.FirstOrDefault(x => x.Id == libId);
             BaseItemDtoQueryResult Query;
 
@@ -76,7 +83,8 @@ namespace Jellyfin.ViewModels
                         limit: Limit,
                         parentId: libId);
                     TotalCount = Query.TotalRecordCount;
-                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
+                    LimitAndCount = $"{StartIndex + 1} - {Limit} of {TotalCount}";
+                    IsPageable = true;
                     break;
                 case "tvshows":
                     // Get TV Shows Library Items
@@ -106,7 +114,8 @@ namespace Jellyfin.ViewModels
                         limit: Limit,
                         parentId: libId);
                     TotalCount = Query.TotalRecordCount;
-                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
+                    LimitAndCount = $"{StartIndex + 1} - {Limit} of {TotalCount}";
+                    IsPageable = true;
                     break;
                 case "movies":
                     // Get Movies Library Items
@@ -137,7 +146,8 @@ namespace Jellyfin.ViewModels
                         limit: Limit,
                         parentId: libId);
                     TotalCount = Query.TotalRecordCount;
-                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
+                    LimitAndCount = $"{StartIndex + 1} - {Limit} of {TotalCount}";
+                    IsPageable = true;
                     break;
                 default:
                     // Get Audiobooks, Photos/Home Videos and Collections Items
@@ -160,8 +170,7 @@ namespace Jellyfin.ViewModels
                         {
                             SortOrder.Ascending
                         });
-                    TotalCount = Query.TotalRecordCount;
-                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
+                    IsPageable = false;
                     break;
             }
 
@@ -221,6 +230,9 @@ namespace Jellyfin.ViewModels
                     });
                 }
             }
+
+            IsBusy = false;
+            IsBusyMessage = "";
         }
     }
 }

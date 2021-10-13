@@ -12,73 +12,87 @@
         <viewModels:ItemsViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
-    <Grid x:Name="LayoutGrid"
-          HorizontalAlignment="Center">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid x:Name="GridButtons"
-              Grid.Row="0"
+    <Grid x:Name="LayoutGrid">
+        <Grid x:Name="ContentGrid"
               HorizontalAlignment="Center"
-              Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock x:Name="LimitAndCount"
-                       Grid.Row="0"
-                       FontSize="24"
-                       Margin="10"
-                       Text="{Binding LimitAndCount}">
-            </TextBlock>
-            <Button x:Name="PreviosPage"
-                    Grid.Column="1"
-                    Margin="10"
-                    FontFamily="Segoe MDL2 Assets">
-                <SymbolIcon Symbol="Back"></SymbolIcon>
-            </Button>
-            <Button x:Name="NextPage"
-                    Grid.Column="2"
-                    Margin="10"
-                    FontFamily="Segoe MDL2 Assets">
-                <SymbolIcon Symbol="Forward"></SymbolIcon>
-            </Button>
-            <Button x:Name="Sort"
-                    Grid.Column="3"
-                    Margin="10"
-                    FontFamily="Segoe MDL2 Assets">
-                <SymbolIcon Symbol="Sort"></SymbolIcon>
-            </Button>
-            <Button x:Name="Filter"
-                    Grid.Column="4"
-                    Margin="10"
-                    FontFamily="Segoe MDL2 Assets">
-                <SymbolIcon Symbol="Filter"></SymbolIcon>
-            </Button>
+              Visibility="{Binding IsBusy, Converter={StaticResource InvertedBoolToVisibilityConv}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid x:Name="GridButtons"
+                  Grid.Row="0"
+                  HorizontalAlignment="Center"
+                  Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="LimitAndCount"
+                           Grid.Row="0"
+                           FontSize="24"
+                           Margin="10"
+                           Text="{Binding LimitAndCount}"
+                           Visibility="{Binding IsPageable}">
+                </TextBlock>
+                <Button x:Name="PreviosPage"
+                        Grid.Column="1"
+                        Margin="10"
+                        FontFamily="Segoe MDL2 Assets"
+                        Visibility="{Binding IsPageable}"
+                        IsEnabled="{Binding BackButtonIsEnabled}">
+                    <SymbolIcon Symbol="Back"></SymbolIcon>
+                </Button>
+                <Button x:Name="NextPage"
+                        Grid.Column="2"
+                        Margin="10"
+                        FontFamily="Segoe MDL2 Assets"
+                        Visibility="{Binding IsPageable}">
+                    <SymbolIcon Symbol="Forward"></SymbolIcon>
+                </Button>
+                <Button x:Name="Sort"
+                        Grid.Column="3"
+                        Margin="10"
+                        FontFamily="Segoe MDL2 Assets">
+                    <SymbolIcon Symbol="Sort"></SymbolIcon>
+                </Button>
+                <Button x:Name="Filter"
+                        Grid.Column="4"
+                        Margin="10"
+                        FontFamily="Segoe MDL2 Assets">
+                    <SymbolIcon Symbol="Filter"></SymbolIcon>
+                </Button>
+            </Grid>
+            <ScrollViewer x:Name="LibraryGridScrollViewer"
+                          Grid.Row="1">
+                <StackPanel ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollMode="Auto"
+                            ScrollViewer.HorizontalScrollMode="Disabled">
+                    <GridView x:Name="GridView"
+                              ItemsSource="{Binding GridItems}"
+                              IsItemClickEnabled="True"
+                              ItemClick="GridView_ItemClick"
+                              SelectionMode="None"
+                              VerticalAlignment="Bottom">
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <customControls:MediaItemUserControl DataContext="{Binding}" />
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
-        <ScrollViewer x:Name="LibraryGridScrollViewer"
-                      Grid.Row="1">
-            <StackPanel ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.VerticalScrollMode="Auto"
-                        ScrollViewer.HorizontalScrollMode="Disabled">
-                <GridView x:Name="GridView"
-                          ItemsSource="{Binding GridItems}"
-                          IsItemClickEnabled="True"
-                          ItemClick="GridView_ItemClick"
-                          SelectionMode="None"
-                          VerticalAlignment="Bottom">
-                    <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <customControls:MediaItemUserControl DataContext="{Binding}"/>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
-            </StackPanel>
-        </ScrollViewer>
+        <ProgressRing Name="LoadingProgressRing"
+                      Height="100"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      Width="100"
+                      IsActive="True"
+                      Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}" />
     </Grid>
 </Page>

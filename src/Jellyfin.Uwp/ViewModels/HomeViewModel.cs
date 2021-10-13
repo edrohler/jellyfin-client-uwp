@@ -47,6 +47,9 @@ namespace Jellyfin.ViewModels
 
         private async Task LoadLatestMedia()
         {
+            IsBusy = true;
+            IsBusyMessage = "Loading Page Content..";
+
             foreach (MediaDataItem item in Libraries)
             {
                 if (item.BaseItem.CollectionType != "boxsets")
@@ -198,6 +201,9 @@ namespace Jellyfin.ViewModels
                     });
                 }
             }
+
+            IsBusy = false;
+            IsBusyMessage = "";
         }
     }
 }
