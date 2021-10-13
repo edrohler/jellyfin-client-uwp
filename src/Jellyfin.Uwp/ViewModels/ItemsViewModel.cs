@@ -4,11 +4,9 @@ using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -16,10 +14,24 @@ namespace Jellyfin.ViewModels
 {
     public class ItemsViewModel : ViewModelBase
     {
+        private int totalCount;
+        public int TotalCount { get => totalCount; set => SetProperty(ref totalCount, value); }
+
+        private int startIndex;
+        public int StartIndex { get => startIndex; set => SetProperty(ref startIndex, value); }
+
+        private int limit;
+        public int Limit { get => limit; set => SetProperty(ref limit, value); }
+
+        private string limitAndCount;
+        public string LimitAndCount { get => limitAndCount; set => SetProperty(ref limitAndCount, value); }
+
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
 
         public ItemsViewModel()
         {
+            StartIndex = 0;
+            Limit = 100;
             GridItems = new ObservableCollection<MediaDataItem>();
         }
 
@@ -60,9 +72,11 @@ namespace Jellyfin.ViewModels
                             ImageType.Banner,
                             ImageType.Thumb
                         },
-                        startIndex: 0,
-                        limit: 100,
+                        startIndex: StartIndex,
+                        limit: Limit,
                         parentId: libId);
+                    TotalCount = Query.TotalRecordCount;
+                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
                     break;
                 case "tvshows":
                     // Get TV Shows Library Items
@@ -88,9 +102,11 @@ namespace Jellyfin.ViewModels
                             ImageType.Banner,
                             ImageType.Thumb
                         },
-                        startIndex: 0,
-                        limit: 100,
+                        startIndex: StartIndex,
+                        limit: Limit,
                         parentId: libId);
+                    TotalCount = Query.TotalRecordCount;
+                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
                     break;
                 case "movies":
                     // Get Movies Library Items
@@ -117,9 +133,11 @@ namespace Jellyfin.ViewModels
                             ImageType.Banner,
                             ImageType.Thumb
                         },
-                        startIndex: 0,
-                        limit: 100,
+                        startIndex: StartIndex,
+                        limit: Limit,
                         parentId: libId);
+                    TotalCount = Query.TotalRecordCount;
+                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
                     break;
                 default:
                     // Get Audiobooks, Photos/Home Videos and Collections Items
@@ -142,6 +160,8 @@ namespace Jellyfin.ViewModels
                         {
                             SortOrder.Ascending
                         });
+                    TotalCount = Query.TotalRecordCount;
+                    LimitAndCount = $"{StartIndex} - {Limit} of {TotalCount}";
                     break;
             }
 
@@ -173,14 +193,17 @@ namespace Jellyfin.ViewModels
 
                     try
                     {
-                        FileResponse fileResponse = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(item.Id, ImageType.Primary);
+                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(item.Id, ImageType.Primary);
 
-                        using (MemoryStream ms = new MemoryStream())
+                        using (Stream stream = fr.Stream)
                         {
-                            await fileResponse.Stream.CopyToAsync(ms);
-                            ms.Position = 0;
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                await stream.CopyToAsync(ms);
+                                ms.Position = 0;
 
-                            await img.SetSourceAsync(ms.AsRandomAccessStream());
+                                await img.SetSourceAsync(ms.AsRandomAccessStream());
+                            }
                         }
                     }
                     catch (Exception ex)

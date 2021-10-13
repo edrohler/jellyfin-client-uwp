@@ -25,14 +25,37 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            <TextBlock x:Name="LimitAndCount"
+                       Grid.Row="0"
+                       FontSize="24"
+                       Margin="10"
+                       Text="{Binding LimitAndCount}">
+            </TextBlock>
+            <Button x:Name="PreviosPage"
+                    Grid.Column="1"
+                    Margin="10"
+                    FontFamily="Segoe MDL2 Assets">
+                <SymbolIcon Symbol="Back"></SymbolIcon>
+            </Button>
+            <Button x:Name="NextPage"
+                    Grid.Column="2"
+                    Margin="10"
+                    FontFamily="Segoe MDL2 Assets">
+                <SymbolIcon Symbol="Forward"></SymbolIcon>
+            </Button>
             <Button x:Name="Sort"
-                    Grid.Column="0"
+                    Grid.Column="3"
+                    Margin="10"
                     FontFamily="Segoe MDL2 Assets">
                 <SymbolIcon Symbol="Sort"></SymbolIcon>
             </Button>
             <Button x:Name="Filter"
-                    Grid.Column="1"
+                    Grid.Column="4"
+                    Margin="10"
                     FontFamily="Segoe MDL2 Assets">
                 <SymbolIcon Symbol="Filter"></SymbolIcon>
             </Button>
