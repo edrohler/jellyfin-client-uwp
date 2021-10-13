@@ -132,6 +132,7 @@
     <Compile Include="Helpers\NavViewHelper.cs" />
     <Compile Include="Helpers\StorageHelpers.cs" />
     <Compile Include="Models\AppUser.cs" />
+    <Compile Include="Models\LatestMedia.cs" />
     <Compile Include="Models\MediaDataItem.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
     <Compile Include="Services\JellyfinClientsServices.cs" />

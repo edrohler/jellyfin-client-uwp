@@ -18,6 +18,8 @@ namespace Jellyfin.ViewModels
         public async Task PageReadyAsync(Guid id)
         {
             BaseItem = await JellyfinClientServices.Current.UserLibraryClient.GetItemAsync(App.Current.AppUser.User.Id, id);
+
+            Console.WriteLine();
         }
     }
 }

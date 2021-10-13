@@ -19,7 +19,7 @@ namespace Jellyfin.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {
-        public string UserName { get; set; }
+        public string UserName => App.Current.AppUser.User.Name;
 
         public string SearchTerm
         {
@@ -54,9 +54,6 @@ namespace Jellyfin.ViewModels
 
         public async Task PageReadyAsync()
         {
-            // Set UserName
-            UserName = App.Current.AppUser.User.Name;
-
             // Get/Create Session Info
             ICollection<SessionInfo> CurrentSessions =
                 (ICollection<SessionInfo>)await JellyfinClientServices.Current.SessionClient.GetSessionsAsync();

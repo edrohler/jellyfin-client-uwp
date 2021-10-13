@@ -10,20 +10,14 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.ViewModels
 {
-    public class LatestMediaModel : MediaDataItem
-    {
-        public string Name { get; set; }
-        public List<MediaDataItem> LatestItems { get; set; }
-    }
-
     public class HomeViewModel : ViewModelBase
     {
-        public ObservableCollection<LatestMediaModel> LatestMedia { get; set; }
+        public ObservableCollection<LatestMedia> LatestMedia { get; set; }
         public ObservableCollection<MediaDataItem> Libraries { get; set; }
 
         public HomeViewModel()
         {
-            LatestMedia = new ObservableCollection<LatestMediaModel>();
+            LatestMedia = new ObservableCollection<LatestMedia>();
             Libraries = new ObservableCollection<MediaDataItem>();
         }
 
@@ -197,7 +191,7 @@ namespace Jellyfin.ViewModels
                         });
                     }
 
-                    LatestMedia.Add(new LatestMediaModel
+                    LatestMedia.Add(new LatestMedia
                     {
                         Name = $"Latest {item.BaseItem.Name}",
                         LatestItems = ltmiList
