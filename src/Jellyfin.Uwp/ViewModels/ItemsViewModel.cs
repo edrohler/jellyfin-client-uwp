@@ -1,4 +1,5 @@
 ﻿using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
 using Jellyfin.Helpers;
 using Jellyfin.Models;
 using Jellyfin.Sdk;
@@ -15,42 +16,95 @@ namespace Jellyfin.ViewModels
     public class ItemsViewModel : ViewModelBase
     {
         private int totalCount;
-        public int TotalCount { get => totalCount; set => SetProperty(ref totalCount, value); }
-
         private int startIndex;
-        public int StartIndex { get => startIndex; set => SetProperty(ref startIndex, value); }
-
         private int limit;
-        public int Limit { get => limit; set => SetProperty(ref limit, value); }
-
-        private string limitAndCount;
-        public string LimitAndCount { get => limitAndCount; set => SetProperty(ref limitAndCount, value); }
-
         private bool isPageable;
-        public bool IsPageable { get => isPageable; set => SetProperty(ref isPageable, value); }
+        private string pageStatusString;
+        private bool backButtonIsEnabled;
+        private bool nextButtonIsEnabled;
+        private BaseItemDto UserView;
+        private BaseItemDtoQueryResult Query;
+        private string[] sortBy;
+        private SortOrder[] sortOrder;
 
-        public bool BackButtonIsEnabled => StartIndex != 0;
+        public int TotalCount { get => totalCount; set => SetProperty(ref totalCount, value); }
+        public int StartIndex { get => startIndex; set => SetProperty(ref startIndex, value); }
+        public int Limit { get => limit; set => SetProperty(ref limit, value); }
+        public bool IsPageable { get => isPageable; set => SetProperty(ref isPageable, value); }
+        public string PageStatusString { get => pageStatusString; set => SetProperty(ref pageStatusString, value); }
+        public bool BackButtonIsEnabled { get => backButtonIsEnabled; set => SetProperty(ref backButtonIsEnabled, value); }
+        public bool NextButtonIsEnabled { get => nextButtonIsEnabled; set => SetProperty(ref nextButtonIsEnabled, value); }
+        public string[] SortBy { get => sortBy; set => SetProperty(ref sortBy, value); }
+        public SortOrder[] SortOrder { get => sortOrder; set => SetProperty(ref sortOrder, value); }
 
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
+        public DelegateCommand NextPageCommand { get; set; }
+        public DelegateCommand PrevPageCommand { get; set; }
+        public DelegateCommand SortCommand { get; set; }
+        public DelegateCommand FilterCommand { get; set; }
 
         public ItemsViewModel()
         {
             StartIndex = 0;
             Limit = 100;
             GridItems = new ObservableCollection<MediaDataItem>();
+            NextPageCommand = new DelegateCommand(async () => await NextPageAsync());
+            PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
         }
 
         public async Task PageReadyAsync(Guid LibraryId)
         {
-            await LoadLibraryItemsAsync(LibraryId);
+            // Get UserView
+            UserView = App.Current.UserViews.Items.FirstOrDefault(x => x.Id == LibraryId);
+
+            // Set Initial Sort Order
+            switch (UserView.CollectionType)
+            {
+                case "movies":
+                    SortOrder = new SortOrder[] { Sdk.SortOrder.Descending };
+                    break;
+                default:
+                    SortOrder = new SortOrder[] { Sdk.SortOrder.Ascending };
+                    break;
+            }
+
+            // Set Initial Sort By
+            if (UserView.CollectionType == "music" || UserView.CollectionType == "tvshows" )
+            {
+                SortBy = new string[] { "SortName" };
+            } else if (UserView.CollectionType == "movies")
+            {
+                SortBy = new string[] { "DateCreated", "SortName", "ProductionYear" };
+            } else
+            {
+                SortBy = new string[] { "IsFolder", "SortName" };
+            }
+
+            // Load Library Items for UserView
+            await LoadLibraryItemsAsync();
         }
 
-        public async Task LoadLibraryItemsAsync(Guid libId)
+        public async Task NextPageAsync()
+        {
+            StartIndex += Limit;
+            await LoadLibraryItemsAsync();
+        }
+
+        public async Task PrevPageAsync()
+        {
+            StartIndex -= Limit;
+            await LoadLibraryItemsAsync();
+        }
+
+        public async Task LoadLibraryItemsAsync()
         {
             IsBusy = true;
             IsBusyMessage = "Loading Content..";
-            BaseItemDto UserView = App.Current.UserViews.Items.FirstOrDefault(x => x.Id == libId);
-            BaseItemDtoQueryResult Query;
+
+            if (GridItems.Count > 0)
+            {
+                GridItems.Clear();
+            }
 
             switch (UserView.CollectionType)
             {
@@ -58,8 +112,8 @@ namespace Jellyfin.ViewModels
                     // Gets Music Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
-                        sortBy: new string[] { "SortName" },
-                        sortOrder: new SortOrder[] { SortOrder.Ascending },
+                        sortBy: SortBy,
+                        sortOrder: SortOrder,
                         includeItemTypes: new string[]
                         {
                             "MusicAlbum"
@@ -81,17 +135,16 @@ namespace Jellyfin.ViewModels
                         },
                         startIndex: StartIndex,
                         limit: Limit,
-                        parentId: libId);
-                    TotalCount = Query.TotalRecordCount;
-                    LimitAndCount = $"{StartIndex + 1} - {Limit} of {TotalCount}";
+                        parentId: UserView.Id);
+                    UpdatePaging();
                     IsPageable = true;
                     break;
                 case "tvshows":
                     // Get TV Shows Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
-                        sortBy: new string[] { "SortName" },
-                        sortOrder: new SortOrder[] { SortOrder.Ascending },
+                        sortBy: SortBy,
+                        sortOrder: SortOrder,
                         includeItemTypes: new string[]
                         {
                             "Series"
@@ -112,17 +165,16 @@ namespace Jellyfin.ViewModels
                         },
                         startIndex: StartIndex,
                         limit: Limit,
-                        parentId: libId);
-                    TotalCount = Query.TotalRecordCount;
-                    LimitAndCount = $"{StartIndex + 1} - {Limit} of {TotalCount}";
+                        parentId: UserView.Id);
+                    UpdatePaging();
                     IsPageable = true;
                     break;
                 case "movies":
                     // Get Movies Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
-                        sortBy: new string[] { "DateCreated", "SortName", "ProductionYear" },
-                        sortOrder: new SortOrder[] { SortOrder.Descending },
+                        sortBy: SortBy,
+                        sortOrder: SortOrder,
                         includeItemTypes: new string[]
                         {
                             "Movie"
@@ -144,9 +196,8 @@ namespace Jellyfin.ViewModels
                         },
                         startIndex: StartIndex,
                         limit: Limit,
-                        parentId: libId);
-                    TotalCount = Query.TotalRecordCount;
-                    LimitAndCount = $"{StartIndex + 1} - {Limit} of {TotalCount}";
+                        parentId: UserView.Id);
+                    UpdatePaging();
                     IsPageable = true;
                     break;
                 default:
@@ -160,20 +211,12 @@ namespace Jellyfin.ViewModels
                             ItemFields.Path
                         },
                         imageTypeLimit: 1,
-                        parentId: libId,
-                        sortBy: new string[]
-                        {
-                            "IsFolder",
-                            "SortName"
-                        },
-                        sortOrder: new SortOrder[]
-                        {
-                            SortOrder.Ascending
-                        });
+                        parentId: UserView.Id,
+                        sortBy: SortBy,
+                        sortOrder: SortOrder);
                     IsPageable = false;
                     break;
             }
-
 
             if (Query != null)
             {
@@ -233,6 +276,14 @@ namespace Jellyfin.ViewModels
 
             IsBusy = false;
             IsBusyMessage = "";
+        }
+
+        private void UpdatePaging()
+        {
+            TotalCount = Query.TotalRecordCount;
+            PageStatusString = (Limit + StartIndex) < TotalCount ? $"{StartIndex + 1} - {StartIndex + Limit} of {TotalCount}" : $"{StartIndex + 1} - {TotalCount} of {TotalCount}";
+            NextButtonIsEnabled = (Limit + StartIndex) < TotalCount;
+            BackButtonIsEnabled = StartIndex > 0;
         }
     }
 }

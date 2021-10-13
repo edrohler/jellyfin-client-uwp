@@ -66,7 +66,6 @@ namespace Jellyfin
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: Load state from previously suspended application
                 }
 
                 Window.Current.Content = RootFrame;
@@ -252,9 +251,6 @@ namespace Jellyfin
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
-
-            //TODO: Save application state and stop any background activity
-            // This is where you need to save any state because the app has been suspended.
 
             deferral.Complete();
         }

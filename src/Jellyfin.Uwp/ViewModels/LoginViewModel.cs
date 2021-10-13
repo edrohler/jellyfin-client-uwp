@@ -25,78 +25,26 @@ namespace Jellyfin.ViewModels
         private string serverConnectionString;
         private string errorString;
 
+        public string ServerConnectionString { get => serverConnectionString; set => SetProperty(ref serverConnectionString, value); }
+        public string ErrorString { get => errorString; set => SetProperty(ref errorString, value); }
+        public string ServerUrl { get => serverUrl; set => SetProperty(ref serverUrl, value, nameof(ServerUrl), ValidateServer); }
+        public string ServerUrlHeader { get => serverUrlHeader; set => SetProperty(ref serverUrlHeader, value); }
+        public string Username { get => username; set => SetProperty(ref username, value); }
+        public string Password { get => password; set => SetProperty(ref password, value); }
+        public bool IsValidServerUrl { get => isValidServerUrl; set => SetProperty(ref isValidServerUrl, value); }
+        public bool IsServerUrlVisible { get => isServerUrlVisible; set => SetProperty(ref isServerUrlVisible, value); }
+        public PublicSystemInfo ServerSystemInfo { get => App.Current.PublicSystemInfo; set => App.Current.PublicSystemInfo = value; }
+        public bool ShowServerConnectionChangeButton { get => showServerConnectionChangeButton; set => SetProperty(ref showServerConnectionChangeButton, value); }
+        public DelegateCommand LoginCommand { get; set; }
+        public DelegateCommand ForgotPasswordCommand { get; set; }
+        public DelegateCommand ClearServerConnectionCommand { get; set; }
+
         public LoginViewModel()
         {
             LoginCommand = new DelegateCommand(async () => await LoginAsync());
             ForgotPasswordCommand = new DelegateCommand(async () => await ForgotPasswordAsync(), CanForgotPasswordExecute);
             ClearServerConnectionCommand = new DelegateCommand(ClearServerConnection);
         }
-
-        public string ServerConnectionString
-        {
-            get => serverConnectionString;
-            set => SetProperty(ref serverConnectionString, value);
-        }
-
-        public string ErrorString
-        {
-            get => errorString;
-            set => SetProperty(ref errorString, value);
-        }
-
-        public string ServerUrl
-        {
-            get => serverUrl;
-            set => SetProperty(ref serverUrl, value, nameof(ServerUrl), ValidateServer);
-        }
-
-        public string ServerUrlHeader
-        {
-            get => serverUrlHeader;
-            set => SetProperty(ref serverUrlHeader, value);
-        }
-
-        public string Username
-        {
-            get => username;
-            set => SetProperty(ref username, value);
-        }
-
-        public string Password
-        {
-            get => password;
-            set => SetProperty(ref password, value);
-        }
-
-        public bool IsValidServerUrl
-        {
-            get => isValidServerUrl;
-            set => SetProperty(ref isValidServerUrl, value);
-        }
-
-        public bool IsServerUrlVisible
-        { 
-            get => isServerUrlVisible;
-            set => SetProperty(ref isServerUrlVisible, value);
-        }
-
-        public PublicSystemInfo ServerSystemInfo
-        {
-            get => App.Current.PublicSystemInfo;
-            set => App.Current.PublicSystemInfo = value;
-        }
-
-        public bool ShowServerConnectionChangeButton
-        {
-            get => showServerConnectionChangeButton;
-            set => SetProperty(ref showServerConnectionChangeButton, value);
-        }
-
-        public DelegateCommand LoginCommand { get; set; }
-
-        public DelegateCommand ForgotPasswordCommand { get; set; }
-
-        public DelegateCommand ClearServerConnectionCommand { get; set; }
 
         public async Task PageReadyAsync()
         {
@@ -123,14 +71,11 @@ namespace Jellyfin.ViewModels
                     ExceptionLogger.LogException(ex);
                 }
 
-                //if (!string.IsNullOrEmpty(ServerSystemInfo.Id))
-                //{
-                    IsValidServerUrl = true;
-                    IsServerUrlVisible = false;
-                    ShowServerConnectionChangeButton = true;
-                    ServerUrl = App.Current.SdkClientSettings.BaseUrl;
-                    ServerConnectionString = !string.IsNullOrEmpty(ErrorString) ? "Error Occured. Change Jellyfin Server Connection?" : $"Change {ServerUrl} Connection?";
-                //}
+                IsValidServerUrl = true;
+                IsServerUrlVisible = false;
+                ShowServerConnectionChangeButton = true;
+                ServerUrl = App.Current.SdkClientSettings.BaseUrl;
+                ServerConnectionString = !string.IsNullOrEmpty(ErrorString) ? "Error Occured. Change Jellyfin Server Connection?" : $"Change {ServerUrl} Connection?";
             }
         }
 
