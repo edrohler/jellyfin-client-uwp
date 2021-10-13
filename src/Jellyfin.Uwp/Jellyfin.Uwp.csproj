@@ -123,6 +123,9 @@
     <Compile Include="Controls\MediaItemUserControl.xaml.cs">
       <DependentUpon>MediaItemUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SlideHubTileUserControl.xaml.cs">
+      <DependentUpon>SlideHubTileUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ExceptionLogger.cs" />
     <Compile Include="Helpers\IconHelper.cs" />
@@ -342,6 +345,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Controls\MediaItemUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SlideHubTileUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

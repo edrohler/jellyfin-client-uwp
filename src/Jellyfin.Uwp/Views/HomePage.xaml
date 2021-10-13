@@ -6,13 +6,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:Jellyfin.ViewModels"
       xmlns:customControls="using:Jellyfin.Controls"
-      xmlns:telerik="using:Telerik.UI.Xaml.Controls.Data"
-      xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:telerikData="using:Telerik.Data.Core"
-      xmlns:loopingList="using:Telerik.UI.Xaml.Controls.Primitives.LoopingList"
-      xmlns:listview="using:Telerik.UI.Xaml.Controls.Data.ListView"
-      xmlns:listViewPrimitives="using:Telerik.UI.Xaml.Controls.Data.ListView.Primitives"
-      xmlns:listviewCommands="using:Telerik.UI.Xaml.Controls.Data.ListView.Commands"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -20,15 +13,7 @@
         <viewModels:HomeViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
-    <!--<Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>-->
-    <!--<ScrollViewer x:Name="MyMediaListScrollViewer"
-                      Grid.Row="0">-->
-    <ScrollViewer Grid.Row="1"
-                  x:Name="LatestMediaListScrollViewer">
+    <ScrollViewer x:Name="PageScrollViewer">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -59,22 +44,7 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <telerikPrimitives:RadSlideHubTile x:Name="MyMediaHubtile"
-                                                               Grid.Row="1"
-                                                               UpdateInterval="{Binding UpdateInterval}"
-                                                               Height="{Binding Height}"
-                                                               Width="{Binding Width}">
-                                <telerikPrimitives:RadSlideHubTile.TopContent>
-                                    <TextBlock Text="{Binding BaseItem.Name}"
-                                               FontSize="96"
-                                               HorizontalAlignment="Stretch"
-                                               VerticalAlignment="Bottom" />
-                                </telerikPrimitives:RadSlideHubTile.TopContent>
-                                <telerikPrimitives:RadSlideHubTile.BottomContent>
-                                    <Image Source="{Binding ImageSource}"
-                                           Stretch="Uniform" />
-                                </telerikPrimitives:RadSlideHubTile.BottomContent>
-                            </telerikPrimitives:RadSlideHubTile>
+                            <customControls:SlideHubTileUserControl DataContext="{Binding}" />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -132,5 +102,4 @@
             </ListView>
         </Grid>
     </ScrollViewer>
-    <!--</Grid>-->
 </Page>

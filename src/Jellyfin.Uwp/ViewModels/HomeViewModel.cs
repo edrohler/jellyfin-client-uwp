@@ -53,7 +53,7 @@ namespace Jellyfin.ViewModels
 
         private async Task LoadLatestMedia()
         {
-            foreach (MediaDataItem item in this.Libraries)
+            foreach (MediaDataItem item in Libraries)
             {
                 if (item.BaseItem.CollectionType != "boxsets")
                 {
@@ -173,13 +173,14 @@ namespace Jellyfin.ViewModels
                     {
                         int height, width;
 
-                        if (item.BaseItem.CollectionType == "tvshows" || 
+                        if (item.BaseItem.CollectionType == "tvshows" ||
                             item.BaseItem.CollectionType == "movies" ||
                             item.BaseItem.CollectionType == "homevideos")
                         {
                             height = 486;
                             width = 324;
-                        } else
+                        }
+                        else
                         {
                             height = 300;
                             width = 300;
@@ -196,7 +197,8 @@ namespace Jellyfin.ViewModels
                         });
                     }
 
-                    LatestMedia.Add(new LatestMediaModel {
+                    LatestMedia.Add(new LatestMediaModel
+                    {
                         Name = $"Latest {item.BaseItem.Name}",
                         LatestItems = ltmiList
                     });
