@@ -2,12 +2,15 @@
 using CommonHelpers.Mvvm;
 using Jellyfin.Helpers;
 using Jellyfin.Models;
+using Jellyfin.Models.Enums;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -22,7 +25,6 @@ namespace Jellyfin.ViewModels
         private string pageStatusString;
         private bool backButtonIsEnabled;
         private bool nextButtonIsEnabled;
-        private BaseItemDto UserView;
         private BaseItemDtoQueryResult Query;
         private string[] sortBy;
         private SortOrder[] sortOrder;
@@ -38,16 +40,22 @@ namespace Jellyfin.ViewModels
         public SortOrder[] SortOrder { get => sortOrder; set => SetProperty(ref sortOrder, value); }
 
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
+        public ObservableCollection<SortDataItem> SortByCollection { get; set; }
+        public ObservableCollection<SortDataItem> SortOrderCollection { get; set; }
         public DelegateCommand NextPageCommand { get; set; }
         public DelegateCommand PrevPageCommand { get; set; }
         public DelegateCommand SortCommand { get; set; }
         public DelegateCommand FilterCommand { get; set; }
+
+        public BaseItemDto UserView;
 
         public ItemsViewModel()
         {
             StartIndex = 0;
             Limit = 100;
             GridItems = new ObservableCollection<MediaDataItem>();
+            SortByCollection = new ObservableCollection<SortDataItem>();
+            SortOrderCollection = new ObservableCollection<SortDataItem>();
             NextPageCommand = new DelegateCommand(async () => await NextPageAsync());
             PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
         }
@@ -57,27 +65,88 @@ namespace Jellyfin.ViewModels
             // Get UserView
             UserView = App.Current.UserViews.Items.FirstOrDefault(x => x.Id == LibraryId);
 
-            // Set Initial Sort Order
+            // Instantiate SortOrderCollection
+            foreach (object item in Enum.GetValues(typeof(Sdk.SortOrder)))
+            {
+                SortOrderCollection.Add(new SortDataItem
+                {
+                    DisplayName = item.ToString(),
+                    Value = item.ToString()
+                });
+            }
+
+            // Set SortByCollection
             switch (UserView.CollectionType)
             {
                 case "movies":
+                    // Instantiate SortByCollection
+                    foreach (object item in Enum.GetValues(typeof(MoviesSortBy)))
+                    {
+                        SortByCollection.Add(new SortDataItem
+                        {
+                            DisplayName = item.GetType()
+                                .GetField(item.ToString())
+                                .GetCustomAttribute<DisplayNameAttribute>()
+                                .DisplayName,
+                            Value = item.ToString()
+                        });
+                    }
+
                     SortOrder = new SortOrder[] { Sdk.SortOrder.Descending };
+                    SortBy = new string[] { "DateCreated", "SortName", "ProductionYear" };
+
+                    break;
+                case "tvshows":
+                    foreach (object item in Enum.GetValues(typeof(TvShowsSortBy)))
+                    {
+                        SortByCollection.Add(new SortDataItem
+                        {
+                            DisplayName = item.GetType()
+                                .GetField(item.ToString())
+                                .GetCustomAttribute<DisplayNameAttribute>()
+                                .DisplayName,
+                            Value = item.ToString()
+                        });
+                    }
+
+                    SortOrder = new SortOrder[] { Sdk.SortOrder.Ascending };
+                    SortBy = new string[] { "SortName" };
+
+                    break;
+                case "music":
+                    foreach (object item in Enum.GetValues(typeof(MusicSortBy)))
+                    {
+                        SortByCollection.Add(new SortDataItem
+                        {
+                            DisplayName = item.GetType()
+                                .GetField(item.ToString())
+                                .GetCustomAttribute<DisplayNameAttribute>()
+                                .DisplayName,
+                            Value = item.ToString()
+                        });
+                    }
+
+                    SortOrder = new SortOrder[] { Sdk.SortOrder.Ascending };
+                    SortBy = new string[] { "SortName" };
+
                     break;
                 default:
-                    SortOrder = new SortOrder[] { Sdk.SortOrder.Ascending };
-                    break;
-            }
+                    foreach (object item in Enum.GetValues(typeof(FolderSortBy)))
+                    {
+                        SortByCollection.Add(new SortDataItem
+                        {
+                            DisplayName = item.GetType()
+                                .GetField(item.ToString())
+                                .GetCustomAttribute<DisplayNameAttribute>()
+                                .DisplayName,
+                            Value = item.ToString()
+                        });
+                    }
 
-            // Set Initial Sort By
-            if (UserView.CollectionType == "music" || UserView.CollectionType == "tvshows" )
-            {
-                SortBy = new string[] { "SortName" };
-            } else if (UserView.CollectionType == "movies")
-            {
-                SortBy = new string[] { "DateCreated", "SortName", "ProductionYear" };
-            } else
-            {
-                SortBy = new string[] { "IsFolder", "SortName" };
+                    SortOrder = new SortOrder[] { Sdk.SortOrder.Ascending };
+                    SortBy = new string[] { "IsFolder", "SortName" };
+
+                    break;
             }
 
             // Load Library Items for UserView
