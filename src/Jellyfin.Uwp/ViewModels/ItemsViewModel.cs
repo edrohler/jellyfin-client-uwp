@@ -28,6 +28,7 @@ namespace Jellyfin.ViewModels
         private BaseItemDtoQueryResult Query;
         private string[] sortBy;
         private SortOrder[] sortOrder;
+        private BaseItemDto userView;
 
         public int TotalCount { get => totalCount; set => SetProperty(ref totalCount, value); }
         public int StartIndex { get => startIndex; set => SetProperty(ref startIndex, value); }
@@ -38,6 +39,8 @@ namespace Jellyfin.ViewModels
         public bool NextButtonIsEnabled { get => nextButtonIsEnabled; set => SetProperty(ref nextButtonIsEnabled, value); }
         public string[] SortBy { get => sortBy; set => SetProperty(ref sortBy, value); }
         public SortOrder[] SortOrder { get => sortOrder; set => SetProperty(ref sortOrder, value); }
+        public BaseItemDto UserView { get => userView; set => SetProperty(ref userView, value); }
+
 
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
         public ObservableCollection<SortDataItem> SortByCollection { get; set; }
@@ -47,7 +50,6 @@ namespace Jellyfin.ViewModels
         public DelegateCommand SortCommand { get; set; }
         public DelegateCommand FilterCommand { get; set; }
 
-        public BaseItemDto UserView;
 
         public ItemsViewModel()
         {
@@ -60,13 +62,10 @@ namespace Jellyfin.ViewModels
             PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
         }
 
-        public async Task PageReadyAsync(Guid LibraryId)
+        public async Task PageReadyAsync()
         {
-            // Get UserView
-            UserView = App.Current.UserViews.Items.FirstOrDefault(x => x.Id == LibraryId);
-
             // Instantiate SortOrderCollection
-            foreach (object item in Enum.GetValues(typeof(Sdk.SortOrder)))
+            foreach (object item in Enum.GetValues(typeof(SortOrder)))
             {
                 SortOrderCollection.Add(new SortDataItem
                 {

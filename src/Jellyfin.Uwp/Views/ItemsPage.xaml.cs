@@ -17,7 +17,8 @@ namespace Jellyfin.Views
         {
             base.OnNavigatedTo(e);
 
-            await ViewModel.PageReadyAsync((Guid)e.Parameter);
+            // Get UserView
+            ViewModel.UserView = App.Current.UserViews.Items.FirstOrDefault(x => x.Id == (Guid)e.Parameter);
 
             // Set Initial SortBy and SortOrder
             switch (ViewModel.UserView.CollectionType)
@@ -31,6 +32,8 @@ namespace Jellyfin.Views
                     SortOrderList.SelectedItem = ViewModel.SortOrderCollection.FirstOrDefault(i => i.Value == "Ascending");
                     break;
             }
+
+            await ViewModel.PageReadyAsync();
         }
 
         private void GridView_ItemClick(object sender, ItemClickEventArgs e)
