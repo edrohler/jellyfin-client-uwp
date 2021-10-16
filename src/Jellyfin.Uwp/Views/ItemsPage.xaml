@@ -73,8 +73,10 @@
                                       SelectionMode="None">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding IsSelected}"
-                                                  Content="{Binding DisplayName}" />
+                                        <CheckBox x:Name="SortByCheckBox"
+                                                  IsChecked="{Binding IsSelected}"
+                                                  Content="{Binding DisplayName}"
+                                                  Click="SortByCheckBox_Click"/>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
@@ -85,8 +87,10 @@
                                       SelectionMode="None">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <RadioButton IsChecked="{Binding IsSelected}"
-                                                     Content="{Binding DisplayName}" />
+                                        <RadioButton x:Name="SortOrderRadioButton"
+                                                     IsChecked="{Binding IsSelected}"
+                                                     Content="{Binding DisplayName}"
+                                                     Click="SortOrderRadioButton_Click"/>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>                                
                             </ListView>

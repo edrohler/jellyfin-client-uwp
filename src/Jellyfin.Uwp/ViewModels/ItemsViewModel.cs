@@ -43,9 +43,6 @@ namespace Jellyfin.ViewModels
         public DelegateCommand PrevPageCommand { get; set; }
         public DelegateCommand SortCommand { get; set; }
         public DelegateCommand FilterCommand { get; set; }
-        public DelegateCommand ChangeSortByCommand { get; set; }
-        public DelegateCommand ChangeSortOrderCommand { get; set; }
-
 
         public ItemsViewModel()
         {
@@ -56,8 +53,6 @@ namespace Jellyfin.ViewModels
             SortOrderCollection = new ObservableCollection<SortDataItem>();
             NextPageCommand = new DelegateCommand(async () => await NextPageAsync());
             PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
-            ChangeSortByCommand = new DelegateCommand(async () => await ChangeSortByAsync());
-            ChangeSortOrderCommand = new DelegateCommand(async () => await ChangeSortOrderAsync());
         }
 
         public async Task PageReadyAsync()
@@ -258,18 +253,6 @@ namespace Jellyfin.ViewModels
 
             IsBusy = false;
             IsBusyMessage = "";
-        }
-
-        public async Task ChangeSortByAsync()
-        {
-            // TODO: Implement ChangeSortByAsync Command
-            await LoadLibraryItemsAsync();
-        }
-
-        public async Task ChangeSortOrderAsync()
-        {
-            // TODO: Implement ChangeSortOrderAsync Command
-            await LoadLibraryItemsAsync();
         }
 
         private string[] GetSortBys()

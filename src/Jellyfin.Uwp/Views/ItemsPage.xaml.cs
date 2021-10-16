@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -144,6 +143,22 @@ namespace Jellyfin.Views
             MediaDataItem item = e.ClickedItem as MediaDataItem;
 
             App.Current.Shell.ChangeMenuSelection(item.BaseItem.Id);
+        }
+
+        private async void SortByCheckBox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            // TODO: Implement Update SortByCollection Logic on Click
+            Console.WriteLine();
+
+            await ViewModel.PageReadyAsync();
+        }
+
+        private async void SortOrderRadioButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            // TODO: Implement Update SortOrderCollection Logic on Click
+            Console.WriteLine();
+
+            await ViewModel.PageReadyAsync();
         }
     }
 }
