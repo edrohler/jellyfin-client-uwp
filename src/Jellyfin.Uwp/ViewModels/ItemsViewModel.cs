@@ -2,15 +2,13 @@
 using CommonHelpers.Mvvm;
 using Jellyfin.Helpers;
 using Jellyfin.Models;
-using Jellyfin.Models.Enums;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -26,8 +24,6 @@ namespace Jellyfin.ViewModels
         private bool backButtonIsEnabled;
         private bool nextButtonIsEnabled;
         private BaseItemDtoQueryResult Query;
-        private string[] sortBy;
-        private SortOrder[] sortOrder;
         private BaseItemDto userView;
 
         public int TotalCount { get => totalCount; set => SetProperty(ref totalCount, value); }
@@ -37,8 +33,6 @@ namespace Jellyfin.ViewModels
         public string PageStatusString { get => pageStatusString; set => SetProperty(ref pageStatusString, value); }
         public bool BackButtonIsEnabled { get => backButtonIsEnabled; set => SetProperty(ref backButtonIsEnabled, value); }
         public bool NextButtonIsEnabled { get => nextButtonIsEnabled; set => SetProperty(ref nextButtonIsEnabled, value); }
-        public string[] SortBy { get => sortBy; set => SetProperty(ref sortBy, value); }
-        public SortOrder[] SortOrder { get => sortOrder; set => SetProperty(ref sortOrder, value); }
         public BaseItemDto UserView { get => userView; set => SetProperty(ref userView, value); }
 
 
@@ -49,6 +43,8 @@ namespace Jellyfin.ViewModels
         public DelegateCommand PrevPageCommand { get; set; }
         public DelegateCommand SortCommand { get; set; }
         public DelegateCommand FilterCommand { get; set; }
+        public DelegateCommand ChangeSortByCommand { get; set; }
+        public DelegateCommand ChangeSortOrderCommand { get; set; }
 
 
         public ItemsViewModel()
@@ -60,6 +56,8 @@ namespace Jellyfin.ViewModels
             SortOrderCollection = new ObservableCollection<SortDataItem>();
             NextPageCommand = new DelegateCommand(async () => await NextPageAsync());
             PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
+            ChangeSortByCommand = new DelegateCommand(async () => await ChangeSortByAsync());
+            ChangeSortOrderCommand = new DelegateCommand(async () => await ChangeSortOrderAsync());
         }
 
         public async Task PageReadyAsync()
@@ -96,8 +94,8 @@ namespace Jellyfin.ViewModels
                     // Gets Music Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
-                        sortBy: SortBy,
-                        sortOrder: SortOrder,
+                        sortBy: GetSortBys(),
+                        sortOrder: GetSortOrders(),
                         includeItemTypes: new string[]
                         {
                             "MusicAlbum"
@@ -127,8 +125,8 @@ namespace Jellyfin.ViewModels
                     // Get TV Shows Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
-                        sortBy: SortBy,
-                        sortOrder: SortOrder,
+                        sortBy: GetSortBys(),
+                        sortOrder: GetSortOrders(),
                         includeItemTypes: new string[]
                         {
                             "Series"
@@ -157,8 +155,8 @@ namespace Jellyfin.ViewModels
                     // Get Movies Library Items
                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
-                        sortBy: SortBy,
-                        sortOrder: SortOrder,
+                        sortBy: GetSortBys(),
+                        sortOrder: GetSortOrders(),
                         includeItemTypes: new string[]
                         {
                             "Movie"
@@ -196,8 +194,8 @@ namespace Jellyfin.ViewModels
                         },
                         imageTypeLimit: 1,
                         parentId: UserView.Id,
-                        sortBy: SortBy,
-                        sortOrder: SortOrder);
+                        sortBy: GetSortBys(),
+                        sortOrder: GetSortOrders());
                     IsPageable = false;
                     break;
             }
@@ -260,6 +258,53 @@ namespace Jellyfin.ViewModels
 
             IsBusy = false;
             IsBusyMessage = "";
+        }
+
+        public async Task ChangeSortByAsync()
+        {
+            // TODO: Implement ChangeSortByAsync Command
+            await LoadLibraryItemsAsync();
+        }
+
+        public async Task ChangeSortOrderAsync()
+        {
+            // TODO: Implement ChangeSortOrderAsync Command
+            await LoadLibraryItemsAsync();
+        }
+
+        private string[] GetSortBys()
+        {
+            IEnumerable<SortDataItem> SelectedSortBys = SortByCollection.Where(i => i.IsSelected);
+            string[] sortBys = new string[SelectedSortBys.Count() + 1];
+
+            for (int i = 0; i < SelectedSortBys.Count(); i++)
+            {
+                sortBys[i] = SelectedSortBys.ElementAt(i).Value;
+            }
+
+            sortBys[SelectedSortBys.Count()] = "ProductionYear";
+
+            return sortBys;
+        }
+
+        private SortOrder[] GetSortOrders()
+        {
+            IEnumerable<SortDataItem> SelectedSortOrders = SortOrderCollection.Where(i => i.IsSelected);
+            SortOrder[] sortOrders = new SortOrder[1];
+
+            for (int i = 0; i < SelectedSortOrders.Count(); i++)
+            {
+                if (SelectedSortOrders.ElementAt(i).Value == "Ascending")
+                {
+                    sortOrders[i] = SortOrder.Ascending;
+                }
+                else
+                {
+                    sortOrders[i] = SortOrder.Descending;
+                }
+            }
+
+            return sortOrders;
         }
 
         private void UpdatePaging()
