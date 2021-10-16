@@ -2,6 +2,7 @@
 using Jellyfin.Models.Enums;
 using Jellyfin.Sdk;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -147,16 +148,33 @@ namespace Jellyfin.Views
 
         private async void SortByCheckBox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            // TODO: Implement Update SortByCollection Logic on Click
-            Console.WriteLine();
+            CheckBox checkBox = (CheckBox)sender;
+            SortDataItem dataItem = (SortDataItem)checkBox.DataContext;
+
+            SortDataItem updateItem = ViewModel.SortByCollection.First(i => i.Value == dataItem.Value);
+
+            updateItem.IsSelected = !dataItem.IsSelected;
 
             await ViewModel.PageReadyAsync();
         }
 
         private async void SortOrderRadioButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            // TODO: Implement Update SortOrderCollection Logic on Click
-            Console.WriteLine();
+            RadioButton radioButton = (RadioButton)sender;
+
+            SortDataItem dataItem = (SortDataItem)radioButton.DataContext;
+
+            foreach (SortDataItem updateItem in ViewModel.SortOrderCollection)
+            {
+                if (updateItem.Value == dataItem.Value)
+                {
+                    updateItem.IsSelected = !dataItem.IsSelected;
+                }
+                else
+                {
+                    updateItem.IsSelected = false;
+                }
+            }
 
             await ViewModel.PageReadyAsync();
         }
