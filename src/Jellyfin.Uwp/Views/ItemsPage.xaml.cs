@@ -55,6 +55,20 @@ namespace Jellyfin.Views
                                     || item.ToString() == "ProductionYear"
                         });
                     }
+
+                    // Instantiate FilterCollection
+                    foreach (object item in Enum.GetValues(typeof(MoviesFilters)))
+                    {
+                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        {
+                            DisplayName = item.GetType()
+                                            .GetField(item.ToString())
+                                            .GetCustomAttribute<DisplayNameAttribute>()
+                                            .DisplayName,
+                            Value = item.ToString(),
+                            IsSelected = false
+                        });
+                    }
                     break;
                 case "tvshows":
                     // Instantiate SortOrderCollection
@@ -79,6 +93,20 @@ namespace Jellyfin.Views
                                 .DisplayName,
                             Value = item.ToString(),
                             IsSelected = item.ToString() == "SortName"
+                        });
+                    }
+
+                    // Instantiate FilterCollection
+                    foreach (object item in Enum.GetValues(typeof(TvShowsFilters)))
+                    {
+                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        {
+                            DisplayName = item.GetType()
+                                            .GetField(item.ToString())
+                                            .GetCustomAttribute<DisplayNameAttribute>()
+                                            .DisplayName,
+                            Value = item.ToString(),
+                            IsSelected = false
                         });
                     }
                     break;
@@ -107,6 +135,20 @@ namespace Jellyfin.Views
                             IsSelected = item.ToString() == "SortName"
                         });
                     }
+
+                    // Instantiate FilterCollection
+                    foreach (object item in Enum.GetValues(typeof(MusicFilters)))
+                    {
+                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        {
+                            DisplayName = item.GetType()
+                                            .GetField(item.ToString())
+                                            .GetCustomAttribute<DisplayNameAttribute>()
+                                            .DisplayName,
+                            Value = item.ToString(),
+                            IsSelected = false
+                        });
+                    }
                     break;
                 default:
                     // Instantiate SortOrderCollection
@@ -133,6 +175,20 @@ namespace Jellyfin.Views
                             IsSelected = item.ToString() == "IsFolder" || item.ToString() == "SortName"
                         });
                     }
+
+                    // Instantiate FilterCollection
+                    foreach (object item in Enum.GetValues(typeof(FolderFilters)))
+                    {
+                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        {
+                            DisplayName = item.GetType()
+                                            .GetField(item.ToString())
+                                            .GetCustomAttribute<DisplayNameAttribute>()
+                                            .DisplayName,
+                            Value = item.ToString(),
+                            IsSelected = false
+                        });
+                    }
                     break;
             }
 
@@ -154,8 +210,6 @@ namespace Jellyfin.Views
             SortDataItem updateItem = ViewModel.SortByCollection.First(i => i.Value == dataItem.Value);
 
             updateItem.IsSelected = !dataItem.IsSelected;
-
-            //await ViewModel.PageReadyAsync();
         }
 
         private void SortOrderRadioButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -177,7 +231,22 @@ namespace Jellyfin.Views
             }
         }
 
+        private void FilterCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            CheckBox checkBox = (CheckBox)sender;
+            FilterDataItem dataItem = (FilterDataItem)checkBox.DataContext;
+
+            FilterDataItem updateItem = ViewModel.FilterCollection.First(i => i.Value == dataItem.Value);
+
+            updateItem.IsSelected = !dataItem.IsSelected;
+        }
+
         private async void ApplySortButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await ViewModel.PageReadyAsync();
+        }
+
+        private async void ApplyFilterButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             await ViewModel.PageReadyAsync();
         }

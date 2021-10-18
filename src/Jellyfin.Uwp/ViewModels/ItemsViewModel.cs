@@ -39,6 +39,7 @@ namespace Jellyfin.ViewModels
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
         public ObservableCollection<SortDataItem> SortByCollection { get; set; }
         public ObservableCollection<SortDataItem> SortOrderCollection { get; set; }
+        public ObservableCollection<FilterDataItem> FilterCollection { get; set; }
         public DelegateCommand NextPageCommand { get; set; }
         public DelegateCommand PrevPageCommand { get; set; }
         public DelegateCommand SortCommand { get; set; }
@@ -51,6 +52,7 @@ namespace Jellyfin.ViewModels
             GridItems = new ObservableCollection<MediaDataItem>();
             SortByCollection = new ObservableCollection<SortDataItem>();
             SortOrderCollection = new ObservableCollection<SortDataItem>();
+            FilterCollection = new ObservableCollection<FilterDataItem>();
             NextPageCommand = new DelegateCommand(async () => await NextPageAsync());
             PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
         }
@@ -112,7 +114,8 @@ namespace Jellyfin.ViewModels
                         },
                         startIndex: StartIndex,
                         limit: Limit,
-                        parentId: UserView.Id);
+                        parentId: UserView.Id, 
+                        filters: GetItemFilters());
                     UpdatePaging();
                     IsPageable = true;
                     break;
@@ -142,7 +145,8 @@ namespace Jellyfin.ViewModels
                         },
                         startIndex: StartIndex,
                         limit: Limit,
-                        parentId: UserView.Id);
+                        parentId: UserView.Id,
+                        filters: GetItemFilters());
                     UpdatePaging();
                     IsPageable = true;
                     break;
@@ -173,7 +177,8 @@ namespace Jellyfin.ViewModels
                         },
                         startIndex: StartIndex,
                         limit: Limit,
-                        parentId: UserView.Id);
+                        parentId: UserView.Id,
+                        filters: GetItemFilters());
                     UpdatePaging();
                     IsPageable = true;
                     break;
@@ -190,7 +195,8 @@ namespace Jellyfin.ViewModels
                         imageTypeLimit: 1,
                         parentId: UserView.Id,
                         sortBy: GetSortBys(),
-                        sortOrder: GetSortOrders());
+                        sortOrder: GetSortOrders(),
+                        filters: GetItemFilters());
                     IsPageable = false;
                     break;
             }
@@ -253,6 +259,40 @@ namespace Jellyfin.ViewModels
 
             IsBusy = false;
             IsBusyMessage = "";
+        }
+
+        private ItemFilter[] GetItemFilters()
+        {
+            IEnumerable<FilterDataItem> SelectedFilters = FilterCollection.Where(i => i.IsSelected);
+
+            ItemFilter[] filters = new ItemFilter[SelectedFilters.Count()];
+
+            for (int i = 0; i < SelectedFilters.Count(); i++)
+            {
+                switch (SelectedFilters.ElementAt(i).Value)
+                {
+                    case "IsUnPlayed":
+                        filters[i] = ItemFilter.IsUnplayed;
+                        break;
+                    case "IsPlayed":
+                        filters[i] = ItemFilter.IsPlayed;
+                        break;
+                    case "IsFavorite":
+                        filters[i] = ItemFilter.IsFavorite;
+                        break;
+                    case "IsResumable":
+                        filters[i] = ItemFilter.IsResumable;
+                        break;
+                    case "Likes":
+                        filters[i] = ItemFilter.Likes;
+                        break;
+                    case "Dislikes":
+                        filters[i] = ItemFilter.Dislikes;
+                        break;
+                }
+            }
+
+            return filters;
         }
 
         private string[] GetSortBys()

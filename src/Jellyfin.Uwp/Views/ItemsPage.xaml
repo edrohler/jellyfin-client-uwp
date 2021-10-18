@@ -96,10 +96,10 @@
                                 </ListView.ItemTemplate>                                
                             </ListView>
                             <Button x:Name="ApplySortButton"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
                                     Grid.Row="2"
                                     Margin="10"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
                                     Content="Apply Sort"
                                     Click="ApplySortButton_Click"></Button>
                         </Grid>
@@ -113,9 +113,34 @@
                 <SymbolIcon Symbol="Filter" />
                 <controls:DropDownButton.Flyout>
                     <Flyout>
-                        <ListView x:Name="FilterList">
-
-                        </ListView>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ListView x:Name="FilterList"
+                                      Grid.Row="0"
+                                      ItemsSource="{Binding FilterCollection}"
+                                      Header="Filters"
+                                      SelectionMode="None">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="FilterCheckbox"
+                                                  Content="{Binding DisplayName}"
+                                                  IsChecked="{Binding IsSelected}"
+                                                  Click="FilterCheckbox_Click">
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <Button x:Name="ApplyFilterButton"
+                                    Grid.Row="1"
+                                    Margin="10"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Content="Apply Filters"
+                                    Click="ApplyFilterButton_Click"></Button>
+                        </Grid>
                     </Flyout>
                 </controls:DropDownButton.Flyout>
             </controls:DropDownButton>

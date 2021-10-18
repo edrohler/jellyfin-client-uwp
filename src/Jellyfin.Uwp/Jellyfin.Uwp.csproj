@@ -132,10 +132,15 @@
     <Compile Include="Helpers\NavViewHelper.cs" />
     <Compile Include="Helpers\StorageHelpers.cs" />
     <Compile Include="Models\AppUser.cs" />
+    <Compile Include="Models\Enums\FolderFilters.cs" />
     <Compile Include="Models\Enums\FolderSortBy.cs" />
+    <Compile Include="Models\Enums\MoviesFilters.cs" />
     <Compile Include="Models\Enums\MoviesSortBy.cs" />
+    <Compile Include="Models\Enums\MusicFilters.cs" />
     <Compile Include="Models\Enums\MusicSortBy.cs" />
+    <Compile Include="Models\Enums\TvShowsFilters.cs" />
     <Compile Include="Models\Enums\TvShowsSortBy.cs" />
+    <Compile Include="Models\FilterDataItem.cs" />
     <Compile Include="Models\LatestMedia.cs" />
     <Compile Include="Models\MediaDataItem.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
