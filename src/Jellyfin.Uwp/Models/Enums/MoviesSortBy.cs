@@ -21,6 +21,8 @@ namespace Jellyfin.Models.Enums
         [DisplayName("Release Date")]
         PremiereDate,
         [DisplayName("Runtime")]
-        Runtime
+        Runtime,
+        [DisplayName("Production Year")]
+        ProductionYear
     }
 }

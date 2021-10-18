@@ -146,7 +146,7 @@ namespace Jellyfin.Views
             App.Current.Shell.ChangeMenuSelection(item.BaseItem.Id);
         }
 
-        private async void SortByCheckBox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void SortByCheckBox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             CheckBox checkBox = (CheckBox)sender;
             SortDataItem dataItem = (SortDataItem)checkBox.DataContext;
@@ -155,10 +155,10 @@ namespace Jellyfin.Views
 
             updateItem.IsSelected = !dataItem.IsSelected;
 
-            await ViewModel.PageReadyAsync();
+            //await ViewModel.PageReadyAsync();
         }
 
-        private async void SortOrderRadioButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void SortOrderRadioButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             RadioButton radioButton = (RadioButton)sender;
 
@@ -175,7 +175,10 @@ namespace Jellyfin.Views
                     updateItem.IsSelected = false;
                 }
             }
+        }
 
+        private async void ApplySortButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
             await ViewModel.PageReadyAsync();
         }
     }

@@ -65,6 +65,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <ListView x:Name="SortByList"
                                       Grid.Row="0"
@@ -94,6 +95,13 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>                                
                             </ListView>
+                            <Button x:Name="ApplySortButton"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Grid.Row="2"
+                                    Margin="10"
+                                    Content="Apply Sort"
+                                    Click="ApplySortButton_Click"></Button>
                         </Grid>
                     </Flyout>
                 </controls:DropDownButton.Flyout>
