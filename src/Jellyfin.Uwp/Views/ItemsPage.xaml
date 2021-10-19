@@ -6,6 +6,7 @@
       xmlns:viewModels="using:Jellyfin.ViewModels"
       xmlns:customControls="using:Jellyfin.Controls"
       xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+      xmlns:telerik="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -34,13 +35,13 @@
                        FontSize="24"
                        Margin="10"
                        Text="{Binding PageStatusString}"
-                       Visibility="{Binding IsPageable}">
+                       Visibility="{Binding IsPageable, Converter={StaticResource BoolToVisibilityConv}}">
             </TextBlock>
             <Button x:Name="PreviosPage"
                     Grid.Column="1"
                     Margin="10"
                     FontFamily="Segoe MDL2 Assets"
-                    Visibility="{Binding IsPageable}"
+                    Visibility="{Binding IsPageable, Converter={StaticResource BoolToVisibilityConv}}"
                     IsEnabled="{Binding BackButtonIsEnabled}"
                     Command="{Binding PrevPageCommand}">
                 <SymbolIcon Symbol="Back" />
@@ -49,7 +50,7 @@
                     Grid.Column="2"
                     Margin="10"
                     FontFamily="Segoe MDL2 Assets"
-                    Visibility="{Binding IsPageable}"
+                    Visibility="{Binding IsPageable, Converter={StaticResource BoolToVisibilityConv}}"
                     IsEnabled="{Binding NextButtonIsEnabled}"
                     Command="{Binding NextPageCommand}">
                 <SymbolIcon Symbol="Forward"></SymbolIcon>
@@ -77,7 +78,7 @@
                                         <CheckBox x:Name="SortByCheckBox"
                                                   IsChecked="{Binding IsSelected}"
                                                   Content="{Binding DisplayName}"
-                                                  Click="SortByCheckBox_Click"/>
+                                                  Click="SortByCheckBox_Click" />
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
@@ -91,9 +92,9 @@
                                         <RadioButton x:Name="SortOrderRadioButton"
                                                      IsChecked="{Binding IsSelected}"
                                                      Content="{Binding DisplayName}"
-                                                     Click="SortOrderRadioButton_Click"/>
+                                                     Click="SortOrderRadioButton_Click" />
                                     </DataTemplate>
-                                </ListView.ItemTemplate>                                
+                                </ListView.ItemTemplate>
                             </ListView>
                             <Button x:Name="ApplySortButton"
                                     Grid.Row="2"
@@ -113,34 +114,126 @@
                 <SymbolIcon Symbol="Filter" />
                 <controls:DropDownButton.Flyout>
                     <Flyout>
-                        <Grid>
+                        <!--<Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <ListView x:Name="FilterList"
-                                      Grid.Row="0"
-                                      ItemsSource="{Binding FilterCollection}"
-                                      Header="Filters"
-                                      SelectionMode="None">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <CheckBox x:Name="FilterCheckbox"
-                                                  Content="{Binding DisplayName}"
-                                                  IsChecked="{Binding IsSelected}"
-                                                  Click="FilterCheckbox_Click">
-                                        </CheckBox>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>-->
+                        <StackPanel Orientation="Vertical">
+                            <telerik:RadExpanderControl x:Name="FiltersExpander"
+                                                        IsExpandable="True">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Filters"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <ListView x:Name="FilterList"
+                                              ItemsSource="{Binding FilterCollection}"
+                                              SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="FilterCheckbox"
+                                                          Content="{Binding DisplayName}"
+                                                          IsChecked="{Binding IsSelected}"
+                                                          Click="FilterCheckbox_Click">
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </telerik:RadExpanderControl.ExpandableContent>
+                            </telerik:RadExpanderControl>
+                            <telerik:RadExpanderControl x:Name="StatusExpander"
+                                                        IsExpandable="True"
+                                                        Visibility="{Binding IsStatusFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Status"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <TextBlock Text="CHECKBOX LIST" />
+                                </telerik:RadExpanderControl.ExpandableContent>
+                            </telerik:RadExpanderControl>
+                            <telerik:RadExpanderControl x:Name="FeaturesExpander"
+                                                        IsExpandable="True"
+                                                        Visibility="{Binding IsFeaturesFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Features"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <TextBlock Text="CHECKBOX LIST" />
+                                </telerik:RadExpanderControl.ExpandableContent>                                
+                            </telerik:RadExpanderControl>
+                            <telerik:RadExpanderControl x:Name="GenresExpander"
+                                                        IsExpandable="True"
+                                                        Visibility="{Binding IsGenresFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Genres"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <TextBlock Text="CHECKBOX LIST" />
+                                </telerik:RadExpanderControl.ExpandableContent>                                
+                            </telerik:RadExpanderControl>
+                            <telerik:RadExpanderControl x:Name="ParentalRatingsExpander"
+                                                        IsExpandable="True"
+                                                        Visibility="{Binding IsParentalRatingsFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Parental Ratings"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <TextBlock Text="CHECKBOX LIST" />
+                                </telerik:RadExpanderControl.ExpandableContent>                                
+                            </telerik:RadExpanderControl>
+                            <telerik:RadExpanderControl x:Name="TagsExpander"
+                                                        IsExpandable="True"
+                                                        Visibility="{Binding IsTagsFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Tags"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <TextBlock Text="CHECKBOX LIST" />
+                                </telerik:RadExpanderControl.ExpandableContent>                                
+                            </telerik:RadExpanderControl>
+                            <telerik:RadExpanderControl x:Name="VideoTypesExpander"
+                                                        IsExpandable="True"
+                                                        Visibility="{Binding IsVideoTypesFIlterVisible, Converter={StaticResource BoolToVisibilityConv}}">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Video Types"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <TextBlock Text="CHECKBOX LIST" />
+                                </telerik:RadExpanderControl.ExpandableContent>                                
+                            </telerik:RadExpanderControl>
+                            <telerik:RadExpanderControl x:Name="YearsExpander"
+                                                        IsExpandable="True"
+                                                        Visibility="{Binding IsYearsFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
+                                <telerik:RadExpanderControl.Content>
+                                    <TextBlock Text="Years"
+                                               FontSize="24" />
+                                </telerik:RadExpanderControl.Content>
+                                <telerik:RadExpanderControl.ExpandableContent>
+                                    <TextBlock Text="CHECKBOX LIST" />
+                                </telerik:RadExpanderControl.ExpandableContent>                                
+                            </telerik:RadExpanderControl>
                             <Button x:Name="ApplyFilterButton"
-                                    Grid.Row="1"
                                     Margin="10"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Content="Apply Filters"
                                     Click="ApplyFilterButton_Click"></Button>
-                        </Grid>
+                        </StackPanel>
+                        <!--</Grid>-->
                     </Flyout>
                 </controls:DropDownButton.Flyout>
             </controls:DropDownButton>

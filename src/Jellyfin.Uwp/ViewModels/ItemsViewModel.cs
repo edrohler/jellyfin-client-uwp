@@ -66,6 +66,14 @@ namespace Jellyfin.ViewModels
             FilterCollection = new ObservableCollection<FilterDataItem>();
             NextPageCommand = new DelegateCommand(async () => await NextPageAsync());
             PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
+
+            IsFeaturesFilterVisible = false;
+            IsGenresFilterVisible = false;
+            IsParentalRatingsFilterVisible = false;
+            IsStatusFilterVisible = false;
+            IsTagsFilterVisible = false;
+            IsVideoTypesFIlterVisible = false;
+            IsYearsFilterVisible = false;
         }
 
         public async Task PageReadyAsync()

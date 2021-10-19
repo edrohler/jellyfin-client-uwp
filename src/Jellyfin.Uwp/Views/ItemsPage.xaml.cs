@@ -71,17 +71,22 @@ namespace Jellyfin.Views
                     }
 
                     // Instantiate FeaturesCollection
+                    ViewModel.IsFeaturesFilterVisible = true;
 
                     // Instantiate GenresCollection
-
+                    ViewModel.IsGenresFilterVisible = true;
+                    
                     // Instantiate ParenetalRatingsCollection
-
+                    ViewModel.IsGenresFilterVisible = true;
+                    
                     // Instantiate TagsCollection
-
+                    ViewModel.IsTagsFilterVisible = true;
+                    
                     // Instantiate VideoTypesCollection
+                    ViewModel.IsVideoTypesFIlterVisible = true;
 
                     // Instantiate YearsCollection
-
+                    ViewModel.IsYearsFilterVisible = true;
 
                     break;
                 case "tvshows":
@@ -126,18 +131,25 @@ namespace Jellyfin.Views
 
 
                     // Instantiate StatusCollection
+                    ViewModel.IsStatusFilterVisible = true;
 
                     // Instantiate FeaturesCollection
+                    ViewModel.IsFeaturesFilterVisible = true;
 
                     // Instantiate GenresCollection
+                    ViewModel.IsGenresFilterVisible = true;
 
                     // Instantiate ParenetalRatingsCollection
+                    ViewModel.IsGenresFilterVisible = true;
 
                     // Instantiate TagsCollection
+                    ViewModel.IsTagsFilterVisible = true;
 
                     // Instantiate VideoTypesCollection
+                    ViewModel.IsVideoTypesFIlterVisible = true;
 
                     // Instantiate YearsCollection
+                    ViewModel.IsYearsFilterVisible = true;
                     break;
                 case "music":
                     // Instantiate SortOrderCollection
@@ -180,8 +192,10 @@ namespace Jellyfin.Views
                     }
 
                     // Instantiate GenresCollection
+                    ViewModel.IsGenresFilterVisible = true;
 
                     // Instantiate YearsCollection
+                    ViewModel.IsYearsFilterVisible = true;
 
                     break;
                 default:
@@ -225,8 +239,10 @@ namespace Jellyfin.Views
                     }
 
                     // Instantiate VideoTypesCollection
+                    ViewModel.IsVideoTypesFIlterVisible = true;
 
                     // Instantiate FeaturesCollection
+                    ViewModel.IsFeaturesFilterVisible = true;
 
                     break;
             }
