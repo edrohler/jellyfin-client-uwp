@@ -20,9 +20,16 @@ namespace Jellyfin.ViewModels
         private int startIndex;
         private int limit;
         private bool isPageable;
-        private string pageStatusString;
         private bool backButtonIsEnabled;
         private bool nextButtonIsEnabled;
+        private bool isStatusFilterVisible;
+        private bool isFeaturesFilterVisible;
+        private bool isGenresFilterVisible;
+        private bool isParentalRatingsFilterVisible;
+        private bool isTagsFilterVisible;
+        private bool isVideoTypesFilterVisible;
+        private bool isYearsFilterVisible;
+        private string pageStatusString;
         private BaseItemDtoQueryResult Query;
         private BaseItemDto userView;
 
@@ -30,11 +37,17 @@ namespace Jellyfin.ViewModels
         public int StartIndex { get => startIndex; set => SetProperty(ref startIndex, value); }
         public int Limit { get => limit; set => SetProperty(ref limit, value); }
         public bool IsPageable { get => isPageable; set => SetProperty(ref isPageable, value); }
-        public string PageStatusString { get => pageStatusString; set => SetProperty(ref pageStatusString, value); }
         public bool BackButtonIsEnabled { get => backButtonIsEnabled; set => SetProperty(ref backButtonIsEnabled, value); }
         public bool NextButtonIsEnabled { get => nextButtonIsEnabled; set => SetProperty(ref nextButtonIsEnabled, value); }
+        public bool IsStatusFilterVisible { get => isStatusFilterVisible; set => SetProperty(ref isStatusFilterVisible, value); }
+        public bool IsFeaturesFilterVisible { get => isFeaturesFilterVisible; set => SetProperty(ref isFeaturesFilterVisible, value); }
+        public bool IsGenresFilterVisible { get => isGenresFilterVisible; set => SetProperty(ref isGenresFilterVisible, value); }
+        public bool IsParentalRatingsFilterVisible { get => isParentalRatingsFilterVisible; set => SetProperty(ref isParentalRatingsFilterVisible, value); }
+        public bool IsTagsFilterVisible { get => isTagsFilterVisible; set => SetProperty(ref isTagsFilterVisible, value); }
+        public bool IsVideoTypesFIlterVisible { get => isVideoTypesFilterVisible; set => SetProperty(ref isVideoTypesFilterVisible, value); }
+        public bool IsYearsFilterVisible { get => isYearsFilterVisible; set => SetProperty(ref isYearsFilterVisible, value); }
+        public string PageStatusString { get => pageStatusString; set => SetProperty(ref pageStatusString, value); }
         public BaseItemDto UserView { get => userView; set => SetProperty(ref userView, value); }
-
 
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
         public ObservableCollection<SortDataItem> SortByCollection { get; set; }
@@ -42,8 +55,6 @@ namespace Jellyfin.ViewModels
         public ObservableCollection<FilterDataItem> FilterCollection { get; set; }
         public DelegateCommand NextPageCommand { get; set; }
         public DelegateCommand PrevPageCommand { get; set; }
-        public DelegateCommand SortCommand { get; set; }
-        public DelegateCommand FilterCommand { get; set; }
 
         public ItemsViewModel()
         {

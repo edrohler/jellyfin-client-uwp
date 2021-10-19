@@ -69,6 +69,20 @@ namespace Jellyfin.Views
                             IsSelected = false
                         });
                     }
+
+                    // Instantiate FeaturesCollection
+
+                    // Instantiate GenresCollection
+
+                    // Instantiate ParenetalRatingsCollection
+
+                    // Instantiate TagsCollection
+
+                    // Instantiate VideoTypesCollection
+
+                    // Instantiate YearsCollection
+
+
                     break;
                 case "tvshows":
                     // Instantiate SortOrderCollection
@@ -109,6 +123,21 @@ namespace Jellyfin.Views
                             IsSelected = false
                         });
                     }
+
+
+                    // Instantiate StatusCollection
+
+                    // Instantiate FeaturesCollection
+
+                    // Instantiate GenresCollection
+
+                    // Instantiate ParenetalRatingsCollection
+
+                    // Instantiate TagsCollection
+
+                    // Instantiate VideoTypesCollection
+
+                    // Instantiate YearsCollection
                     break;
                 case "music":
                     // Instantiate SortOrderCollection
@@ -149,6 +178,11 @@ namespace Jellyfin.Views
                             IsSelected = false
                         });
                     }
+
+                    // Instantiate GenresCollection
+
+                    // Instantiate YearsCollection
+
                     break;
                 default:
                     // Instantiate SortOrderCollection
@@ -189,6 +223,11 @@ namespace Jellyfin.Views
                             IsSelected = false
                         });
                     }
+
+                    // Instantiate VideoTypesCollection
+
+                    // Instantiate FeaturesCollection
+
                     break;
             }
 
