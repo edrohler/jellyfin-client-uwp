@@ -44,15 +44,22 @@ namespace Jellyfin.ViewModels
         public bool IsGenresFilterVisible { get => isGenresFilterVisible; set => SetProperty(ref isGenresFilterVisible, value); }
         public bool IsParentalRatingsFilterVisible { get => isParentalRatingsFilterVisible; set => SetProperty(ref isParentalRatingsFilterVisible, value); }
         public bool IsTagsFilterVisible { get => isTagsFilterVisible; set => SetProperty(ref isTagsFilterVisible, value); }
-        public bool IsVideoTypesFIlterVisible { get => isVideoTypesFilterVisible; set => SetProperty(ref isVideoTypesFilterVisible, value); }
+        public bool IsVideoTypesFilterVisible { get => isVideoTypesFilterVisible; set => SetProperty(ref isVideoTypesFilterVisible, value); }
         public bool IsYearsFilterVisible { get => isYearsFilterVisible; set => SetProperty(ref isYearsFilterVisible, value); }
         public string PageStatusString { get => pageStatusString; set => SetProperty(ref pageStatusString, value); }
         public BaseItemDto UserView { get => userView; set => SetProperty(ref userView, value); }
 
         public ObservableCollection<MediaDataItem> GridItems { get; set; }
-        public ObservableCollection<SortDataItem> SortByCollection { get; set; }
-        public ObservableCollection<SortDataItem> SortOrderCollection { get; set; }
-        public ObservableCollection<FilterDataItem> FilterCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> SortByCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> SortOrderCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> FilterCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> FeaturesCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> SeriesStatusCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> GenresCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> ParentalRatingCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> TagsCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> VideoTypesCollection { get; set; }
+        public ObservableCollection<SortFilterDataItem> YearsCollection { get; set; }
         public DelegateCommand NextPageCommand { get; set; }
         public DelegateCommand PrevPageCommand { get; set; }
 
@@ -61,9 +68,9 @@ namespace Jellyfin.ViewModels
             StartIndex = 0;
             Limit = 100;
             GridItems = new ObservableCollection<MediaDataItem>();
-            SortByCollection = new ObservableCollection<SortDataItem>();
-            SortOrderCollection = new ObservableCollection<SortDataItem>();
-            FilterCollection = new ObservableCollection<FilterDataItem>();
+            SortByCollection = new ObservableCollection<SortFilterDataItem>();
+            SortOrderCollection = new ObservableCollection<SortFilterDataItem>();
+            FilterCollection = new ObservableCollection<SortFilterDataItem>();
             NextPageCommand = new DelegateCommand(async () => await NextPageAsync());
             PrevPageCommand = new DelegateCommand(async () => await PrevPageAsync());
 
@@ -72,7 +79,7 @@ namespace Jellyfin.ViewModels
             IsParentalRatingsFilterVisible = false;
             IsStatusFilterVisible = false;
             IsTagsFilterVisible = false;
-            IsVideoTypesFIlterVisible = false;
+            IsVideoTypesFilterVisible = false;
             IsYearsFilterVisible = false;
         }
 
@@ -168,6 +175,23 @@ namespace Jellyfin.ViewModels
                         filters: GetItemFilters());
                     UpdatePaging();
                     IsPageable = true;
+
+                    List<string> tvShowParentalRatings = Query.Items.Select(i => i.OfficialRating).Distinct().ToList();
+                    if(tvShowParentalRatings.Count > 0)
+                    {
+                        ParentalRatingCollection = new ObservableCollection<SortFilterDataItem>();
+                        IsParentalRatingsFilterVisible = true;
+                        foreach (string item in tvShowParentalRatings)
+                        {
+                            ParentalRatingCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item ?? "None",
+                                Value = item ?? "None",
+                                IsSelected = false
+                            });
+                        }
+                    }
+
                     break;
                 case "movies":
                     // Get Movies Library Items
@@ -200,6 +224,23 @@ namespace Jellyfin.ViewModels
                         filters: GetItemFilters());
                     UpdatePaging();
                     IsPageable = true;
+
+                    List<string> movieParentalRatings = Query.Items.Select(i => i.OfficialRating).Distinct().ToList();
+                    if (movieParentalRatings.Count > 0)
+                    {
+                        ParentalRatingCollection = new ObservableCollection<SortFilterDataItem>();
+                        IsParentalRatingsFilterVisible = true;
+                        foreach (string item in movieParentalRatings)
+                        {
+                            ParentalRatingCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item ?? "None",
+                                Value = item ?? "None",
+                                IsSelected = false
+                            });
+                        }
+                    }
+
                     break;
                 default:
                     // Get Audiobooks, Photos/Home Videos and Collections Items
@@ -282,7 +323,7 @@ namespace Jellyfin.ViewModels
 
         private ItemFilter[] GetItemFilters()
         {
-            IEnumerable<FilterDataItem> SelectedFilters = FilterCollection.Where(i => i.IsSelected);
+            IEnumerable<SortFilterDataItem> SelectedFilters = FilterCollection.Where(i => i.IsSelected);
 
             ItemFilter[] filters = new ItemFilter[SelectedFilters.Count()];
 
@@ -316,7 +357,7 @@ namespace Jellyfin.ViewModels
 
         private string[] GetSortBys()
         {
-            IEnumerable<SortDataItem> SelectedSortBys = SortByCollection.Where(i => i.IsSelected);
+            IEnumerable<SortFilterDataItem> SelectedSortBys = SortByCollection.Where(i => i.IsSelected);
             string[] sortBys = new string[SelectedSortBys.Count() + 1];
 
             for (int i = 0; i < SelectedSortBys.Count(); i++)
@@ -331,7 +372,7 @@ namespace Jellyfin.ViewModels
 
         private SortOrder[] GetSortOrders()
         {
-            IEnumerable<SortDataItem> SelectedSortOrders = SortOrderCollection.Where(i => i.IsSelected);
+            IEnumerable<SortFilterDataItem> SelectedSortOrders = SortOrderCollection.Where(i => i.IsSelected);
             SortOrder[] sortOrders = new SortOrder[1];
 
             for (int i = 0; i < SelectedSortOrders.Count(); i++)

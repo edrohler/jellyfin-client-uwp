@@ -114,18 +114,6 @@
                 <SymbolIcon Symbol="Filter" />
                 <controls:DropDownButton.Flyout>
                     <Flyout>
-                        <!--<Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>-->
                         <StackPanel Orientation="Vertical">
                             <telerik:RadExpanderControl x:Name="FiltersExpander"
                                                         IsExpandable="True">
@@ -157,7 +145,19 @@
                                                FontSize="24" />
                                 </telerik:RadExpanderControl.Content>
                                 <telerik:RadExpanderControl.ExpandableContent>
-                                    <TextBlock Text="CHECKBOX LIST" />
+                                    <ListView x:Name="StatusList"
+                                              ItemsSource="{Binding SeriesStatusCollection}"
+                                              SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="StatusCheckbox"
+                                                          Content="{Binding DisplayName}"
+                                                          IsChecked="{Binding IsSelected}"
+                                                          Click="StatusCheckbox_Click">
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
                                 </telerik:RadExpanderControl.ExpandableContent>
                             </telerik:RadExpanderControl>
                             <telerik:RadExpanderControl x:Name="FeaturesExpander"
@@ -168,8 +168,20 @@
                                                FontSize="24" />
                                 </telerik:RadExpanderControl.Content>
                                 <telerik:RadExpanderControl.ExpandableContent>
-                                    <TextBlock Text="CHECKBOX LIST" />
-                                </telerik:RadExpanderControl.ExpandableContent>                                
+                                    <ListView x:Name="FeaturesList"
+                                              ItemsSource="{Binding FeaturesCollection}"
+                                              SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="FeaturesCheckbox"
+                                                          Content="{Binding DisplayName}"
+                                                          IsChecked="{Binding IsSelected}"
+                                                          Click="FeaturesCheckbox_Click">
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </telerik:RadExpanderControl.ExpandableContent>
                             </telerik:RadExpanderControl>
                             <telerik:RadExpanderControl x:Name="GenresExpander"
                                                         IsExpandable="True"
@@ -179,8 +191,20 @@
                                                FontSize="24" />
                                 </telerik:RadExpanderControl.Content>
                                 <telerik:RadExpanderControl.ExpandableContent>
-                                    <TextBlock Text="CHECKBOX LIST" />
-                                </telerik:RadExpanderControl.ExpandableContent>                                
+                                    <ListView x:Name="GenresList"
+                                              ItemsSource="{Binding GenresCollection}"
+                                              SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="GenresCheckbox"
+                                                          Content="{Binding DisplayName}"
+                                                          IsChecked="{Binding IsSelected}"
+                                                          Click="GenresCheckbox_Click">
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </telerik:RadExpanderControl.ExpandableContent>
                             </telerik:RadExpanderControl>
                             <telerik:RadExpanderControl x:Name="ParentalRatingsExpander"
                                                         IsExpandable="True"
@@ -190,8 +214,20 @@
                                                FontSize="24" />
                                 </telerik:RadExpanderControl.Content>
                                 <telerik:RadExpanderControl.ExpandableContent>
-                                    <TextBlock Text="CHECKBOX LIST" />
-                                </telerik:RadExpanderControl.ExpandableContent>                                
+                                    <ListView x:Name="ParentalRatingsList"
+                                              ItemsSource="{Binding ParentalRatingCollection}"
+                                              SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox x:Name="ParentalRatingsCheckbox"
+                                                          Content="{Binding DisplayName}"
+                                                          IsChecked="{Binding IsSelected}"
+                                                          Click="ParentalRatingsCheckbox_Click">
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </telerik:RadExpanderControl.ExpandableContent>
                             </telerik:RadExpanderControl>
                             <telerik:RadExpanderControl x:Name="TagsExpander"
                                                         IsExpandable="True"
@@ -202,7 +238,7 @@
                                 </telerik:RadExpanderControl.Content>
                                 <telerik:RadExpanderControl.ExpandableContent>
                                     <TextBlock Text="CHECKBOX LIST" />
-                                </telerik:RadExpanderControl.ExpandableContent>                                
+                                </telerik:RadExpanderControl.ExpandableContent>
                             </telerik:RadExpanderControl>
                             <telerik:RadExpanderControl x:Name="VideoTypesExpander"
                                                         IsExpandable="True"
@@ -213,7 +249,7 @@
                                 </telerik:RadExpanderControl.Content>
                                 <telerik:RadExpanderControl.ExpandableContent>
                                     <TextBlock Text="CHECKBOX LIST" />
-                                </telerik:RadExpanderControl.ExpandableContent>                                
+                                </telerik:RadExpanderControl.ExpandableContent>
                             </telerik:RadExpanderControl>
                             <telerik:RadExpanderControl x:Name="YearsExpander"
                                                         IsExpandable="True"
@@ -224,7 +260,7 @@
                                 </telerik:RadExpanderControl.Content>
                                 <telerik:RadExpanderControl.ExpandableContent>
                                     <TextBlock Text="CHECKBOX LIST" />
-                                </telerik:RadExpanderControl.ExpandableContent>                                
+                                </telerik:RadExpanderControl.ExpandableContent>
                             </telerik:RadExpanderControl>
                             <Button x:Name="ApplyFilterButton"
                                     Margin="10"
@@ -233,7 +269,6 @@
                                     Content="Apply Filters"
                                     Click="ApplyFilterButton_Click"></Button>
                         </StackPanel>
-                        <!--</Grid>-->
                     </Flyout>
                 </controls:DropDownButton.Flyout>
             </controls:DropDownButton>

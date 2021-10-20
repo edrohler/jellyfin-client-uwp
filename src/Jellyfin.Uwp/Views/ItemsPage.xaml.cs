@@ -1,8 +1,10 @@
 ﻿using Jellyfin.Models;
 using Jellyfin.Models.Enums;
 using Jellyfin.Sdk;
+using Jellyfin.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -32,7 +34,7 @@ namespace Jellyfin.Views
                     // Instantiate SortOrderCollection
                     foreach (object item in Enum.GetValues(typeof(SortOrder)))
                     {
-                        ViewModel.SortOrderCollection.Add(new SortDataItem
+                        ViewModel.SortOrderCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.ToString(),
                             Value = item.ToString(),
@@ -43,7 +45,7 @@ namespace Jellyfin.Views
                     // Intantiate SortByCollection
                     foreach (object item in Enum.GetValues(typeof(MoviesSortBy)))
                     {
-                        ViewModel.SortByCollection.Add(new SortDataItem
+                        ViewModel.SortByCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                 .GetField(item.ToString())
@@ -59,7 +61,7 @@ namespace Jellyfin.Views
                     // Instantiate FilterCollection
                     foreach (object item in Enum.GetValues(typeof(MoviesFilters)))
                     {
-                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        ViewModel.FilterCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                             .GetField(item.ToString())
@@ -83,7 +85,7 @@ namespace Jellyfin.Views
                     ViewModel.IsTagsFilterVisible = true;
                     
                     // Instantiate VideoTypesCollection
-                    ViewModel.IsVideoTypesFIlterVisible = true;
+                    ViewModel.IsVideoTypesFilterVisible = true;
 
                     // Instantiate YearsCollection
                     ViewModel.IsYearsFilterVisible = true;
@@ -93,7 +95,7 @@ namespace Jellyfin.Views
                     // Instantiate SortOrderCollection
                     foreach (object item in Enum.GetValues(typeof(SortOrder)))
                     {
-                        ViewModel.SortOrderCollection.Add(new SortDataItem
+                        ViewModel.SortOrderCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.ToString(),
                             Value = item.ToString(),
@@ -104,7 +106,7 @@ namespace Jellyfin.Views
                     // Instantiate SortByCollection
                     foreach (object item in Enum.GetValues(typeof(TvShowsSortBy)))
                     {
-                        ViewModel.SortByCollection.Add(new SortDataItem
+                        ViewModel.SortByCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                 .GetField(item.ToString())
@@ -118,7 +120,7 @@ namespace Jellyfin.Views
                     // Instantiate FilterCollection
                     foreach (object item in Enum.GetValues(typeof(TvShowsFilters)))
                     {
-                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        ViewModel.FilterCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                             .GetField(item.ToString())
@@ -132,21 +134,54 @@ namespace Jellyfin.Views
 
                     // Instantiate StatusCollection
                     ViewModel.IsStatusFilterVisible = true;
+                    ViewModel.SeriesStatusCollection = new ObservableCollection<SortFilterDataItem>();
+                    foreach (object item in Enum.GetValues(typeof(SeriesStatus)))
+                    {
+                        ViewModel.SeriesStatusCollection.Add(new SortFilterDataItem
+                        {
+                            DisplayName = item.ToString(),
+                            Value = item.ToString(),
+                            IsSelected = false
+                        });
+                    }
 
                     // Instantiate FeaturesCollection
                     ViewModel.IsFeaturesFilterVisible = true;
+                    ViewModel.FeaturesCollection = new ObservableCollection<SortFilterDataItem>();
+                    foreach (object item in Enum.GetValues(typeof(FeaturesFilters)))
+                    {
+                        ViewModel.FeaturesCollection.Add(new SortFilterDataItem
+                        {
+                            DisplayName = item.GetType()
+                                            .GetField(item.ToString())
+                                            .GetCustomAttribute<DisplayNameAttribute>()
+                                            .DisplayName,
+                            Value = item.ToString(),
+                            IsSelected = false
+                        });
+                    }
 
                     // Instantiate GenresCollection
                     ViewModel.IsGenresFilterVisible = true;
+                    ViewModel.GenresCollection = new ObservableCollection<SortFilterDataItem>();
+                    JellyfinClientServices.Current.GenresClient = new GenresClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+                    BaseItemDtoQueryResult Genres = await JellyfinClientServices.Current.GenresClient.GetGenresAsync(parentId: ViewModel.UserView.Id);
 
-                    // Instantiate ParenetalRatingsCollection
-                    ViewModel.IsGenresFilterVisible = true;
+                    foreach (BaseItemDto item in Genres.Items)
+                    {
+                        ViewModel.GenresCollection.Add(new SortFilterDataItem
+                        {
+                            DisplayName = item.Name,
+                            Value = item.Name,
+                            IsSelected = false
+                        });
+                    }
 
                     // Instantiate TagsCollection
                     ViewModel.IsTagsFilterVisible = true;
 
                     // Instantiate VideoTypesCollection
-                    ViewModel.IsVideoTypesFIlterVisible = true;
+                    ViewModel.IsVideoTypesFilterVisible = true;
 
                     // Instantiate YearsCollection
                     ViewModel.IsYearsFilterVisible = true;
@@ -155,7 +190,7 @@ namespace Jellyfin.Views
                     // Instantiate SortOrderCollection
                     foreach (object item in Enum.GetValues(typeof(SortOrder)))
                     {
-                        ViewModel.SortOrderCollection.Add(new SortDataItem
+                        ViewModel.SortOrderCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.ToString(),
                             Value = item.ToString(),
@@ -166,7 +201,7 @@ namespace Jellyfin.Views
                     // Instantiate SortByCollection
                     foreach (object item in Enum.GetValues(typeof(MusicSortBy)))
                     {
-                        ViewModel.SortByCollection.Add(new SortDataItem
+                        ViewModel.SortByCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                 .GetField(item.ToString())
@@ -180,7 +215,7 @@ namespace Jellyfin.Views
                     // Instantiate FilterCollection
                     foreach (object item in Enum.GetValues(typeof(MusicFilters)))
                     {
-                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        ViewModel.FilterCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                             .GetField(item.ToString())
@@ -202,7 +237,7 @@ namespace Jellyfin.Views
                     // Instantiate SortOrderCollection
                     foreach (object item in Enum.GetValues(typeof(SortOrder)))
                     {
-                        ViewModel.SortOrderCollection.Add(new SortDataItem
+                        ViewModel.SortOrderCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.ToString(),
                             Value = item.ToString(),
@@ -213,7 +248,7 @@ namespace Jellyfin.Views
                     // Instantiate SortByCollection
                     foreach (object item in Enum.GetValues(typeof(FolderSortBy)))
                     {
-                        ViewModel.SortByCollection.Add(new SortDataItem
+                        ViewModel.SortByCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                 .GetField(item.ToString())
@@ -227,7 +262,7 @@ namespace Jellyfin.Views
                     // Instantiate FilterCollection
                     foreach (object item in Enum.GetValues(typeof(FolderFilters)))
                     {
-                        ViewModel.FilterCollection.Add(new FilterDataItem
+                        ViewModel.FilterCollection.Add(new SortFilterDataItem
                         {
                             DisplayName = item.GetType()
                                             .GetField(item.ToString())
@@ -239,7 +274,7 @@ namespace Jellyfin.Views
                     }
 
                     // Instantiate VideoTypesCollection
-                    ViewModel.IsVideoTypesFIlterVisible = true;
+                    ViewModel.IsVideoTypesFilterVisible = true;
 
                     // Instantiate FeaturesCollection
                     ViewModel.IsFeaturesFilterVisible = true;
@@ -260,9 +295,9 @@ namespace Jellyfin.Views
         private void SortByCheckBox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             CheckBox checkBox = (CheckBox)sender;
-            SortDataItem dataItem = (SortDataItem)checkBox.DataContext;
+            SortFilterDataItem dataItem = (SortFilterDataItem)checkBox.DataContext;
 
-            SortDataItem updateItem = ViewModel.SortByCollection.First(i => i.Value == dataItem.Value);
+            SortFilterDataItem updateItem = ViewModel.SortByCollection.First(i => i.Value == dataItem.Value);
 
             updateItem.IsSelected = !dataItem.IsSelected;
         }
@@ -271,9 +306,9 @@ namespace Jellyfin.Views
         {
             RadioButton radioButton = (RadioButton)sender;
 
-            SortDataItem dataItem = (SortDataItem)radioButton.DataContext;
+            SortFilterDataItem dataItem = (SortFilterDataItem)radioButton.DataContext;
 
-            foreach (SortDataItem updateItem in ViewModel.SortOrderCollection)
+            foreach (SortFilterDataItem updateItem in ViewModel.SortOrderCollection)
             {
                 if (updateItem.Value == dataItem.Value)
                 {
@@ -289,9 +324,9 @@ namespace Jellyfin.Views
         private void FilterCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             CheckBox checkBox = (CheckBox)sender;
-            FilterDataItem dataItem = (FilterDataItem)checkBox.DataContext;
+            SortFilterDataItem dataItem = (SortFilterDataItem)checkBox.DataContext;
 
-            FilterDataItem updateItem = ViewModel.FilterCollection.First(i => i.Value == dataItem.Value);
+            SortFilterDataItem updateItem = ViewModel.FilterCollection.First(i => i.Value == dataItem.Value);
 
             updateItem.IsSelected = !dataItem.IsSelected;
         }
@@ -304,6 +339,26 @@ namespace Jellyfin.Views
         private async void ApplyFilterButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             await ViewModel.PageReadyAsync();
+        }
+
+        private void StatusCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void FeaturesCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void GenresCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void ParentalRatingsCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Jellyfin.Models
 {
-    public class FilterDataItem
+    public class SortFilterDataItem
     {
         public string DisplayName { get; set; }
         public string Value { get; set; }
