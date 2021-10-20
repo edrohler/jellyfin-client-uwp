@@ -128,7 +128,7 @@ namespace Jellyfin.ViewModels
                         {
                             ItemFields.PrimaryImageAspectRatio,
                             ItemFields.SortName,
-                            ItemFields.BasicSyncInfo
+                            ItemFields.BasicSyncInfo,
                         },
                         imageTypeLimit: 1,
                         enableImageTypes: new ImageType[]
@@ -159,7 +159,8 @@ namespace Jellyfin.ViewModels
                         fields: new ItemFields[]
                         {
                             ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.BasicSyncInfo
+                            ItemFields.BasicSyncInfo,
+                            ItemFields.Tags
                         },
                         imageTypeLimit: 1,
                         enableImageTypes: new ImageType[]
@@ -176,6 +177,7 @@ namespace Jellyfin.ViewModels
                     UpdatePaging();
                     IsPageable = true;
 
+                    // Instantiate ParentalRatings Collection
                     List<string> tvShowParentalRatings = Query.Items.Select(i => i.OfficialRating).Distinct().ToList();
                     if(tvShowParentalRatings.Count > 0)
                     {
@@ -187,6 +189,40 @@ namespace Jellyfin.ViewModels
                             {
                                 DisplayName = item ?? "None",
                                 Value = item ?? "None",
+                                IsSelected = false
+                            });
+                        }
+                    }
+
+                    // Instantiate TagsCollection
+                    List<string> tvShowTags = Query.Items.SelectMany(i => i.Tags).Distinct().ToList();
+                    if(tvShowTags.Count > 0)
+                    {
+                        TagsCollection = new ObservableCollection<SortFilterDataItem>();
+                        IsTagsFilterVisible = true;
+                        foreach (string item in tvShowTags)
+                        {
+                            TagsCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item,
+                                Value = item,
+                                IsSelected = false
+                            });
+                        }
+                    }
+
+                    // Instantiate YearsCollection
+                    List<int?> tvShowYears = Query.Items.Select(i => i.ProductionYear).OrderBy(i => i.Value).Distinct().ToList();
+                    if(tvShowYears.Count > 0)
+                    {
+                        YearsCollection = new ObservableCollection<SortFilterDataItem>();
+                        IsYearsFilterVisible = true;
+                        foreach (int? item in tvShowYears)
+                        {
+                            YearsCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item.ToString(),
+                                Value = item.ToString(),
                                 IsSelected = false
                             });
                         }
@@ -208,7 +244,8 @@ namespace Jellyfin.ViewModels
                         {
                             ItemFields.PrimaryImageAspectRatio,
                             ItemFields.MediaSourceCount,
-                            ItemFields.BasicSyncInfo
+                            ItemFields.BasicSyncInfo,
+                            ItemFields.Tags
                         },
                         imageTypeLimit: 1,
                         enableImageTypes: new ImageType[]
@@ -225,6 +262,7 @@ namespace Jellyfin.ViewModels
                     UpdatePaging();
                     IsPageable = true;
 
+                    // Instantiate ParentalRatingsCollection
                     List<string> movieParentalRatings = Query.Items.Select(i => i.OfficialRating).Distinct().ToList();
                     if (movieParentalRatings.Count > 0)
                     {
@@ -236,6 +274,40 @@ namespace Jellyfin.ViewModels
                             {
                                 DisplayName = item ?? "None",
                                 Value = item ?? "None",
+                                IsSelected = false
+                            });
+                        }
+                    }
+
+                    // Instantiate TagsCollection
+                    List<string> movieTags = Query.Items.SelectMany(i => i.Tags).Distinct().ToList();
+                    if (movieTags.Count > 0)
+                    {
+                        TagsCollection = new ObservableCollection<SortFilterDataItem>();
+                        IsTagsFilterVisible = true;
+                        foreach (string item in movieTags)
+                        {
+                            TagsCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item,
+                                Value = item,
+                                IsSelected = false
+                            });
+                        }
+                    }
+
+                    // Instantiate YearsCollection
+                    List<int?> movieYears = Query.Items.Select(i => i.ProductionYear).OrderBy(i => i.Value).Distinct().ToList();
+                    if (movieYears.Count > 0)
+                    {
+                        YearsCollection = new ObservableCollection<SortFilterDataItem>();
+                        IsYearsFilterVisible = true;
+                        foreach (int? item in movieYears)
+                        {
+                            YearsCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item.ToString(),
+                                Value = item.ToString(),
                                 IsSelected = false
                             });
                         }

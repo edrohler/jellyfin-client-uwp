@@ -74,21 +74,47 @@ namespace Jellyfin.Views
 
                     // Instantiate FeaturesCollection
                     ViewModel.IsFeaturesFilterVisible = true;
+                    ViewModel.FeaturesCollection = new ObservableCollection<SortFilterDataItem>();
+                    foreach (object item in Enum.GetValues(typeof(FeaturesFilters)))
+                    {
+                        ViewModel.FeaturesCollection.Add(new SortFilterDataItem
+                        {
+                            DisplayName = item.GetType()
+                                            .GetField(item.ToString())
+                                            .GetCustomAttribute<DisplayNameAttribute>()
+                                            .DisplayName,
+                            Value = item.ToString(),
+                            IsSelected = false
+                        });
+                    }
 
                     // Instantiate GenresCollection
                     ViewModel.IsGenresFilterVisible = true;
-                    
-                    // Instantiate ParenetalRatingsCollection
-                    ViewModel.IsGenresFilterVisible = true;
-                    
-                    // Instantiate TagsCollection
-                    ViewModel.IsTagsFilterVisible = true;
-                    
+                    ViewModel.GenresCollection = new ObservableCollection<SortFilterDataItem>();
+                    JellyfinClientServices.Current.GenresClient = new GenresClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+                    BaseItemDtoQueryResult MovieGenres = await JellyfinClientServices.Current.GenresClient.GetGenresAsync(parentId: ViewModel.UserView.Id);
+
+                    foreach (BaseItemDto item in MovieGenres.Items)
+                    {
+                        ViewModel.GenresCollection.Add(new SortFilterDataItem
+                        {
+                            DisplayName = item.Name,
+                            Value = item.Name,
+                            IsSelected = false
+                        });
+                    }
+
                     // Instantiate VideoTypesCollection
                     ViewModel.IsVideoTypesFilterVisible = true;
+                    ViewModel.VideoTypesCollection = new ObservableCollection<SortFilterDataItem>();
+                    foreach (object item in Enum.GetValues(typeof(VideoType)))
+                    {
+                        //ViewModel.VideoTypesCollection.Add(new SortFilterDataItem
+                        //{
+                        //    DisplayName = 
+                        //})
+                    }
 
-                    // Instantiate YearsCollection
-                    ViewModel.IsYearsFilterVisible = true;
 
                     break;
                 case "tvshows":
@@ -165,9 +191,9 @@ namespace Jellyfin.Views
                     ViewModel.IsGenresFilterVisible = true;
                     ViewModel.GenresCollection = new ObservableCollection<SortFilterDataItem>();
                     JellyfinClientServices.Current.GenresClient = new GenresClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
-                    BaseItemDtoQueryResult Genres = await JellyfinClientServices.Current.GenresClient.GetGenresAsync(parentId: ViewModel.UserView.Id);
+                    BaseItemDtoQueryResult TvShowsGenres = await JellyfinClientServices.Current.GenresClient.GetGenresAsync(parentId: ViewModel.UserView.Id);
 
-                    foreach (BaseItemDto item in Genres.Items)
+                    foreach (BaseItemDto item in TvShowsGenres.Items)
                     {
                         ViewModel.GenresCollection.Add(new SortFilterDataItem
                         {
@@ -177,14 +203,6 @@ namespace Jellyfin.Views
                         });
                     }
 
-                    // Instantiate TagsCollection
-                    ViewModel.IsTagsFilterVisible = true;
-
-                    // Instantiate VideoTypesCollection
-                    ViewModel.IsVideoTypesFilterVisible = true;
-
-                    // Instantiate YearsCollection
-                    ViewModel.IsYearsFilterVisible = true;
                     break;
                 case "music":
                     // Instantiate SortOrderCollection
@@ -357,6 +375,21 @@ namespace Jellyfin.Views
         }
 
         private void ParentalRatingsCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void TagsCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void VideoTYpesCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+        private void YearsCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
 
         }
