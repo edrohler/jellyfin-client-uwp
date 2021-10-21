@@ -13,8 +13,7 @@
         <viewModels:HomeViewModel x:Name="ViewModel" />
     </Page.DataContext>
     <Grid>
-        <ScrollViewer x:Name="PageScrollViewer"
-                      Visibility="{Binding IsBusy, Converter={StaticResource InvertedBoolToVisibilityConv}}">
+        <ScrollViewer x:Name="PageScrollViewer">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -52,7 +51,8 @@
                 </StackPanel>
                 <ListView x:Name="LatestMediaList"
                           Grid.Row="1"
-                          ItemsSource="{Binding LatestMedia}">
+                          ItemsSource="{Binding LatestMedia}"
+                          Visibility="{Binding IsBusy, Converter={StaticResource InvertedBoolToVisibilityConv}}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsStackPanel Background="Transparent"

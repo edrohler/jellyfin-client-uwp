@@ -19,9 +19,7 @@
                                       Margin="15">
             <telerikPrimitives:RadHubTile.BackContentTemplate>
                 <DataTemplate>
-                    <Image Source="{Binding ImageSource}"
-                           Stretch="Uniform">
-                    </Image>
+                    <local:MediaItemImageUserControl MediaId="{Binding BaseItem.Id}" Width="{Binding Width}" Height="{Binding Height}" />
                 </DataTemplate>
             </telerikPrimitives:RadHubTile.BackContentTemplate>
         </telerikPrimitives:RadHubTile>
