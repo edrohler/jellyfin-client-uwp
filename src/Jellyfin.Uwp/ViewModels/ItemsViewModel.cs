@@ -144,6 +144,24 @@ namespace Jellyfin.ViewModels
                         filters: GetItemFilters());
                     UpdatePaging();
                     IsPageable = true;
+
+                    // Instantiate YearsCollection
+                    List<int?> musicYears = Query.Items.Select(i => i.ProductionYear != null ? i.ProductionYear : 0).Distinct().OrderBy(i => i.Value).ToList();
+                    if (musicYears.Count > 0)
+                    {
+                        YearsCollection = new ObservableCollection<SortFilterDataItem>();
+                        IsYearsFilterVisible = true;
+                        foreach (int? item in musicYears)
+                        {
+                            YearsCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item == 0 ? "None" : item.ToString(),
+                                Value = item == 0 ? "None" : item.ToString(),
+                                IsSelected = false
+                            });
+                        }
+                    }
+
                     break;
                 case "tvshows":
                     // Get TV Shows Library Items

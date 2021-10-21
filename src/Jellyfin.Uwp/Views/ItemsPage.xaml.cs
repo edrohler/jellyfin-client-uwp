@@ -107,12 +107,17 @@ namespace Jellyfin.Views
                     // Instantiate VideoTypesCollection
                     ViewModel.IsVideoTypesFilterVisible = true;
                     ViewModel.VideoTypesCollection = new ObservableCollection<SortFilterDataItem>();
-                    foreach (object item in Enum.GetValues(typeof(VideoType)))
+                    foreach (object item in Enum.GetValues(typeof(VideoTypeFilters)))
                     {
-                        //ViewModel.VideoTypesCollection.Add(new SortFilterDataItem
-                        //{
-                        //    DisplayName = 
-                        //})
+                        ViewModel.VideoTypesCollection.Add(new SortFilterDataItem
+                        {
+                            DisplayName = item.GetType()
+                                            .GetField(item.ToString())
+                                            .GetCustomAttribute<DisplayNameAttribute>()
+                                            .DisplayName,
+                            Value = item.ToString(),
+                            IsSelected = false
+                        });
                     }
 
 
@@ -246,9 +251,19 @@ namespace Jellyfin.Views
 
                     // Instantiate GenresCollection
                     ViewModel.IsGenresFilterVisible = true;
+                    ViewModel.GenresCollection = new ObservableCollection<SortFilterDataItem>();
+                    JellyfinClientServices.Current.GenresClient = new GenresClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+                    BaseItemDtoQueryResult MusicGenres = await JellyfinClientServices.Current.GenresClient.GetGenresAsync(parentId: ViewModel.UserView.Id);
 
-                    // Instantiate YearsCollection
-                    ViewModel.IsYearsFilterVisible = true;
+                    foreach (BaseItemDto item in MusicGenres.Items)
+                    {
+                        ViewModel.GenresCollection.Add(new SortFilterDataItem
+                        {
+                            DisplayName = item.Name,
+                            Value = item.Name,
+                            IsSelected = false
+                        });
+                    }
 
                     break;
                 default:

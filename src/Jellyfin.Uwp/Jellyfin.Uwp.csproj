@@ -141,6 +141,7 @@
     <Compile Include="Models\Enums\MusicSortBy.cs" />
     <Compile Include="Models\Enums\TvShowsFilters.cs" />
     <Compile Include="Models\Enums\TvShowsSortBy.cs" />
+    <Compile Include="Models\Enums\VideoTypeFilters.cs" />
     <Compile Include="Models\LatestMedia.cs" />
     <Compile Include="Models\MediaDataItem.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
