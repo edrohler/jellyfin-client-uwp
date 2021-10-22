@@ -134,24 +134,24 @@ namespace Jellyfin.ViewModels
                     break;
                 case "tvshows":
                     // Get TV Shows Library Items
-                     Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
-                        App.Current.AppUser.User.Id,
-                        sortBy: SelectedSortBy.ToArray(),
-                        sortOrder: SelectedSortOrder.ToArray(),
-                        includeItemTypes: IncludeItemTypesCollection.ToArray(),
-                        recursive: true,
-                        fields: FieldsCollection.ToArray(),
-                        imageTypeLimit: 1,
-                        enableImageTypes: EnableImageTypesCollection.ToArray(),
-                        startIndex: StartIndex,
-                        limit: Limit,
-                        parentId: UserView.Id,
-                        seriesStatus: SelectedSeriesStatus.ToArray(),
-                        filters: SelectedFilters.ToArray(),
-                        officialRatings: SelectedParentalRatings.ToArray(),
-                        tags: SelectedTags.ToArray(),
-                        years: SelectedYears.ToArray(),
-                        genres: SelectedGenres.ToArray());
+                    Query = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                       App.Current.AppUser.User.Id,
+                       sortBy: SelectedSortBy.ToArray(),
+                       sortOrder: SelectedSortOrder.ToArray(),
+                       includeItemTypes: IncludeItemTypesCollection.ToArray(),
+                       recursive: true,
+                       fields: FieldsCollection.ToArray(),
+                       imageTypeLimit: 1,
+                       enableImageTypes: EnableImageTypesCollection.ToArray(),
+                       startIndex: StartIndex,
+                       limit: Limit,
+                       parentId: UserView.Id,
+                       seriesStatus: SelectedSeriesStatus.ToArray(),
+                       filters: SelectedFilters.ToArray(),
+                       officialRatings: SelectedParentalRatings.ToArray(),
+                       tags: SelectedTags.ToArray(),
+                       years: SelectedYears.ToArray(),
+                       genres: SelectedGenres.ToArray());
                     UpdatePaging();
                     IsPageable = true;
 
@@ -215,8 +215,6 @@ namespace Jellyfin.ViewModels
                     GridItems.Add(new MediaDataItem
                     {
                         BaseItem = item,
-                        //ImageSource = new BitmapImage(
-                        //    new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.Id}/Images/Primary")),
                         Width = width,
                         Height = height
                     });

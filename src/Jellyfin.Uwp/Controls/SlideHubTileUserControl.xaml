@@ -22,8 +22,9 @@
                            VerticalAlignment="Bottom" />
             </telerikPrimitives:RadSlideHubTile.TopContent>
             <telerikPrimitives:RadSlideHubTile.BottomContent>
-                <Image Source="{Binding ImageSource}"
-                       Stretch="Uniform" />
+                <local:MediaItemImageUserControl MediaId="{Binding BaseItem.Id}" Height="{Binding Height}" Width="{Binding Width}"/>
+                <!--<Image Source="{Binding ImageSource}"
+                       Stretch="Uniform" />-->
             </telerikPrimitives:RadSlideHubTile.BottomContent>
         </telerikPrimitives:RadSlideHubTile>
     </Grid>

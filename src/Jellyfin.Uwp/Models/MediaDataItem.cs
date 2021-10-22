@@ -11,7 +11,6 @@ namespace Jellyfin.Models
     public class MediaDataItem
     {
         public BaseItemDto BaseItem { get; set; }
-        public ImageSource ImageSource { get; set; }
         public TimeSpan UpdateInterval { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }

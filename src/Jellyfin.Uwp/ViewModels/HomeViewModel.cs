@@ -36,8 +36,6 @@ namespace Jellyfin.ViewModels
                 Libraries.Add(new MediaDataItem
                 {
                     BaseItem = item,
-                    ImageSource = new BitmapImage(
-                        new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.DisplayPreferencesId}/Images/Primary")),
                     UpdateInterval = new TimeSpan(0, 0, new Random().Next(5, 15)),
                     Height = 405,
                     Width = 720
@@ -186,8 +184,6 @@ namespace Jellyfin.ViewModels
                         ltmiList.Add(new MediaDataItem
                         {
                             BaseItem = LatestMediaItem,
-                            //ImageSource = new BitmapImage(
-                            //    new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{LatestMediaItem.Id}/Images/Primary")),
                             Height = height,
                             Width = width,
                             UpdateInterval = new TimeSpan(0, 0, new Random().Next(5, 35))
