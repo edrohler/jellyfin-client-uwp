@@ -5,8 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives"
+             xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
              mc:Ignorable="d"
-             d:DesignHeight="300"
+             d:DesignHeight="400"
              d:DesignWidth="400">
 
     <StackPanel Orientation="Vertical"

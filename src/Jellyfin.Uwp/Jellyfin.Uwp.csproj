@@ -135,7 +135,6 @@
     <Compile Include="Helpers\NavViewHelper.cs" />
     <Compile Include="Helpers\StorageHelpers.cs" />
     <Compile Include="Models\AppUser.cs" />
-    <Compile Include="Models\Enums\FeaturesFilters.cs" />
     <Compile Include="Models\Enums\FolderFilters.cs" />
     <Compile Include="Models\Enums\FolderSortBy.cs" />
     <Compile Include="Models\Enums\MoviesFilters.cs" />
@@ -144,7 +143,6 @@
     <Compile Include="Models\Enums\MusicSortBy.cs" />
     <Compile Include="Models\Enums\TvShowsFilters.cs" />
     <Compile Include="Models\Enums\TvShowsSortBy.cs" />
-    <Compile Include="Models\Enums\VideoTypeFilters.cs" />
     <Compile Include="Models\LatestMedia.cs" />
     <Compile Include="Models\MediaDataItem.cs" />
     <Compile Include="Models\MenuDataItem.cs" />
@@ -360,8 +358,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Controls\MediaItemImageUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\MediaItemUserControl.xaml">
       <SubType>Designer</SubType>

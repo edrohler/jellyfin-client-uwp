@@ -73,12 +73,12 @@ namespace Jellyfin.Views
                         {
                             DisplayName = item.ToString(),
                             Value = item.ToString(),
-                            IsSelected = item.ToString() == "Descending"
+                            IsSelected = item.ToString() == "Ascending"
                         });
                     }
 
                     // Instantiate SelectedSortOrder
-                    ViewModel.SelectedSortOrder = new ObservableCollection<SortOrder>() { SortOrder.Descending };
+                    ViewModel.SelectedSortOrder = new ObservableCollection<SortOrder>() { SortOrder.Ascending };
 
                     // Intantiate SortByCollection
                     foreach (object item in Enum.GetValues(typeof(MoviesSortBy)))
@@ -90,18 +90,14 @@ namespace Jellyfin.Views
                                 .GetCustomAttribute<DisplayNameAttribute>()
                                 .DisplayName,
                             Value = item.ToString(),
-                            IsSelected = item.ToString() == "DateCreated"
-                                    || item.ToString() == "SortName"
-                                    || item.ToString() == "ProductionYear"
+                            IsSelected = item.ToString() == "SortName"
                         });
                     }
 
                     // Instantiate SelectedSortBy
                     ViewModel.SelectedSortBy = new ObservableCollection<string>()
                         {
-                            "DateCreated",
-                            "SortName",
-                            "ProductionYear"
+                            "SortName"
                         };
 
                     // Instantiate FilterCollection
@@ -120,22 +116,6 @@ namespace Jellyfin.Views
 
                     // Instantiate SelectedFilter
                     ViewModel.SelectedFilters = new ObservableCollection<ItemFilter>();
-
-                    // Instantiate FeaturesCollection
-                    ViewModel.IsFeaturesFilterVisible = true;
-                    ViewModel.FeaturesCollection = new ObservableCollection<SortFilterDataItem>();
-                    foreach (object item in Enum.GetValues(typeof(FeaturesFilters)))
-                    {
-                        ViewModel.FeaturesCollection.Add(new SortFilterDataItem
-                        {
-                            DisplayName = item.GetType()
-                                            .GetField(item.ToString())
-                                            .GetCustomAttribute<DisplayNameAttribute>()
-                                            .DisplayName,
-                            Value = item.ToString(),
-                            IsSelected = false
-                        });
-                    }
 
                     // Instantiate GenresCollection
                     ViewModel.IsGenresFilterVisible = true;
@@ -156,25 +136,6 @@ namespace Jellyfin.Views
                     // Instantiate SelectedGenres
                     ViewModel.SelectedGenres = new ObservableCollection<string>();
 
-                    // Instantiate VideoTypesCollection
-                    ViewModel.IsVideoTypesFilterVisible = true;
-                    ViewModel.VideoTypesCollection = new ObservableCollection<SortFilterDataItem>();
-                    foreach (object item in Enum.GetValues(typeof(VideoTypeFilters)))
-                    {
-                        ViewModel.VideoTypesCollection.Add(new SortFilterDataItem
-                        {
-                            DisplayName = item.GetType()
-                                            .GetField(item.ToString())
-                                            .GetCustomAttribute<DisplayNameAttribute>()
-                                            .DisplayName,
-                            Value = item.ToString(),
-                            IsSelected = false
-                        });
-                    }
-
-                    // Instantiate SelectedVideoTypes
-                    ViewModel.SelectedVideoTypes = new ObservableCollection<VideoType>();
-
                     // Instantiate ParentalRatingsCollection
                     List<string> movieParentalRatings = ViewModel.Query.Items.Select(i => i.OfficialRating).Distinct().ToList();
                     if (movieParentalRatings.Count > 0)
@@ -183,12 +144,15 @@ namespace Jellyfin.Views
                         ViewModel.IsParentalRatingsFilterVisible = true;
                         foreach (string item in movieParentalRatings)
                         {
-                            ViewModel.ParentalRatingCollection.Add(new SortFilterDataItem
+                            if(!string.IsNullOrEmpty(item))
                             {
-                                DisplayName = item ?? "None",
-                                Value = item ?? "None",
-                                IsSelected = false
-                            });
+                                ViewModel.ParentalRatingCollection.Add(new SortFilterDataItem
+                                {
+                                    DisplayName = item,
+                                    Value = item,
+                                    IsSelected = false
+                                });
+                            }
                         }
                     }
 
@@ -213,17 +177,20 @@ namespace Jellyfin.Views
                     ViewModel.SelectedTags = new ObservableCollection<string>();
 
                     // Instantiate YearsCollection
-                    List<int?> movieYears = ViewModel.Query.Items.Select(i => i.ProductionYear).OrderBy(i => i.Value).Distinct().ToList();
+                    List<int?> movieYears = ViewModel.Query.Items.Select(i => i.ProductionYear != null ? i.ProductionYear : 0).OrderBy(i => i.Value).Distinct().ToList();
                     ViewModel.YearsCollection = new ObservableCollection<SortFilterDataItem>();
                     ViewModel.IsYearsFilterVisible = true;
                     foreach (int? item in movieYears)
                     {
-                        ViewModel.YearsCollection.Add(new SortFilterDataItem
+                        if (item != 0)
                         {
-                            DisplayName = item == 0 ? "None" : item.ToString(),
-                            Value = item == 0 ? "None" : item.ToString(),
-                            IsSelected = false
-                        });
+                            ViewModel.YearsCollection.Add(new SortFilterDataItem
+                            {
+                                DisplayName = item.ToString(),
+                                Value = item.ToString(),
+                                IsSelected = false
+                            });
+                        }
                     }
 
                     // Instantiate SelectedYears
@@ -328,22 +295,6 @@ namespace Jellyfin.Views
                     // Instantiate SelectedStatus
                     ViewModel.SelectedSeriesStatus = new ObservableCollection<SeriesStatus>();
 
-                    // Instantiate FeaturesCollection
-                    ViewModel.IsFeaturesFilterVisible = true;
-                    ViewModel.FeaturesCollection = new ObservableCollection<SortFilterDataItem>();
-                    foreach (object item in Enum.GetValues(typeof(FeaturesFilters)))
-                    {
-                        ViewModel.FeaturesCollection.Add(new SortFilterDataItem
-                        {
-                            DisplayName = item.GetType()
-                                            .GetField(item.ToString())
-                                            .GetCustomAttribute<DisplayNameAttribute>()
-                                            .DisplayName,
-                            Value = item.ToString(),
-                            IsSelected = false
-                        });
-                    }
-
                     // Instantiate GenresCollection
                     ViewModel.IsGenresFilterVisible = true;
                     ViewModel.GenresCollection = new ObservableCollection<SortFilterDataItem>();
@@ -371,12 +322,15 @@ namespace Jellyfin.Views
                         ViewModel.IsParentalRatingsFilterVisible = true;
                         foreach (string item in tvShowParentalRatings)
                         {
-                            ViewModel.ParentalRatingCollection.Add(new SortFilterDataItem
+                            if (!string.IsNullOrEmpty(item))
                             {
-                                DisplayName = item ?? "None",
-                                Value = item ?? "None",
-                                IsSelected = false
-                            });
+                                ViewModel.ParentalRatingCollection.Add(new SortFilterDataItem
+                                {
+                                    DisplayName = item,
+                                    Value = item,
+                                    IsSelected = false
+                                });
+                            }
                         }
                     }
 
@@ -411,12 +365,15 @@ namespace Jellyfin.Views
                         ViewModel.IsYearsFilterVisible = true;
                         foreach (int? item in tvShowYears)
                         {
-                            ViewModel.YearsCollection.Add(new SortFilterDataItem
+                            if (item != 0)
                             {
-                                DisplayName = item == 0 ? "None" : item.ToString(),
-                                Value = item == 0 ? "None" : item.ToString(),
-                                IsSelected = false
-                            });
+                                ViewModel.YearsCollection.Add(new SortFilterDataItem
+                                {
+                                    DisplayName = item.ToString(),
+                                    Value = item.ToString(),
+                                    IsSelected = false
+                                });
+                            }
                         }
                     }
 
@@ -533,12 +490,15 @@ namespace Jellyfin.Views
                         ViewModel.IsYearsFilterVisible = true;
                         foreach (int? item in musicYears)
                         {
-                            ViewModel.YearsCollection.Add(new SortFilterDataItem
+                            if (item != 0)
                             {
-                                DisplayName = item == 0 ? "None" : item.ToString(),
-                                Value = item == 0 ? "None" : item.ToString(),
-                                IsSelected = false
-                            });
+                                ViewModel.YearsCollection.Add(new SortFilterDataItem
+                                {
+                                    DisplayName = item.ToString(),
+                                    Value = item.ToString(),
+                                    IsSelected = false
+                                });
+                            }
                         }
                     }
 
@@ -582,12 +542,12 @@ namespace Jellyfin.Views
                                 .GetCustomAttribute<DisplayNameAttribute>()
                                 .DisplayName,
                             Value = item.ToString(),
-                            IsSelected = item.ToString() == "IsFolder" || item.ToString() == "SortName"
+                            IsSelected = item.ToString() == "SortName"
                         });
                     }
 
                     // Instantiate SelectedSortBy
-                    ViewModel.SelectedSortBy = new ObservableCollection<string> { "IsFolder", "SortName" };
+                    ViewModel.SelectedSortBy = new ObservableCollection<string> { "SortName" };
 
                     // Instantiate FilterCollection
                     foreach (object item in Enum.GetValues(typeof(FolderFilters)))
@@ -606,41 +566,6 @@ namespace Jellyfin.Views
                     // Instantiate SelectedFilters
                     ViewModel.SelectedFilters = new ObservableCollection<ItemFilter>();
 
-                    // Instantiate VideoTypesCollection
-                    ViewModel.IsVideoTypesFilterVisible = true;
-                    ViewModel.VideoTypesCollection = new ObservableCollection<SortFilterDataItem>();
-                    foreach (object item in Enum.GetValues(typeof(VideoTypeFilters)))
-                    {
-                        ViewModel.VideoTypesCollection.Add(new SortFilterDataItem
-                        {
-                            DisplayName = item.GetType()
-                                            .GetField(item.ToString())
-                                            .GetCustomAttribute<DisplayNameAttribute>()
-                                            .DisplayName,
-                            Value = item.ToString(),
-                            IsSelected = false
-                        });
-                    }
-
-                    // Instantiate SelectedVideoTypes
-                    ViewModel.SelectedVideoTypes = new ObservableCollection<VideoType>();
-
-                    // Instantiate FeaturesCollection
-                    ViewModel.IsFeaturesFilterVisible = true;
-                    ViewModel.FeaturesCollection = new ObservableCollection<SortFilterDataItem>();
-                    foreach (object item in Enum.GetValues(typeof(FeaturesFilters)))
-                    {
-                        ViewModel.FeaturesCollection.Add(new SortFilterDataItem
-                        {
-                            DisplayName = item.GetType()
-                                            .GetField(item.ToString())
-                                            .GetCustomAttribute<DisplayNameAttribute>()
-                                            .DisplayName,
-                            Value = item.ToString(),
-                            IsSelected = false
-                        });
-                    }
-
                     break;
                     #endregion
             }
@@ -650,6 +575,7 @@ namespace Jellyfin.Views
             ViewModel.IsBusy = false;
         }
 
+        #region UI Interaction Events
         private void GridView_ItemClick(object sender, ItemClickEventArgs e)
         {
             MediaDataItem item = e.ClickedItem as MediaDataItem;
@@ -663,26 +589,36 @@ namespace Jellyfin.Views
             SortFilterDataItem dataItem = (SortFilterDataItem)checkBox.DataContext;
 
             SortFilterDataItem updateItem = ViewModel.SortByCollection.First(i => i.Value == dataItem.Value);
-
             updateItem.IsSelected = !dataItem.IsSelected;
+
+            ViewModel.SelectedSortBy.Clear();
+            foreach (SortFilterDataItem item in ViewModel.SortByCollection.Where(i => i.IsSelected))
+            {
+                ViewModel.SelectedSortBy.Add(item.Value);
+            }
         }
 
         private void SortOrderRadioButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             RadioButton radioButton = (RadioButton)sender;
-
             SortFilterDataItem dataItem = (SortFilterDataItem)radioButton.DataContext;
 
             foreach (SortFilterDataItem updateItem in ViewModel.SortOrderCollection)
             {
-                if (updateItem.Value == dataItem.Value)
-                {
-                    updateItem.IsSelected = !dataItem.IsSelected;
-                }
-                else
-                {
-                    updateItem.IsSelected = false;
-                }
+                updateItem.IsSelected = updateItem.Value == dataItem.Value && !dataItem.IsSelected;
+            }
+
+            ViewModel.SelectedSortOrder.Clear();
+            switch (dataItem.Value)
+            {
+                case "Ascending":
+                    ViewModel.SelectedSortOrder.Add(SortOrder.Ascending);
+                    break;
+                case "Descending":
+                    ViewModel.SelectedSortOrder.Add(SortOrder.Descending);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -694,30 +630,91 @@ namespace Jellyfin.Views
             SortFilterDataItem updateItem = ViewModel.FilterCollection.First(i => i.Value == dataItem.Value);
             updateItem.IsSelected = !dataItem.IsSelected;
 
+            ViewModel.SelectedFilters.Clear();
             foreach (SortFilterDataItem item in ViewModel.FilterCollection.Where(i => i.IsSelected))
             {
-
+                switch (item.Value)
+                {
+                    case "IsResumable":
+                        ViewModel.SelectedFilters.Add(ItemFilter.IsResumable);
+                        break;
+                    case "IsFavorite":
+                        ViewModel.SelectedFilters.Add(ItemFilter.IsFavorite);
+                        break;
+                    case "IsPlayed":
+                        ViewModel.SelectedFilters.Add(ItemFilter.IsPlayed);
+                        break;
+                    case "IsUnplayed":
+                        ViewModel.SelectedFilters.Add(ItemFilter.IsUnplayed);
+                        break;
+                    case "Likes":
+                        ViewModel.SelectedFilters.Add(ItemFilter.Likes);
+                        break;
+                    case "Dislikes":
+                        ViewModel.SelectedFilters.Add(ItemFilter.Dislikes);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
         private void StatusCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            CheckBox checkBox = (CheckBox)sender;
+            SortFilterDataItem dataItem = (SortFilterDataItem)checkBox.DataContext;
 
-        }
+            SortFilterDataItem updateItem = ViewModel.SeriesStatusCollection.First(i => i.Value == dataItem.Value);
+            updateItem.IsSelected = !dataItem.IsSelected;
 
-        private void FeaturesCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-
+            ViewModel.SelectedSeriesStatus.Clear();
+            foreach (SortFilterDataItem item in ViewModel.SeriesStatusCollection.Where(i => i.IsSelected))
+            {
+                switch (item.Value)
+                {
+                    case "Continuing":
+                        ViewModel.SelectedSeriesStatus.Add(SeriesStatus.Continuing);
+                        break;
+                    case "Ended":
+                        ViewModel.SelectedSeriesStatus.Add(SeriesStatus.Ended);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         private void GenresCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            CheckBox checkBox = (CheckBox)sender;
+            SortFilterDataItem dataItem = (SortFilterDataItem)checkBox.DataContext;
 
+            SortFilterDataItem updateItem = ViewModel.GenresCollection.First(i => i.Value == dataItem.Value);
+            updateItem.IsSelected = !dataItem.IsSelected;
+
+            ViewModel.SelectedGenres.Clear();
+            foreach (SortFilterDataItem item in ViewModel.GenresCollection.Where(i => i.IsSelected))
+            {
+                ViewModel.SelectedGenres.Add(item.Value);
+            }
         }
 
         private void ParentalRatingsCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            CheckBox checkBox = (CheckBox)sender;
+            SortFilterDataItem dataItem = (SortFilterDataItem)checkBox.DataContext;
 
+            SortFilterDataItem updateItem = ViewModel.ParentalRatingCollection.First(i => i.Value == dataItem.Value);
+            updateItem.IsSelected = !dataItem.IsSelected;
+
+            ViewModel.ParentalRatingCollection.Clear();
+            foreach (SortFilterDataItem item in ViewModel.ParentalRatingCollection.Where(i => i.IsSelected))
+            {
+                if (item.Value != "None")
+                {
+                    ViewModel.ParentalRatingCollection.Add(item);
+                }
+            }
         }
 
         private void TagsCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -725,14 +722,23 @@ namespace Jellyfin.Views
 
         }
 
-        private void VideoTypesCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-
-        }
-
         private void YearsCheckbox_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            CheckBox checkBox = (CheckBox)sender;
+            SortFilterDataItem dataItem = (SortFilterDataItem)checkBox.DataContext;
 
+            SortFilterDataItem updateItem = ViewModel.YearsCollection.First(i => i.Value == dataItem.Value);
+            updateItem.IsSelected = !dataItem.IsSelected;
+
+            ViewModel.SelectedYears.Clear();
+            foreach (SortFilterDataItem item in ViewModel.YearsCollection.Where(i => i.IsSelected))
+            {
+                bool isYear = int.TryParse(item.Value, out int year);
+                if (isYear)
+                {
+                    ViewModel.SelectedYears.Add(year);
+                }
+            }
         }
 
         private async void ApplySortButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -744,5 +750,7 @@ namespace Jellyfin.Views
         {
             await ViewModel.PageReadyAsync();
         }
+
+        #endregion
     }
 }

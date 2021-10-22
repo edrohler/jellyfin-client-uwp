@@ -2,14 +2,26 @@
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
+
+// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Jellyfin.Controls
 {
@@ -17,7 +29,7 @@ namespace Jellyfin.Controls
     {
         public MediaItemImageUserControl()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         #region Dependency Properties
@@ -27,22 +39,13 @@ namespace Jellyfin.Controls
 
         public static readonly DependencyProperty DesiredImageTypeProperty = DependencyProperty.Register(
             "DesiredImageType", typeof(ImageType), typeof(MediaItemImageUserControl), new PropertyMetadata(ImageType.Primary));
-        
-        /// <summary>
-        /// Sets the value of the Id of the media item's images to fetch.
-        /// the control will first check the local cache to see if the image has already been downloaded.
-        /// If the image is in the cache, it will load that one
-        /// If the image is not in the cache, it will download it, save to the cache and then create the 
-        /// </summary>
+
         public Guid MediaId
         {
             get => (Guid)GetValue(MediaIdProperty);
             set => SetValue(MediaIdProperty, value);
         }
-        
-        /// <summary>
-        /// Selected the desired ImageType, Default is ImageType.Primary
-        /// </summary>
+
         public ImageType DesiredImageType
         {
             get => (ImageType)GetValue(DesiredImageTypeProperty);
@@ -71,43 +74,64 @@ namespace Jellyfin.Controls
 
         private async Task LoadImageAsync()
         {
-            BitmapImage img = new BitmapImage
-            {
-                DecodePixelHeight = 300,
-                DecodePixelWidth = 300
-            };
+            //var height = this.Height;
+            //var width = this.Width;
 
-            string cacheFileName = $"{MediaId}.png";
+            //BitmapImage bitmapImage = new BitmapImage
+            //{
+            //    DecodePixelHeight = Convert.ToInt32(this.Height),
+            //    DecodePixelWidth = Convert.ToInt32(this.Width)
+            //};
 
-            // Using TryGetItem will let you get a null value (instead of a FileNoteFoundException)
-            IStorageItem item = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync(cacheFileName);
-            
-            if (item is StorageFile imageFile) // If the item exists, there is no need to download it again
+            // Set FileName without Extension
+            // Accounts for various image types.
+            string cacheFileName = $"{this.MediaId}-{this.DesiredImageType}";
+
+            // Verify that an image exists by {filename}.*
+            DirectoryInfo root = new DirectoryInfo(ApplicationData.Current.LocalCacheFolder.Path);
+            FileInfo[] files = root.GetFiles($"{cacheFileName}.*");
+
+            // If the item exists, there is no need to download it again
+            if (files.Count() > 0)
             {
+                Debug.WriteLine("LOCAL FILE Loading from file");
+
+                // Get FirstFileInfo (Should be only 1)
+                FileInfo file = files[0];
+
+                // Create new Storage File object
+                StorageFile imageFile = (StorageFile)await ApplicationData.Current.LocalCacheFolder.GetItemAsync(file.Name);
+
                 // Open up the file for reading
-                using(Stream stream = await imageFile.OpenStreamForReadAsync())
+                using (Stream stream = await imageFile.OpenStreamForReadAsync())
                 {
                     // Load the image
-                    await img.SetSourceAsync(stream.AsRandomAccessStream());
+                    await ItemBitmapImage.SetSourceAsync(stream.AsRandomAccessStream());
+
                 }
             }
             else // If the file does not exist, download it, save it 
             {
+                Debug.WriteLine("SERVER Loading from server");
+
                 try
                 {
                     using (MemoryStream ms = new MemoryStream())
                     {
                         // Get the API response
-                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(MediaId, DesiredImageType);
+                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(this.MediaId, this.DesiredImageType);
 
                         // Copy the API stream into a MemoryStream
                         await fr.Stream.CopyToAsync(ms);
 
-                        // Dispose the FileResponse's Stream now that we do not need it anymore 
-                        fr.Stream.Dispose();
+                        // Get image type from Contet-Type header
+                        string imageType = fr.Headers["Content-Type"].First().Split("/")[1];
 
                         // Create the file in the cache 
-                        StorageFile file = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(cacheFileName, CreationCollisionOption.ReplaceExisting);
+                        StorageFile file = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync($"{cacheFileName}.{imageType}", CreationCollisionOption.ReplaceExisting);
+
+                        // Dispose the FileResponse's Stream now that we do not need it anymore 
+                        fr.Stream.Dispose();
 
                         // Rewind the MemoryStream to the beginning
                         ms.Position = 0;
@@ -119,17 +143,20 @@ namespace Jellyfin.Controls
                         await FileIO.WriteBytesAsync(file, imageBytes);
 
                         // Load up the image using the same MemoryStream for best performance
-                        await img.SetSourceAsync(ms.AsRandomAccessStream());
+                        await ItemBitmapImage.SetSourceAsync(ms.AsRandomAccessStream());
                     }
                 }
                 catch (Exception ex)
                 {
-                    //TODO: Set Default Image
+                    // Need to log exception when request gets error from server
                     ExceptionLogger.LogException(ex);
                 }
             }
+
+            // Finally assign the ImageSource to the Image
+            //this.ItemImage.Source = bitmapImage;
         }
-        
+
         #endregion
 
         #region Global Methods
@@ -143,12 +170,12 @@ namespace Jellyfin.Controls
         public static async Task ClearCacheForId(Guid id, string fileExtension = "png")
         {
             string cacheFileName = $"{id}.{fileExtension}";
-            
+
             IStorageItem item = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync(cacheFileName);
 
             await item.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
-        
+
         #endregion
     }
 }

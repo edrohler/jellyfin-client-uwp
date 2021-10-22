@@ -3,10 +3,10 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:viewModels="using:Jellyfin.ViewModels"
-      xmlns:customControls="using:Jellyfin.Controls"
       xmlns:controls="using:Microsoft.UI.Xaml.Controls"
       xmlns:telerik="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:viewModels="using:Jellyfin.ViewModels"
+      xmlns:customControls="using:Jellyfin.Controls"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -167,29 +167,6 @@
                                         </ListView>
                                     </telerik:RadExpanderControl.ExpandableContent>
                                 </telerik:RadExpanderControl>
-                                <telerik:RadExpanderControl x:Name="FeaturesExpander"
-                                                            IsExpandable="True"
-                                                            Visibility="{Binding IsFeaturesFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
-                                    <telerik:RadExpanderControl.Content>
-                                        <TextBlock Text="Features"
-                                                   FontSize="24" />
-                                    </telerik:RadExpanderControl.Content>
-                                    <telerik:RadExpanderControl.ExpandableContent>
-                                        <ListView x:Name="FeaturesList"
-                                                  ItemsSource="{Binding FeaturesCollection}"
-                                                  SelectionMode="None">
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox x:Name="FeaturesCheckbox"
-                                                              Content="{Binding DisplayName}"
-                                                              IsChecked="{Binding IsSelected}"
-                                                              Click="FeaturesCheckbox_Click">
-                                                    </CheckBox>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                        </ListView>
-                                    </telerik:RadExpanderControl.ExpandableContent>
-                                </telerik:RadExpanderControl>
                                 <telerik:RadExpanderControl x:Name="GenresExpander"
                                                             IsExpandable="True"
                                                             Visibility="{Binding IsGenresFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
@@ -258,29 +235,6 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
-                                    </telerik:RadExpanderControl.ExpandableContent>
-                                </telerik:RadExpanderControl>
-                                <telerik:RadExpanderControl x:Name="VideoTypesExpander"
-                                                            IsExpandable="True"
-                                                            Visibility="{Binding IsVideoTypesFilterVisible, Converter={StaticResource BoolToVisibilityConv}}">
-                                    <telerik:RadExpanderControl.Content>
-                                        <TextBlock Text="Video Types"
-                                                   FontSize="24" />
-                                    </telerik:RadExpanderControl.Content>
-                                    <telerik:RadExpanderControl.ExpandableContent>
-                                        <ListView x:Name="VideoTypesList"
-                                                  ItemsSource="{Binding VideoTypesCollection}"
-                                                  SelectionMode="None">
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox x:Name="VideoTypesCheckbox"
-                                                              Content="{Binding DisplayName}"
-                                                              IsChecked="{Binding IsSelected}"
-                                                              Click="VideoTypesCheckbox_Click">
-                                                    </CheckBox>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                        </ListView>
                                     </telerik:RadExpanderControl.ExpandableContent>
                                 </telerik:RadExpanderControl>
                                 <telerik:RadExpanderControl x:Name="YearsExpander"
