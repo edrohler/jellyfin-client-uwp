@@ -1,31 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Threading.Tasks;
-using CommonHelpers.Common;
+﻿using CommonHelpers.Common;
 using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
-using Windows.UI.Xaml.Media;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Jellyfin.ViewModels
 {
-    public class LatestMediaModel : MediaDataItem
-    {
-        public string Name { get; set; }
-        public List<MediaDataItem> LatestItems { get; set; }
-    }
-
     public class HomeViewModel : ViewModelBase
     {
-        public ObservableCollection<LatestMediaModel> LatestMedia { get; set; }
+        public ObservableCollection<LatestMedia> LatestMedia { get; set; }
         public ObservableCollection<MediaDataItem> Libraries { get; set; }
 
         public HomeViewModel()
         {
-            LatestMedia = new ObservableCollection<LatestMediaModel>();
+            LatestMedia = new ObservableCollection<LatestMedia>();
             Libraries = new ObservableCollection<MediaDataItem>();
         }
 
@@ -44,8 +36,6 @@ namespace Jellyfin.ViewModels
                 Libraries.Add(new MediaDataItem
                 {
                     BaseItem = item,
-                    ImageSource = new BitmapImage(
-                        new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{item.DisplayPreferencesId}/Images/Primary")),
                     UpdateInterval = new TimeSpan(0, 0, new Random().Next(5, 15)),
                     Height = 405,
                     Width = 720
@@ -55,7 +45,10 @@ namespace Jellyfin.ViewModels
 
         private async Task LoadLatestMedia()
         {
-            foreach (MediaDataItem item in this.Libraries)
+            IsBusy = true;
+            IsBusyMessage = "Loading Page Content..";
+
+            foreach (MediaDataItem item in Libraries)
             {
                 if (item.BaseItem.CollectionType != "boxsets")
                 {
@@ -175,13 +168,14 @@ namespace Jellyfin.ViewModels
                     {
                         int height, width;
 
-                        if (item.BaseItem.CollectionType == "tvshows" || 
+                        if (item.BaseItem.CollectionType == "tvshows" ||
                             item.BaseItem.CollectionType == "movies" ||
                             item.BaseItem.CollectionType == "homevideos")
                         {
                             height = 486;
                             width = 324;
-                        } else
+                        }
+                        else
                         {
                             height = 300;
                             width = 300;
@@ -190,20 +184,22 @@ namespace Jellyfin.ViewModels
                         ltmiList.Add(new MediaDataItem
                         {
                             BaseItem = LatestMediaItem,
-                            ImageSource = new BitmapImage(
-                                new Uri($"{App.Current.SdkClientSettings.BaseUrl}/Items/{LatestMediaItem.Id}/Images/Primary")),
                             Height = height,
                             Width = width,
                             UpdateInterval = new TimeSpan(0, 0, new Random().Next(5, 35))
                         });
                     }
 
-                    LatestMedia.Add(new LatestMediaModel {
+                    LatestMedia.Add(new LatestMedia
+                    {
                         Name = $"Latest {item.BaseItem.Name}",
                         LatestItems = ltmiList
                     });
                 }
             }
+
+            IsBusy = false;
+            IsBusyMessage = "";
         }
     }
 }

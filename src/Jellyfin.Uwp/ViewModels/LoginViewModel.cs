@@ -23,7 +23,21 @@ namespace Jellyfin.ViewModels
         private bool isServerUrlVisible;
         private bool showServerConnectionChangeButton;
         private string serverConnectionString;
-        private string authErrorString;
+        private string errorString;
+
+        public string ServerConnectionString { get => serverConnectionString; set => SetProperty(ref serverConnectionString, value); }
+        public string ErrorString { get => errorString; set => SetProperty(ref errorString, value); }
+        public string ServerUrl { get => serverUrl; set => SetProperty(ref serverUrl, value, nameof(ServerUrl), ValidateServer); }
+        public string ServerUrlHeader { get => serverUrlHeader; set => SetProperty(ref serverUrlHeader, value); }
+        public string Username { get => username; set => SetProperty(ref username, value); }
+        public string Password { get => password; set => SetProperty(ref password, value); }
+        public bool IsValidServerUrl { get => isValidServerUrl; set => SetProperty(ref isValidServerUrl, value); }
+        public bool IsServerUrlVisible { get => isServerUrlVisible; set => SetProperty(ref isServerUrlVisible, value); }
+        public PublicSystemInfo ServerSystemInfo { get => App.Current.PublicSystemInfo; set => App.Current.PublicSystemInfo = value; }
+        public bool ShowServerConnectionChangeButton { get => showServerConnectionChangeButton; set => SetProperty(ref showServerConnectionChangeButton, value); }
+        public DelegateCommand LoginCommand { get; set; }
+        public DelegateCommand ForgotPasswordCommand { get; set; }
+        public DelegateCommand ClearServerConnectionCommand { get; set; }
 
         public LoginViewModel()
         {
@@ -31,72 +45,6 @@ namespace Jellyfin.ViewModels
             ForgotPasswordCommand = new DelegateCommand(async () => await ForgotPasswordAsync(), CanForgotPasswordExecute);
             ClearServerConnectionCommand = new DelegateCommand(ClearServerConnection);
         }
-
-        public string ServerConnectionString
-        {
-            get => serverConnectionString;
-            set => SetProperty(ref serverConnectionString, value);
-        }
-
-        public string AuthErrorString
-        {
-            get => authErrorString;
-            set => SetProperty(ref authErrorString, value);
-        }
-
-        public string ServerUrl
-        {
-            get => serverUrl;
-            set => SetProperty(ref serverUrl, value, nameof(ServerUrl), ValidateServer);
-        }
-
-        public string ServerUrlHeader
-        {
-            get => serverUrlHeader;
-            set => SetProperty(ref serverUrlHeader, value);
-        }
-
-        public string Username
-        {
-            get => username;
-            set => SetProperty(ref username, value);
-        }
-
-        public string Password
-        {
-            get => password;
-            set => SetProperty(ref password, value);
-        }
-
-        public bool IsValidServerUrl
-        {
-            get => isValidServerUrl;
-            set => SetProperty(ref isValidServerUrl, value);
-        }
-
-        public bool IsServerUrlVisible
-        { 
-            get => isServerUrlVisible;
-            set => SetProperty(ref isServerUrlVisible, value);
-        }
-
-        public PublicSystemInfo ServerSystemInfo
-        {
-            get => App.Current.PublicSystemInfo;
-            set => App.Current.PublicSystemInfo = value;
-        }
-
-        public bool ShowServerConnectionChangeButton
-        {
-            get => showServerConnectionChangeButton;
-            set => SetProperty(ref showServerConnectionChangeButton, value);
-        }
-
-        public DelegateCommand LoginCommand { get; set; }
-
-        public DelegateCommand ForgotPasswordCommand { get; set; }
-
-        public DelegateCommand ClearServerConnectionCommand { get; set; }
 
         public async Task PageReadyAsync()
         {
@@ -113,15 +61,21 @@ namespace Jellyfin.ViewModels
             }
             else
             {
-                ServerSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
-                if (!string.IsNullOrEmpty(ServerSystemInfo.Id))
+                try
                 {
-                    IsValidServerUrl = true;
-                    IsServerUrlVisible = false;
-                    ShowServerConnectionChangeButton = true;
-                    ServerUrl = App.Current.SdkClientSettings.BaseUrl;
-                    ServerConnectionString = $"Change {ServerUrl} Connection?";
+                    ServerSystemInfo = await JellyfinClientServices.Current.SystemClient.GetPublicSystemInfoAsync();
                 }
+                catch (Exception ex)
+                {
+                    ErrorString = ex.Message;
+                    ExceptionLogger.LogException(ex);
+                }
+
+                IsValidServerUrl = true;
+                IsServerUrlVisible = false;
+                ShowServerConnectionChangeButton = true;
+                ServerUrl = App.Current.SdkClientSettings.BaseUrl;
+                ServerConnectionString = !string.IsNullOrEmpty(ErrorString) ? "Error Occured. Change Jellyfin Server Connection?" : $"Change {ServerUrl} Connection?";
             }
         }
 
@@ -129,7 +83,7 @@ namespace Jellyfin.ViewModels
         {
             IsBusy = true;
             IsBusyMessage = "Logging in...";
-            AuthErrorString = "";
+            ErrorString = "";
             try
             {
                 // Make a login request to the server
@@ -160,7 +114,7 @@ namespace Jellyfin.ViewModels
             }
             catch (Exception ex)
             {
-                AuthErrorString = ex.Message;
+                ErrorString = ex.Message;
                 // Log Auth Error
                 ExceptionLogger.LogException(ex);
             }
@@ -225,7 +179,7 @@ namespace Jellyfin.ViewModels
 
             // Update local bindings
             ServerUrl = "";
-            AuthErrorString = "";
+            ErrorString = "";
             ServerSystemInfo = null;
             IsValidServerUrl = false;
             IsServerUrlVisible = true;

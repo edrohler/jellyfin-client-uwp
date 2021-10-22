@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Jellyfin.Models;
+using System;
+using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -11,16 +13,34 @@ namespace Jellyfin.Views
             this.InitializeComponent();
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            await ViewModel.PageReadyAsync((Guid)e.Parameter);
+            ViewModel.PageReady((Guid)e.Parameter);
+
+            object SelectedItem = ViewModel.LibraryPageMenuItems.FirstOrDefault();
+
+            if (SelectedItem != null)
+            {
+                LibNavView.SelectedItem = ViewModel.LibraryPageMenuItems.FirstOrDefault();
+            } else
+            {
+                LibraryContentFrame.Navigate(typeof(ItemsPage), (Guid)e.Parameter);
+            }
         }
 
-        private void LibNavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        private void LibNavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-
+            if (args.SelectedItem is MenuDataItem selectedItem)
+            {
+                switch (selectedItem)
+                {
+                    default:
+                        LibraryContentFrame.Navigate(typeof(ItemsPage), selectedItem.Id);
+                        break;
+                }
+            }
         }
     }
 }

@@ -17,11 +17,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Jellyfin.Controls
 {
-    public sealed partial class LibraryGridControl : UserControl
+    public sealed partial class SlideHubTileUserControl : UserControl
     {
-        
-
-        public LibraryGridControl()
+        public SlideHubTileUserControl()
         {
             this.InitializeComponent();
         }
