@@ -34,8 +34,11 @@ namespace Jellyfin.Views
         {
             if (args.SelectedItem is MenuDataItem selectedItem)
             {
-                switch (selectedItem)
+                switch (selectedItem.Name)
                 {
+                    case "Suggestions":
+                        LibraryContentFrame.Navigate(typeof(SuggestionsPage), ViewModel.BaseItem.Id);
+                        break;
                     default:
                         LibraryContentFrame.Navigate(typeof(ItemsPage), selectedItem.Id);
                         break;

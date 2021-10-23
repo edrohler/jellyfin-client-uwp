@@ -16,7 +16,7 @@ namespace Jellyfin.ViewModels
     {
         public string LibraryTitle { get; set; }
         public bool IsPaneVisible { get; set; } = true;
-        BaseItemDto BaseItem { get; set; }
+        public BaseItemDto BaseItem { get; set; }
 
         public ObservableCollection<MenuDataItem> LibraryPageMenuItems { get; set; }
 
