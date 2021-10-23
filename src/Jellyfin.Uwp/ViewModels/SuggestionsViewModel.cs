@@ -1,4 +1,5 @@
 ﻿using CommonHelpers.Common;
+using Jellyfin.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,13 @@ namespace Jellyfin.ViewModels
 {
     public class SuggestionsViewModel : ViewModelBase
     {
+        private BaseItemDto userView;
 
+        public BaseItemDto UserView { get => userView; set => SetProperty(ref userView, value); }
+
+        public SuggestionsViewModel()
+        {
+
+        }
     }
 }

@@ -26,7 +26,33 @@ namespace Jellyfin.Views
         {
             base.OnNavigatedTo(e);
 
-            Console.WriteLine();
+            ViewModel.UserView = App.Current.UserViews.Items.First(i => i.Id == (Guid)e.Parameter);
+
+            switch (ViewModel.UserView.CollectionType)
+            {
+                case "movies":
+                    /*
+                     * Latest Movies
+                     * Recommendations
+                     */
+                    break;
+                case "tvshows":
+                    /* 
+                     * Continue Watching Collection
+                     * Latest Episodes
+                     * Next Up
+                    */
+                    break;
+                case "music":
+                    /*
+                     * Latest Music
+                     * Recently Played
+                     * Frequently Played
+                     */
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
