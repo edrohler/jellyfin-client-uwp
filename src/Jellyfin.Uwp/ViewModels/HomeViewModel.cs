@@ -12,12 +12,12 @@ namespace Jellyfin.ViewModels
 {
     public class HomeViewModel : ViewModelBase
     {
-        public ObservableCollection<LatestMedia> LatestMedia { get; set; }
+        public ObservableCollection<MediaDataItemCollection> LatestMedia { get; set; }
         public ObservableCollection<MediaDataItem> Libraries { get; set; }
 
         public HomeViewModel()
         {
-            LatestMedia = new ObservableCollection<LatestMedia>();
+            LatestMedia = new ObservableCollection<MediaDataItemCollection>();
             Libraries = new ObservableCollection<MediaDataItem>();
         }
 
@@ -190,7 +190,7 @@ namespace Jellyfin.ViewModels
                         });
                     }
 
-                    LatestMedia.Add(new LatestMedia
+                    LatestMedia.Add(new MediaDataItemCollection
                     {
                         Name = $"Latest {item.BaseItem.Name}",
                         LatestItems = ltmiList

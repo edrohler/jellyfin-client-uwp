@@ -19,11 +19,11 @@ namespace Jellyfin.ViewModels
         public BaseItemDto UserView { get => userView; set => SetProperty(ref userView, value); }
         public BaseItemDtoQueryResult Query { get => query; set => SetProperty(ref query, value); }
 
-        public ObservableCollection<LatestMedia> SuggestionsCollection { get; set; }
+        public ObservableCollection<MediaDataItemCollection> SuggestionsCollection { get; set; }
 
         public SuggestionsViewModel()
         {
-            SuggestionsCollection = new ObservableCollection<LatestMedia>();
+            SuggestionsCollection = new ObservableCollection<MediaDataItemCollection>();
         }
 
         public async Task PageReadyAsync()
@@ -92,7 +92,7 @@ namespace Jellyfin.ViewModels
                             });
                         }
 
-                        SuggestionsCollection.Add(new LatestMedia
+                        SuggestionsCollection.Add(new MediaDataItemCollection
                         {
                             Name = "Continue Watching",
                             LatestItems = movieList
@@ -136,7 +136,7 @@ namespace Jellyfin.ViewModels
                             });
                         }
 
-                        SuggestionsCollection.Add(new LatestMedia
+                        SuggestionsCollection.Add(new MediaDataItemCollection
                         {
                             Name = "Latest Movies",
                             LatestItems = latestMovies
@@ -177,7 +177,7 @@ namespace Jellyfin.ViewModels
                                         });
                                     }
 
-                                    SuggestionsCollection.Add(new LatestMedia
+                                    SuggestionsCollection.Add(new MediaDataItemCollection
                                     {
                                         Name = $"Because you watched {recoItem.BaselineItemName}",
                                         LatestItems = recoList
@@ -197,7 +197,7 @@ namespace Jellyfin.ViewModels
                                         });
                                     }
 
-                                    SuggestionsCollection.Add(new LatestMedia
+                                    SuggestionsCollection.Add(new MediaDataItemCollection
                                     {
                                         Name = $"Because you liked {recoItem.BaselineItemName}",
                                         LatestItems = recoList
@@ -217,7 +217,7 @@ namespace Jellyfin.ViewModels
                                         });
                                     }
 
-                                    SuggestionsCollection.Add(new LatestMedia
+                                    SuggestionsCollection.Add(new MediaDataItemCollection
                                     {
                                         Name = $"Directed by {recoItem.BaselineItemName}",
                                         LatestItems = recoList
@@ -237,7 +237,7 @@ namespace Jellyfin.ViewModels
                                         });
                                     }
 
-                                    SuggestionsCollection.Add(new LatestMedia
+                                    SuggestionsCollection.Add(new MediaDataItemCollection
                                     {
                                         Name = $"Starring {recoItem.BaselineItemName}",
                                         LatestItems = recoList
@@ -257,7 +257,7 @@ namespace Jellyfin.ViewModels
                                         });
                                     }
 
-                                    SuggestionsCollection.Add(new LatestMedia
+                                    SuggestionsCollection.Add(new MediaDataItemCollection
                                     {
                                         Name = $"Because you liked {recoItem.BaselineItemName}",
                                         LatestItems = recoList
@@ -328,7 +328,7 @@ namespace Jellyfin.ViewModels
                             });
                         }
 
-                        SuggestionsCollection.Add(new LatestMedia
+                        SuggestionsCollection.Add(new MediaDataItemCollection
                         {
                             Name = "Continue Watching",
                             LatestItems = tvShowsList
@@ -371,7 +371,7 @@ namespace Jellyfin.ViewModels
                             });
                         }
 
-                        SuggestionsCollection.Add(new LatestMedia
+                        SuggestionsCollection.Add(new MediaDataItemCollection
                         {
                             Name = "Latest TV Shows",
                             LatestItems = latestTvShows
@@ -407,7 +407,7 @@ namespace Jellyfin.ViewModels
                             });
                         }
 
-                        SuggestionsCollection.Add(new LatestMedia
+                        SuggestionsCollection.Add(new MediaDataItemCollection
                         {
                             Name = "Next Up",
                             LatestItems = nextUpList

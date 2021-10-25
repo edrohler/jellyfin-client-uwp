@@ -2,7 +2,7 @@
 
 namespace Jellyfin.Models
 {
-    public class LatestMedia : MediaDataItem
+    public class MediaDataItemCollection : MediaDataItem
     {
         public string Name { get; set; }
         public List<MediaDataItem> LatestItems { get; set; }
