@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Jellyfin.Sdk;
+using Jellyfin.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -22,37 +25,18 @@ namespace Jellyfin.Views
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
             ViewModel.UserView = App.Current.UserViews.Items.First(i => i.Id == (Guid)e.Parameter);
 
-            switch (ViewModel.UserView.CollectionType)
-            {
-                case "movies":
-                    /*
-                     * Latest Movies
-                     * Recommendations
-                     */
-                    break;
-                case "tvshows":
-                    /* 
-                     * Continue Watching Collection
-                     * Latest Episodes
-                     * Next Up
-                    */
-                    break;
-                case "music":
-                    /*
-                     * Latest Music
-                     * Recently Played
-                     * Frequently Played
-                     */
-                    break;
-                default:
-                    break;
-            }
+            await ViewModel.PageReadyAsync();
+        }
+
+        private void SuggestionsMediaItemList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

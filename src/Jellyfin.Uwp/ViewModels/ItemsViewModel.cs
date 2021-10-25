@@ -201,7 +201,8 @@ namespace Jellyfin.ViewModels
                     int height, width;
 
                     if (item.Type == "Series" ||
-                        item.Type == "Movie")
+                        item.Type == "Movie" ||
+                        item.Type == "Video")
                     {
                         height = 450;
                         width = 300;

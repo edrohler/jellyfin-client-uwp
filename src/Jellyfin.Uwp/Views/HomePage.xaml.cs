@@ -53,15 +53,5 @@ namespace Jellyfin.Views
 
             Frame.Navigate(typeof(ItemPage), id);
         }
-
-        // Play Media Item
-        private void TitlePlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Get selected media item
-            MediaDataItem MediaDataItem = (MediaDataItem)((Button)sender).DataContext;
-
-            // Set root frame to media player
-            App.Current.RootFrame.Navigate(typeof(MediaPlayerPage), MediaDataItem.BaseItem.Id);
-        }
     }
 }
