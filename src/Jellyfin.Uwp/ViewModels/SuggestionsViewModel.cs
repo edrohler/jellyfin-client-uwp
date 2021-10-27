@@ -39,6 +39,8 @@ namespace Jellyfin.ViewModels
                      * Recommendations Collection - MoviesCLient
                      */
 
+                    #region Movies
+
                     // Continue Watching
                     BaseItemDtoQueryResult MoviesContinueWatching = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
@@ -58,7 +60,7 @@ namespace Jellyfin.ViewModels
                         recursive: true,
                         collapseBoxSetItems: false,
                         includeItemTypes: new string[]
-                        { 
+                        {
                             "Movie"
                         },
                         limit: 10,
@@ -68,15 +70,15 @@ namespace Jellyfin.ViewModels
                             ItemFields.MediaSourceCount,
                             ItemFields.BasicSyncInfo
                         },
-                        imageTypeLimit:1,
+                        imageTypeLimit: 1,
                         enableImageTypes: new ImageType[]
-                        { 
+                        {
                             ImageType.Primary,
                             ImageType.Backdrop,
                             ImageType.Banner,
                             ImageType.Thumb
                         },
-                        enableTotalRecordCount:false);
+                        enableTotalRecordCount: false);
 
                     if (MoviesContinueWatching.TotalRecordCount > 0)
                     {
@@ -269,6 +271,7 @@ namespace Jellyfin.ViewModels
                     }
 
                     break;
+                #endregion
                 case "tvshows":
                     /* 
                      * Continue Watching Collection - ItemsClient
@@ -276,6 +279,7 @@ namespace Jellyfin.ViewModels
                      * Next Up Collectionn - TvShowsClient
                     */
 
+                    #region TV Shows
                     // Continue Watching
                     BaseItemDtoQueryResult TvShowsContinueWatching = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
                         App.Current.AppUser.User.Id,
@@ -306,7 +310,7 @@ namespace Jellyfin.ViewModels
                         },
                         limit: 1,
                         enableImageTypes: new ImageType[]
-                        { 
+                        {
                             ImageType.Primary,
                             ImageType.Backdrop,
                             ImageType.Banner,
@@ -351,7 +355,7 @@ namespace Jellyfin.ViewModels
                         },
                         imageTypeLimit: 1,
                         enableImageTypes: new ImageType[]
-                        { 
+                        {
                             ImageType.Primary,
                             ImageType.Backdrop,
                             ImageType.Thumb
@@ -393,7 +397,7 @@ namespace Jellyfin.ViewModels
                         },
                         enableTotalRecordCount: false);
 
-                    if(NextUpEpisodes.Items.Count > 0)
+                    if (NextUpEpisodes.Items.Count > 0)
                     {
                         List<MediaDataItem> nextUpList = new List<MediaDataItem>();
 
@@ -415,6 +419,7 @@ namespace Jellyfin.ViewModels
                     }
 
                     break;
+                #endregion
                 case "music":
                     /*
                      * Latest Music Collection - UserLibraryClient
@@ -424,6 +429,29 @@ namespace Jellyfin.ViewModels
                      * Favorite Songs - ItemsClient
                      * Favorite Albums - ItemsClient
                      */
+
+                    // Latest Items
+                    IReadOnlyList<BaseItemDto> MusicLatestItems = await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
+                            App.Current.AppUser.User.Id,
+                            parentId: UserView.Id,
+                            includeItemTypes: new string[]
+                            {
+                                "Audio"
+                            },
+                            limit: 30,
+                            fields: new ItemFields[]
+                            {
+                                ItemFields.PrimaryImageAspectRatio,
+                                ItemFields.BasicSyncInfo
+                            },
+                            imageTypeLimit: 1,
+                            enableImageTypes: new ImageType[]
+                            {
+                                                    ImageType.Primary,
+                                                    ImageType.Backdrop,
+                                                    ImageType.Thumb
+                            });
+
 
 
                     break;
