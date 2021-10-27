@@ -1,4 +1,5 @@
 ﻿using CommonHelpers.Common;
+using Jellyfin.Helpers;
 using Jellyfin.Models;
 using Jellyfin.Sdk;
 using Jellyfin.Services;
@@ -146,8 +147,8 @@ namespace Jellyfin.ViewModels
                     }
 
                     // Recommendations
-                    MoviesClient MoviesClient = new MoviesClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
-                    IReadOnlyList<RecommendationDto> MovieRecommendations = await MoviesClient.GetMovieRecommendationsAsync(
+                    JellyfinClientServices.Current.MoviesClient = new MoviesClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+                    IReadOnlyList<RecommendationDto> MovieRecommendations = await JellyfinClientServices.Current.MoviesClient.GetMovieRecommendationsAsync(
                         userId: App.Current.AppUser.User.Id,
                         parentId: UserView.Id,
                         categoryLimit: 6,
@@ -383,8 +384,8 @@ namespace Jellyfin.ViewModels
                     }
 
                     // Next Up Episodes
-                    TvShowsClient TvShowsClient = new TvShowsClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
-                    BaseItemDtoQueryResult NextUpEpisodes = await TvShowsClient.GetNextUpAsync(
+                    JellyfinClientServices.Current.TvShowsClient = new TvShowsClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+                    BaseItemDtoQueryResult NextUpEpisodes = await JellyfinClientServices.Current.TvShowsClient.GetNextUpAsync(
                         userId: App.Current.AppUser.User.Id,
                         parentId: UserView.Id,
                         limit: 24,
@@ -430,32 +431,321 @@ namespace Jellyfin.ViewModels
                      * Favorite Albums - ItemsClient
                      */
 
+                    #region Music
                     // Latest Items
                     IReadOnlyList<BaseItemDto> MusicLatestItems = await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
-                            App.Current.AppUser.User.Id,
-                            parentId: UserView.Id,
-                            includeItemTypes: new string[]
+                        App.Current.AppUser.User.Id,
+                        parentId: UserView.Id,
+                        includeItemTypes: new string[]
+                        {
+                            "Audio"
+                        },
+                        limit: 24,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.BasicSyncInfo
+                        },
+                        imageTypeLimit: 1,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Thumb
+                        });
+
+                    if (MusicLatestItems.Count > 0)
+                    {
+                        List<MediaDataItem> LatestMusicItems = new List<MediaDataItem>();
+
+                        foreach (BaseItemDto item in MusicLatestItems)
+                        {
+                            LatestMusicItems.Add(new MediaDataItem
                             {
-                                "Audio"
-                            },
-                            limit: 30,
-                            fields: new ItemFields[]
-                            {
-                                ItemFields.PrimaryImageAspectRatio,
-                                ItemFields.BasicSyncInfo
-                            },
-                            imageTypeLimit: 1,
-                            enableImageTypes: new ImageType[]
-                            {
-                                                    ImageType.Primary,
-                                                    ImageType.Backdrop,
-                                                    ImageType.Thumb
+                                BaseItem = item,
+                                Height = 300,
+                                Width = 300
                             });
+                        }
 
+                        SuggestionsCollection.Add(new MediaDataItemCollection
+                        {
+                            Name = "Latest Music",
+                            LatestItems = LatestMusicItems
+                        });
+                    }
 
+                    // Recently Played Items
+                    BaseItemDtoQueryResult MusicRecentlyPlayed = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        App.Current.AppUser.User.Id,
+                        parentId: UserView.Id,
+                        sortBy: new string[]
+                        {
+                            "DatePlayed"
+                        },
+                        sortOrder: new SortOrder[]
+                        {
+                            SortOrder.Descending
+                        },
+                        includeItemTypes: new string[]
+                        {
+                            "Audio"
+                        },
+                        recursive: true,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.BasicSyncInfo
+                        },
+                        filters: new ItemFilter[]
+                        {
+                            ItemFilter.IsPlayed
+                        },
+                        limit: 12,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Banner,
+                            ImageType.Thumb
+                        },
+                        imageTypeLimit: 1,
+                        enableTotalRecordCount: false);
+
+                    if (MusicRecentlyPlayed.Items.Count > 0)
+                    {
+                        List<MediaDataItem> RecentlyPlayedMusicItems = new List<MediaDataItem>();
+
+                        foreach (BaseItemDto item in MusicRecentlyPlayed.Items)
+                        {
+                            RecentlyPlayedMusicItems.Add(new MediaDataItem
+                            {
+                                BaseItem = item,
+                                Height = 300,
+                                Width = 300
+                            });
+                        }
+
+                        SuggestionsCollection.Add(new MediaDataItemCollection
+                        {
+                            Name = "Recently Played Music",
+                            LatestItems = RecentlyPlayedMusicItems
+                        });
+                    }
+
+                    // Most Played Items
+                    BaseItemDtoQueryResult MusicMostPlayed = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        App.Current.AppUser.User.Id,
+                        parentId: UserView.Id,
+                        sortBy: new string[]
+                        {
+                            "PlayCount"
+                        },
+                        sortOrder: new SortOrder[]
+                        {
+                            SortOrder.Descending
+                        },
+                        includeItemTypes: new string[]
+                        {
+                            "Audio"
+                        },
+                        recursive: true,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.BasicSyncInfo
+                        },
+                        filters: new ItemFilter[]
+                        {
+                            ItemFilter.IsPlayed
+                        },
+                        limit: 12,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Banner,
+                            ImageType.Thumb
+                        },
+                        imageTypeLimit: 1,
+                        enableTotalRecordCount: false);
+
+                    if (MusicMostPlayed.Items.Count > 0)
+                    {
+                        List<MediaDataItem> MostPlayedMusic = new List<MediaDataItem>();
+
+                        foreach (BaseItemDto item in MusicMostPlayed.Items)
+                        {
+                            MostPlayedMusic.Add(new MediaDataItem
+                            {
+                                BaseItem = item,
+                                Height = 300,
+                                Width = 300
+                            });
+                        }
+
+                        SuggestionsCollection.Add(new MediaDataItemCollection
+                        {
+                            Name = "Most Played Music",
+                            LatestItems = MostPlayedMusic
+                        });
+                    }
+
+                    BaseItemDtoQueryResult MusicFavoriteAlbums = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        App.Current.AppUser.User.Id,
+                        parentId: UserView.Id,
+                        sortBy: new string[]
+                        {
+                            "SortName"
+                        },
+                        sortOrder: new SortOrder[]
+                        {
+                            SortOrder.Ascending
+                        },
+                        includeItemTypes: new string[]
+                        {
+                            "MusicAlbum"
+                        },
+                        collapseBoxSetItems: false,
+                        recursive: true,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.BasicSyncInfo
+                        },
+                        filters: new ItemFilter[]
+                        {
+                            ItemFilter.IsFavorite
+                        },
+                        limit: 10,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Banner,
+                            ImageType.Thumb
+                        },
+                        imageTypeLimit: 1,
+                        excludeLocationTypes: new LocationType[] { LocationType.Virtual } );
+
+                    if (MusicFavoriteAlbums.Items.Count > 0)
+                    {
+                        List<MediaDataItem> FavoriteMusicAlbums = new List<MediaDataItem>();
+
+                        foreach (BaseItemDto item in MusicFavoriteAlbums.Items)
+                        {
+                            FavoriteMusicAlbums.Add(new MediaDataItem
+                            {
+                                BaseItem = item,
+                                Height = 300,
+                                Width = 300
+                            });
+                        }
+
+                        SuggestionsCollection.Add(new MediaDataItemCollection
+                        {
+                            Name = "Favorite Albums",
+                            LatestItems = FavoriteMusicAlbums
+                        });
+                    }
+
+                    BaseItemDtoQueryResult MusicFavoriteSongs = await JellyfinClientServices.Current.ItemsClient.GetItemsByUserIdAsync(
+                        userId: App.Current.AppUser.User.Id,
+                        parentId: UserView.Id,
+                        sortBy: new string[]
+                        {
+                            "SortName"
+                        },
+                        sortOrder: new SortOrder[]
+                        {
+                            SortOrder.Ascending
+                        },
+                        includeItemTypes: new string[]
+                        {
+                            "Audio"
+                        },
+                        collapseBoxSetItems: false,
+                        recursive: true,
+                        fields: new ItemFields[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.BasicSyncInfo
+                        },
+                        filters: new ItemFilter[]
+                        {
+                            ItemFilter.IsFavorite
+                        },
+                        limit: 10,
+                        enableImageTypes: new ImageType[]
+                        {
+                            ImageType.Primary,
+                            ImageType.Backdrop,
+                            ImageType.Banner,
+                            ImageType.Thumb
+                        },
+                        imageTypeLimit: 1,
+                        excludeLocationTypes: new LocationType[] { LocationType.Virtual });
+
+                    if (MusicFavoriteSongs.Items.Count > 0)
+                    {
+                        List<MediaDataItem> FavoriteMusicSongs = new List<MediaDataItem>();
+
+                        foreach (BaseItemDto item in MusicFavoriteSongs.Items)
+                        {
+                            FavoriteMusicSongs.Add(new MediaDataItem
+                            {
+                                BaseItem = item,
+                                Height = 300,
+                                Width = 300
+                            });
+                        }
+
+                        SuggestionsCollection.Add(new MediaDataItemCollection
+                        {
+                            Name = "Favorite Songs",
+                            LatestItems = FavoriteMusicSongs
+                        });
+                    }
+
+                    JellyfinClientServices.Current.ArtistsClient = new ArtistsClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+                    BaseItemDtoQueryResult MusicFavoriteArtists = await JellyfinClientServices.Current.ArtistsClient.GetArtistsAsync(
+                        userId: App.Current.AppUser.User.Id,
+                        filters: new ItemFilter[]
+                        { 
+                            ItemFilter.IsFavorite
+                        },
+                        fields: new ItemFields[]
+                        { 
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.BasicSyncInfo
+                        },
+                        parentId: UserView.Id);
+
+                    if (MusicFavoriteArtists.Items.Count > 0)
+                    {
+                        List<MediaDataItem> FavoriteMusicArtists = new List<MediaDataItem>();
+
+                        foreach (BaseItemDto item in MusicFavoriteArtists.Items)
+                        {
+                            FavoriteMusicArtists.Add(new MediaDataItem
+                            {
+                                BaseItem = item,
+                                Height = 300,
+                                Width = 300
+                            });
+                        }
+
+                        SuggestionsCollection.Add(new MediaDataItemCollection
+                        {
+                            Name = "Favorite Songs",
+                            LatestItems = FavoriteMusicArtists
+                        });
+                    }
 
                     break;
+                #endregion
                 default:
+                    ExceptionLogger.LogException(new Exception("Unknown Collection Type") { Source = "SuggestionsCollection" });
                     break;
             }
 
