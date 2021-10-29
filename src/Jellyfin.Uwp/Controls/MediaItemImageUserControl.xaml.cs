@@ -34,16 +34,25 @@ namespace Jellyfin.Controls
 
         #region Dependency Properties
 
-        public static readonly DependencyProperty MediaIdProperty = DependencyProperty.Register(
-            "MediaId", typeof(Guid), typeof(MediaItemImageUserControl), new PropertyMetadata(default(Guid), OnMediaIdChanged));
+        //public static readonly DependencyProperty MediaIdProperty = DependencyProperty.Register(
+        //    "MediaId", typeof(Guid), typeof(MediaItemImageUserControl), new PropertyMetadata(default(Guid), OnMediaIdChanged));
 
         public static readonly DependencyProperty DesiredImageTypeProperty = DependencyProperty.Register(
             "DesiredImageType", typeof(ImageType), typeof(MediaItemImageUserControl), new PropertyMetadata(ImageType.Primary));
 
-        public Guid MediaId
+        public static readonly DependencyProperty MediaProperty = DependencyProperty.Register(
+            "Media", typeof(BaseItemDto), typeof(MediaItemImageUserControl), new PropertyMetadata(null, OnMediaChanged));
+
+        //public Guid MediaId
+        //{
+        //    get => (Guid)GetValue(MediaIdProperty);
+        //    set => SetValue(MediaIdProperty, value);
+        //}
+
+        public BaseItemDto Media
         {
-            get => (Guid)GetValue(MediaIdProperty);
-            set => SetValue(MediaIdProperty, value);
+            get => (BaseItemDto)GetValue(MediaProperty);
+            set => SetValue(MediaProperty, value);
         }
 
         public ImageType DesiredImageType
@@ -52,7 +61,7 @@ namespace Jellyfin.Controls
             set => SetValue(DesiredImageTypeProperty, value);
         }
 
-        private static async void OnMediaIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void OnMediaChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is MediaItemImageUserControl self)
             {
@@ -68,24 +77,31 @@ namespace Jellyfin.Controls
             }
         }
 
+        //private static async void OnMediaIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
+        //    if (d is MediaItemImageUserControl self)
+        //    {
+        //        if (e.NewValue != null)
+        //        {
+        //            await self.LoadImageAsync();
+        //        }
+
+        //        if (e.NewValue == null)
+        //        {
+        //            self.ItemImage.Source = null;
+        //        }
+        //    }
+        //}
+
         #endregion
 
         #region Local Methods
 
         private async Task LoadImageAsync()
         {
-            //var height = this.Height;
-            //var width = this.Width;
-
-            //BitmapImage bitmapImage = new BitmapImage
-            //{
-            //    DecodePixelHeight = Convert.ToInt32(this.Height),
-            //    DecodePixelWidth = Convert.ToInt32(this.Width)
-            //};
-
             // Set FileName without Extension
             // Accounts for various image types.
-            string cacheFileName = $"{this.MediaId}-{this.DesiredImageType}";
+            string cacheFileName = $"{this.Media.Id}-{this.DesiredImageType}";
 
             // Verify that an image exists by {filename}.*
             DirectoryInfo root = new DirectoryInfo(ApplicationData.Current.LocalCacheFolder.Path);
@@ -119,7 +135,7 @@ namespace Jellyfin.Controls
                     using (MemoryStream ms = new MemoryStream())
                     {
                         // Get the API response
-                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(this.MediaId, this.DesiredImageType);
+                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(this.Media.Id, this.DesiredImageType);
 
                         // Copy the API stream into a MemoryStream
                         await fr.Stream.CopyToAsync(ms);
@@ -152,9 +168,6 @@ namespace Jellyfin.Controls
                     ExceptionLogger.LogException(ex);
                 }
             }
-
-            // Finally assign the ImageSource to the Image
-            //this.ItemImage.Source = bitmapImage;
         }
 
         #endregion
