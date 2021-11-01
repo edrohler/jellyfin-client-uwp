@@ -29,25 +29,16 @@ namespace Jellyfin.Controls
     {
         public MediaItemImageUserControl()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         #region Dependency Properties
-
-        //public static readonly DependencyProperty MediaIdProperty = DependencyProperty.Register(
-        //    "MediaId", typeof(Guid), typeof(MediaItemImageUserControl), new PropertyMetadata(default(Guid), OnMediaIdChanged));
 
         public static readonly DependencyProperty DesiredImageTypeProperty = DependencyProperty.Register(
             "DesiredImageType", typeof(ImageType), typeof(MediaItemImageUserControl), new PropertyMetadata(ImageType.Primary));
 
         public static readonly DependencyProperty MediaProperty = DependencyProperty.Register(
             "Media", typeof(BaseItemDto), typeof(MediaItemImageUserControl), new PropertyMetadata(null, OnMediaChanged));
-
-        //public Guid MediaId
-        //{
-        //    get => (Guid)GetValue(MediaIdProperty);
-        //    set => SetValue(MediaIdProperty, value);
-        //}
 
         public BaseItemDto Media
         {
@@ -77,22 +68,6 @@ namespace Jellyfin.Controls
             }
         }
 
-        //private static async void OnMediaIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-        //    if (d is MediaItemImageUserControl self)
-        //    {
-        //        if (e.NewValue != null)
-        //        {
-        //            await self.LoadImageAsync();
-        //        }
-
-        //        if (e.NewValue == null)
-        //        {
-        //            self.ItemImage.Source = null;
-        //        }
-        //    }
-        //}
-
         #endregion
 
         #region Local Methods
@@ -101,7 +76,26 @@ namespace Jellyfin.Controls
         {
             // Set FileName without Extension
             // Accounts for various image types.
-            string cacheFileName = $"{this.Media.Id}-{this.DesiredImageType}";
+            // Sinlge Episodes and Single Audio Songe
+            // need to get parent data.
+            string cacheFileName;
+            Guid mediaId;
+
+            switch (Media.Type)
+            {
+                case "Episode":
+                    mediaId = (Guid)Media.SeriesId;
+                    cacheFileName = $"{Media.SeriesId}-{DesiredImageType}";
+                    break;
+                case "Audio":
+                    mediaId = (Guid)Media.AlbumId;
+                    cacheFileName = $"{Media.AlbumId}-{DesiredImageType}";
+                    break;
+                default:
+                    mediaId = Media.Id;
+                    cacheFileName = $"{Media.Id}-{DesiredImageType}";
+                    break;
+            }
 
             // Verify that an image exists by {filename}.*
             DirectoryInfo root = new DirectoryInfo(ApplicationData.Current.LocalCacheFolder.Path);
@@ -135,7 +129,7 @@ namespace Jellyfin.Controls
                     using (MemoryStream ms = new MemoryStream())
                     {
                         // Get the API response
-                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(this.Media.Id, this.DesiredImageType);
+                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(mediaId, DesiredImageType);
 
                         // Copy the API stream into a MemoryStream
                         await fr.Stream.CopyToAsync(ms);
