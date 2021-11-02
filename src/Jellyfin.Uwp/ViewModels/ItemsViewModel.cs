@@ -213,6 +213,7 @@ namespace Jellyfin.ViewModels
                         width = 300;
                     }
 
+                    // TODO: Add Title and Subtitle for MediaItemControl
                     GridItems.Add(new MediaDataItem
                     {
                         BaseItem = item,

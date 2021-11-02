@@ -15,6 +15,9 @@ namespace Jellyfin.ViewModels
         public ObservableCollection<MediaDataItemCollection> LatestMedia { get; set; }
         public ObservableCollection<MediaDataItem> Libraries { get; set; }
 
+        // TODO: Add Continue Watching Section
+        // TODO: Add Up Next Section
+
         public HomeViewModel()
         {
             LatestMedia = new ObservableCollection<MediaDataItemCollection>();
@@ -135,6 +138,7 @@ namespace Jellyfin.ViewModels
                             width = 300;
                         }
 
+                        // TODO: Add Title and Subtitle for MediaItemUserControl
                         ltmiList.Add(new MediaDataItem
                         {
                             BaseItem = LatestMediaItem,

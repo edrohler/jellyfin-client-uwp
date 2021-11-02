@@ -85,6 +85,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> movieList = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MoviesContinueWatching.Items)
                         {
                             movieList.Add(new MediaDataItem
@@ -129,6 +130,8 @@ namespace Jellyfin.ViewModels
                     if (MoviesLatestItems.Count > 0)
                     {
                         List<MediaDataItem> latestMovies = new List<MediaDataItem>();
+                        
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MoviesLatestItems)
                         {
                             latestMovies.Add(new MediaDataItem
@@ -170,6 +173,7 @@ namespace Jellyfin.ViewModels
                                 case RecommendationType.SimilarToRecentlyPlayed:
                                     recoList = new List<MediaDataItem>();
 
+                                    // TODO: Add Title and Subtitle for MediaItemControl
                                     foreach (BaseItemDto item in recoItem.Items)
                                     {
                                         recoList.Add(new MediaDataItem
@@ -190,6 +194,7 @@ namespace Jellyfin.ViewModels
                                 case RecommendationType.SimilarToLikedItem:
                                     recoList = new List<MediaDataItem>();
 
+                                    // TODO: Add Title and Subtitle for MediaItemControl
                                     foreach (BaseItemDto item in recoItem.Items)
                                     {
                                         recoList.Add(new MediaDataItem
@@ -210,6 +215,7 @@ namespace Jellyfin.ViewModels
                                 case RecommendationType.HasDirectorFromRecentlyPlayed:
                                     recoList = new List<MediaDataItem>();
 
+                                    // TODO: Add Title and Subtitle for MediaItemControl
                                     foreach (BaseItemDto item in recoItem.Items)
                                     {
                                         recoList.Add(new MediaDataItem
@@ -230,6 +236,7 @@ namespace Jellyfin.ViewModels
                                 case RecommendationType.HasActorFromRecentlyPlayed:
                                     recoList = new List<MediaDataItem>();
 
+                                    // TODO: Add Title and Subtitle for MediaItemControl
                                     foreach (BaseItemDto item in recoItem.Items)
                                     {
                                         recoList.Add(new MediaDataItem
@@ -249,7 +256,8 @@ namespace Jellyfin.ViewModels
                                     break;
                                 default:
                                     recoList = new List<MediaDataItem>();
-
+                                    
+                                    // TODO: Add Title and Subtitle for MediaItemControl
                                     foreach (BaseItemDto item in recoItem.Items)
                                     {
                                         recoList.Add(new MediaDataItem
@@ -323,6 +331,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> tvShowsList = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in TvShowsContinueWatching.Items)
                         {
                             tvShowsList.Add(new MediaDataItem
@@ -366,6 +375,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> latestTvShows = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in TvShowsLatestItems)
                         {
                             latestTvShows.Add(new MediaDataItem
@@ -402,6 +412,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> nextUpList = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in NextUpEpisodes.Items)
                         {
                             nextUpList.Add(new MediaDataItem
@@ -458,6 +469,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> LatestMusicItems = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MusicLatestItems)
                         {
                             LatestMusicItems.Add(new MediaDataItem
@@ -516,6 +528,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> RecentlyPlayedMusicItems = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MusicRecentlyPlayed.Items)
                         {
                             RecentlyPlayedMusicItems.Add(new MediaDataItem
@@ -574,6 +587,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> MostPlayedMusic = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MusicMostPlayed.Items)
                         {
                             MostPlayedMusic.Add(new MediaDataItem
@@ -632,6 +646,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> FavoriteMusicAlbums = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MusicFavoriteAlbums.Items)
                         {
                             FavoriteMusicAlbums.Add(new MediaDataItem
@@ -690,6 +705,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> FavoriteMusicSongs = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MusicFavoriteSongs.Items)
                         {
                             FavoriteMusicSongs.Add(new MediaDataItem
@@ -725,6 +741,7 @@ namespace Jellyfin.ViewModels
                     {
                         List<MediaDataItem> FavoriteMusicArtists = new List<MediaDataItem>();
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         foreach (BaseItemDto item in MusicFavoriteArtists.Items)
                         {
                             FavoriteMusicArtists.Add(new MediaDataItem
