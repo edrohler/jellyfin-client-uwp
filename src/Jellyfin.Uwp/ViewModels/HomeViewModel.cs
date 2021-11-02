@@ -98,54 +98,6 @@ namespace Jellyfin.ViewModels
                                     limit: 20
                                 );
                             break;
-                        //case "homevideos":
-                        //    LatestMediaItems =
-                        //        await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
-                        //            App.Current.AppUser.User.Id,
-                        //            parentId: item.BaseItem.Id,
-                        //            fields: new ItemFields[] {
-                        //                ItemFields.PrimaryImageAspectRatio,
-                        //                ItemFields.BasicSyncInfo,
-                        //                ItemFields.Path
-                        //            },
-                        //            imageTypeLimit: 1,
-                        //            enableImages: true,
-                        //            enableImageTypes: new ImageType[] { ImageType.Primary },
-                        //            limit: 20
-                        //        );
-                        //    break;
-                        //case "music":
-                        //    LatestMediaItems =
-                        //        await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
-                        //            App.Current.AppUser.User.Id,
-                        //            parentId: item.BaseItem.Id,
-                        //            fields: new ItemFields[] {
-                        //                ItemFields.PrimaryImageAspectRatio,
-                        //                ItemFields.BasicSyncInfo,
-                        //                ItemFields.Path
-                        //            },
-                        //            imageTypeLimit: 1,
-                        //            enableImages: true,
-                        //            enableImageTypes: new ImageType[] { ImageType.Primary },
-                        //            limit: 20
-                        //        );
-                        //    break;
-                        //case "books":
-                        //    LatestMediaItems =
-                        //        await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
-                        //            App.Current.AppUser.User.Id,
-                        //            parentId: item.BaseItem.Id,
-                        //            fields: new ItemFields[] {
-                        //                ItemFields.PrimaryImageAspectRatio,
-                        //                ItemFields.BasicSyncInfo,
-                        //                ItemFields.Path
-                        //            },
-                        //            imageTypeLimit: 1,
-                        //            enableImages: true,
-                        //            enableImageTypes: new ImageType[] { ImageType.Primary },
-                        //            limit: 20
-                        //        );
-                        //    break;
                         default:
                             LatestMediaItems =
                                 await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
@@ -163,7 +115,6 @@ namespace Jellyfin.ViewModels
                                 );
                             break;
                     }
-
 
                     List<MediaDataItem> ltmiList = new List<MediaDataItem>();
 

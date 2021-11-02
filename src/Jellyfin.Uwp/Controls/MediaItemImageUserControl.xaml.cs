@@ -129,7 +129,7 @@ namespace Jellyfin.Controls
                     using (MemoryStream ms = new MemoryStream())
                     {
                         // Get the API response
-                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(mediaId, DesiredImageType);
+                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(mediaId, DesiredImageType, addPlayedIndicator: true);
 
                         // Copy the API stream into a MemoryStream
                         await fr.Stream.CopyToAsync(ms);

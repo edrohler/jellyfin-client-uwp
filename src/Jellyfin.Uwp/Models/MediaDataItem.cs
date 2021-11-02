@@ -12,6 +12,8 @@ namespace Jellyfin.Models
     {
         public BaseItemDto BaseItem { get; set; }
         public TimeSpan UpdateInterval { get; set; }
+        public string Title { get; set; }
+        public string SubTitle { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
     }
