@@ -79,7 +79,7 @@ namespace Jellyfin.ViewModels
                             ImageType.Banner,
                             ImageType.Thumb
                         },
-                        enableTotalRecordCount: false);
+                        enableTotalRecordCount: true);
 
                     if (MoviesContinueWatching.TotalRecordCount > 0)
                     {
@@ -394,7 +394,6 @@ namespace Jellyfin.ViewModels
                     }
 
                     // Next Up Episodes
-                    JellyfinClientServices.Current.TvShowsClient = new TvShowsClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
                     BaseItemDtoQueryResult NextUpEpisodes = await JellyfinClientServices.Current.TvShowsClient.GetNextUpAsync(
                         userId: App.Current.AppUser.User.Id,
                         parentId: UserView.Id,
