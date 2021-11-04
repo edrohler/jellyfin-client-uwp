@@ -142,6 +142,13 @@ namespace Jellyfin.ViewModels
 
                 foreach (BaseItemDto item in TvShowsContinueWatching.Items)
                 {
+                    switch (item.Type)
+                    {
+                        default:
+                            Console.WriteLine();
+                            break;
+                    }
+
                     ContinueWatchingTvShowsCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
