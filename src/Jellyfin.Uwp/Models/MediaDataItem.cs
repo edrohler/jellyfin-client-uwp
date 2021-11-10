@@ -12,5 +12,6 @@ namespace Jellyfin.Models
         public string SubTitle { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
+        public int UnwatchedCount { get; set; }
     }
 }
