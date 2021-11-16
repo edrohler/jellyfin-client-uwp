@@ -187,7 +187,7 @@ namespace Jellyfin.ViewModels
 
                 foreach (BaseItemDto item in MusicContinueListening.Items)
                 {
-                    ContinueWatchingTvShowsCollection.Add(new MediaDataItem
+                    ContinueListeningMusicCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
                         Height = 300,
