@@ -104,6 +104,7 @@ namespace Jellyfin.ViewModels
 
                 foreach (BaseItemDto item in LiveTvRecomendations.Items)
                 {
+                    // TODO: Add Title and Subtitle for MediaItemControl
                     LiveTvRecommendationCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
@@ -149,6 +150,7 @@ namespace Jellyfin.ViewModels
                             break;
                     }
 
+                    // TODO: Add Title and Subtitle for MediaItemControl
                     ContinueWatchingTvShowsCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
@@ -187,6 +189,7 @@ namespace Jellyfin.ViewModels
 
                 foreach (BaseItemDto item in MusicContinueListening.Items)
                 {
+                    // TODO: Add Title and Subtitle for MediaItemControl
                     ContinueListeningMusicCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
@@ -218,6 +221,7 @@ namespace Jellyfin.ViewModels
 
                 foreach (BaseItemDto item in NextUpEpisodes.Items)
                 {
+                    // TODO: Add Title and Subtitle for MediaItemControl
                     NextUpCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
@@ -319,7 +323,7 @@ namespace Jellyfin.ViewModels
                             width = 300;
                         }
 
-                        // TODO: Add Title and Subtitle for MediaItemUserControl
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         ltmiList.Add(new MediaDataItem
                         {
                             BaseItem = LatestMediaItem,
