@@ -70,6 +70,7 @@ namespace Jellyfin.ViewModels
                 Libraries.Add(new MediaDataItem
                 {
                     BaseItem = item,
+                    Title = item.Name,
                     UpdateInterval = new TimeSpan(0, 0, new Random().Next(5, 15)),
                     Height = 405,
                     Width = 720
@@ -104,10 +105,11 @@ namespace Jellyfin.ViewModels
 
                 foreach (BaseItemDto item in LiveTvRecomendations.Items)
                 {
-                    // TODO: Add Title and Subtitle for MediaItemControl
+                    // TODO: Add Subtitle for MediaItemControl
                     LiveTvRecommendationCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
+                        Title = item.Name,
                         Height = 486,
                         Width = 324,
                     });
@@ -154,6 +156,8 @@ namespace Jellyfin.ViewModels
                     ContinueWatchingTvShowsCollection.Add(new MediaDataItem
                     {
                         BaseItem = item,
+                        Title = item.SeriesName,
+                        SubTitle = $"{item.Name} - {item.Name}",
                         Height = 324,
                         Width = 486,
                     });

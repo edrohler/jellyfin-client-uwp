@@ -5,11 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives"
-             xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
              mc:Ignorable="d"
              d:DesignHeight="400"
              d:DesignWidth="400">
-
     <StackPanel Orientation="Vertical"
                 Margin="15,15,10,10">
         <telerikPrimitives:RadHubTile x:Name="MediaHubTile"
@@ -27,23 +25,15 @@
         <Grid x:Name="MediaTitleMarquee">
             <Grid.RowDefinitions>
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Grid.Resources>
-                <Storyboard x:Name="MarqueeAnimation">
-                    <DoubleAnimation Storyboard.TargetName="TitleScrollerCanvas"
-                                     Storyboard.TargetProperty="(Canvas.Left)"
-                                     Duration="0:0:10"
-                                     From="295"
-                                     To="-600"
-                                     RepeatBehavior="Forever" />
-                </Storyboard>
-            </Grid.Resources>
             <Button x:Name="TitlePlayButton"
                     Grid.Row="0"
+                    Grid.RowSpan="2"
                     Grid.Column="1"
                     HorizontalAlignment="Right"
                     FontFamily="Segoe MDL2 Assets"
@@ -51,18 +41,23 @@
                 <SymbolIcon Symbol="Play">
                 </SymbolIcon>
             </Button>
-            <Canvas x:Name="TitleScrollerCanvas"
-                    Width="295"
-                    Loaded="TitleScrollerCanvas_Loaded">
-                <Canvas.Clip>
-                    <RectangleGeometry Rect="0,0,295,100" />
-                </Canvas.Clip>
-                <TextBlock x:Name="TitleText"
-                           Text="{Binding BaseItem.Name}"
-                           FontSize="24"
-                           MaxWidth="{Binding Width}"
-                           TextAlignment="Left" />
-            </Canvas>
+            <TextBlock x:Name="TitleText"
+                       Grid.Row="0"
+                       Grid.Column="0"
+                       Text="{Binding BaseItem.Name}"
+                       FontSize="24"
+                       MaxWidth="{Binding Width}"
+                       TextAlignment="Left">
+            </TextBlock>
+            <TextBlock x:Name="SubTitleText"
+                       Grid.Row="1"
+                       Grid.Column="0"
+                       FontSize="24"
+                       Text="SUBTITLE"
+                       Foreground="Gray"
+                       MaxHeight="{Binding Width}"
+                       TextAlignment="Left">
+            </TextBlock>
         </Grid>
     </StackPanel>
 </UserControl>

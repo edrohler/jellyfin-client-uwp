@@ -16,15 +16,13 @@
                                            Height="{Binding Height}"
                                            Width="{Binding Width}">
             <telerikPrimitives:RadSlideHubTile.TopContent>
-                <TextBlock Text="{Binding BaseItem.Name}"
+                <TextBlock Text="{Binding Title}"
                            FontSize="96"
                            HorizontalAlignment="Stretch"
                            VerticalAlignment="Bottom" />
             </telerikPrimitives:RadSlideHubTile.TopContent>
             <telerikPrimitives:RadSlideHubTile.BottomContent>
                 <local:MediaItemImageUserControl Media="{Binding BaseItem}" Height="{Binding Height}" Width="{Binding Width}"/>
-                <!--<Image Source="{Binding ImageSource}"
-                       Stretch="Uniform" />-->
             </telerikPrimitives:RadSlideHubTile.BottomContent>
         </telerikPrimitives:RadSlideHubTile>
     </Grid>
