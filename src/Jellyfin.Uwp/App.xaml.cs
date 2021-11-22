@@ -220,6 +220,11 @@ namespace Jellyfin
                 SdkClientSettings,
                 DefaultHttpClient);
 
+            // Configure Tv Shows Client
+            JellyfinClientServices.Current.TvShowsClient = new TvShowsClient(
+                SdkClientSettings,
+                DefaultHttpClient);
+
         }
 
         public HttpClient ConfigureDefaultHttpClient()

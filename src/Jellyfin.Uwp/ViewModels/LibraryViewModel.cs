@@ -14,22 +14,25 @@ namespace Jellyfin.ViewModels
 {
     public class LibraryViewModel : ViewModelBase
     {
-        public string LibraryTitle { get; set; }
-        public bool IsPaneVisible { get; set; } = true;
-        BaseItemDto BaseItem { get; set; }
+        private string libraryTitle;
+        private bool isPaneVisible;
+        private BaseItemDto userView;
+
+        public string LibraryTitle { get => libraryTitle; set => SetProperty(ref libraryTitle, value); }
+        public bool IsPaneVisible { get => isPaneVisible; set => SetProperty(ref isPaneVisible, value); }
+        public BaseItemDto UserView { get => userView; set => SetProperty(ref userView, value); }
 
         public ObservableCollection<MenuDataItem> LibraryPageMenuItems { get; set; }
 
         public LibraryViewModel()
         {
             LibraryPageMenuItems = new ObservableCollection<MenuDataItem>();
-
         }
 
         public void PageReady(Guid LibraryId)
         {
-            BaseItem = App.Current.UserViews.Items.FirstOrDefault(i => i.Id == LibraryId);
-            LoadMenuItems(BaseItem.CollectionType);
+            UserView = App.Current.UserViews.Items.FirstOrDefault(i => i.Id == LibraryId);
+            LoadMenuItems(UserView.CollectionType);
         }
 
         private void LoadMenuItems(string collectionType)
@@ -37,45 +40,47 @@ namespace Jellyfin.ViewModels
             switch (collectionType)
             {
                 case "tvshows":
-                    LibraryTitle = BaseItem.Name;
+                    LibraryTitle = UserView.Name;
                     string[] tvshowsMenuItems = { "Shows", "Suggestions", "Upcoming", "Genres", "Networks", "Episodes" };
                     foreach (string item in tvshowsMenuItems)
                     {
                         LibraryPageMenuItems.Add(new MenuDataItem
                         {
                             Name = item,
-                            Id = BaseItem.Id
+                            Id = UserView.Id
                         });
                     }
-
+                    IsPaneVisible = true;
                     break;
                 case "movies":
-                    LibraryTitle = BaseItem.Name;
+                    LibraryTitle = UserView.Name;
                     string[] moviesMenuItems = { "Movies", "Suggestions", "Trailers", "Favorites", "Collections", "Genres" };
                     foreach (string item in moviesMenuItems)
                     {
                         LibraryPageMenuItems.Add(new MenuDataItem
                         {
                             Name = item,
-                            Id = BaseItem.Id
+                            Id = UserView.Id
                         });
                     }
+                    IsPaneVisible = true;
                     break;
                 case "music":
-                    LibraryTitle = BaseItem.Name;
+                    LibraryTitle = UserView.Name;
                     string[] musicMenuItems = { "Albums", "Suggestions", "Album Artists", "Artists", "Playlists", "Songs", "Genres" };
                     foreach (string item in musicMenuItems)
                     {
                         LibraryPageMenuItems.Add(new MenuDataItem
                         {
                             Name = item,
-                            Id = BaseItem.Id
+                            Id = UserView.Id
                         });
                     }
+                    IsPaneVisible = true;
                     break;
                 default:
                     // No Menu Items for Audiobooks, Videos, Photos, Collections
-                    LibraryTitle = BaseItem.Name;
+                    LibraryTitle = UserView.Name;
                     IsPaneVisible = false;
                     // Play All, Shuffle, Sort, Filter
                     break;

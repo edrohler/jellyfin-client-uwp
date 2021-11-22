@@ -5,6 +5,7 @@ using Jellyfin.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -12,21 +13,54 @@ namespace Jellyfin.ViewModels
 {
     public class HomeViewModel : ViewModelBase
     {
-        public ObservableCollection<LatestMedia> LatestMedia { get; set; }
+
+        private bool hasLiveTvRecommendations;
+        private bool hasContinueWatchingTvShows;
+        private bool hasContinueListeningMusic;
+        private bool hasNextUp;
+        
+        public bool HasLiveTvRecommendations { get => hasLiveTvRecommendations; set => SetProperty(ref hasLiveTvRecommendations, value); }
+        public bool HasContinueWatchingTvShows { get => hasContinueWatchingTvShows; set => SetProperty(ref hasContinueWatchingTvShows, value); }
+        public bool HasContinueListeningMusic { get => hasContinueListeningMusic; set => SetProperty(ref hasContinueListeningMusic, value); }
+        public bool HasNextUp { get => hasNextUp; set => SetProperty(ref hasNextUp, value); }
+
+        public ObservableCollection<MediaDataItem> LiveTvRecommendationCollection { get; set; }
+        public ObservableCollection<MediaDataItem> ContinueWatchingTvShowsCollection { get; set; }
+        public ObservableCollection<MediaDataItem> ContinueListeningMusicCollection { get; set; }
+        public ObservableCollection<MediaDataItem> NextUpCollection { get; set; }
+        public ObservableCollection<MediaDataItemCollection> LatestMedia { get; set; }
         public ObservableCollection<MediaDataItem> Libraries { get; set; }
 
         public HomeViewModel()
         {
-            LatestMedia = new ObservableCollection<LatestMedia>();
+            HasLiveTvRecommendations = false;
+            HasContinueWatchingTvShows = false;
+            HasContinueListeningMusic = false;
+            HasNextUp = false;
+            LatestMedia = new ObservableCollection<MediaDataItemCollection>();
             Libraries = new ObservableCollection<MediaDataItem>();
         }
 
         //Load Home Page Content
         public async Task PageReadyAsync()
         {
+            IsBusy = true;
+            IsBusyMessage = "Loading Page Content..";
+
             LoadLibraries();
 
+            await LoadLiveTvRecommendations();
+
+            await LoadContinueWatchingTvShows();
+
+            await LoadContinueListeningMusic();
+
+            await LoadNextUp();
+
             await LoadLatestMedia();
+
+            IsBusy = false;
+            IsBusyMessage = "";
         }
 
         private void LoadLibraries()
@@ -43,10 +77,164 @@ namespace Jellyfin.ViewModels
             }
         }
 
+        private async Task LoadLiveTvRecommendations()
+        {
+            JellyfinClientServices.Current.LiveTvClient = new LiveTvClient(App.Current.SdkClientSettings, App.Current.DefaultHttpClient);
+            BaseItemDtoQueryResult LiveTvRecomendations = await JellyfinClientServices.Current.LiveTvClient.GetRecommendedProgramsAsync(
+                userId: App.Current.AppUser.User.Id,
+                isAiring: true,
+                limit:1,
+                imageTypeLimit:1,
+                enableImageTypes: new ImageType[]
+                {
+                    ImageType.Primary,
+                    ImageType.Thumb,
+                    ImageType.Backdrop
+                },
+                fields: new ItemFields[]
+                {
+                    ItemFields.ChannelInfo,
+                    ItemFields.PrimaryImageAspectRatio
+                });
+
+            if (LiveTvRecomendations.TotalRecordCount > 0)
+            {
+                HasLiveTvRecommendations = true;
+                LiveTvRecommendationCollection = new ObservableCollection<MediaDataItem>();
+
+                foreach (BaseItemDto item in LiveTvRecomendations.Items)
+                {
+                    // TODO: Add Title and Subtitle for MediaItemControl
+                    LiveTvRecommendationCollection.Add(new MediaDataItem
+                    {
+                        BaseItem = item,
+                        Height = 486,
+                        Width = 324,
+                    });
+                }
+            }
+        }
+
+        private async Task LoadContinueWatchingTvShows()
+        {
+            BaseItemDtoQueryResult TvShowsContinueWatching = await JellyfinClientServices.Current.ItemsClient.GetResumeItemsAsync(
+                App.Current.AppUser.User.Id,
+                limit: 12,
+                fields: new ItemFields[]
+                {
+                    ItemFields.PrimaryImageAspectRatio,
+                    ItemFields.BasicSyncInfo
+                },
+                enableImageTypes: new ImageType[]
+                {
+                    ImageType.Primary,
+                    ImageType.Backdrop,
+                    ImageType.Thumb
+                },
+                mediaTypes: new string[]
+                {
+                    "Video"
+                });
+
+            if (TvShowsContinueWatching.TotalRecordCount > 0)
+            {
+                HasContinueWatchingTvShows = true;
+                ContinueWatchingTvShowsCollection = new ObservableCollection<MediaDataItem>();
+
+                foreach (BaseItemDto item in TvShowsContinueWatching.Items)
+                {
+                    switch (item.Type)
+                    {
+                        default:
+                            Console.WriteLine();
+                            break;
+                    }
+
+                    // TODO: Add Title and Subtitle for MediaItemControl
+                    ContinueWatchingTvShowsCollection.Add(new MediaDataItem
+                    {
+                        BaseItem = item,
+                        Height = 324,
+                        Width = 486,
+                    });
+                }
+            }
+        }
+
+        private async Task LoadContinueListeningMusic()
+        {
+            BaseItemDtoQueryResult MusicContinueListening = await JellyfinClientServices.Current.ItemsClient.GetResumeItemsAsync(
+                App.Current.AppUser.User.Id,
+                limit: 12,
+                fields: new ItemFields[]
+                {
+                    ItemFields.PrimaryImageAspectRatio,
+                    ItemFields.BasicSyncInfo
+                },
+                enableImageTypes: new ImageType[]
+                {
+                    ImageType.Primary,
+                    ImageType.Backdrop,
+                    ImageType.Thumb
+                },
+                mediaTypes: new string[]
+                {
+                    "Audio"
+                });
+
+            if (MusicContinueListening.TotalRecordCount > 0)
+            {
+                HasContinueListeningMusic = true;
+                ContinueListeningMusicCollection = new ObservableCollection<MediaDataItem>();
+
+                foreach (BaseItemDto item in MusicContinueListening.Items)
+                {
+                    // TODO: Add Title and Subtitle for MediaItemControl
+                    ContinueListeningMusicCollection.Add(new MediaDataItem
+                    {
+                        BaseItem = item,
+                        Height = 300,
+                        Width = 300,
+                    });
+                }
+            }
+        }
+
+        private async Task LoadNextUp()
+        {
+            BaseItemDtoQueryResult NextUpEpisodes = await JellyfinClientServices.Current.TvShowsClient.GetNextUpAsync(
+            userId: App.Current.AppUser.User.Id,
+            limit: 24,
+            imageTypeLimit: 1,
+            enableImageTypes: new ImageType[]
+            {
+                ImageType.Primary,
+                ImageType.Backdrop,
+                ImageType.Thumb
+            },
+            enableTotalRecordCount: true);
+
+            if (NextUpEpisodes.TotalRecordCount > 0)
+            {
+                HasNextUp = true;
+                NextUpCollection = new ObservableCollection<MediaDataItem>();
+
+                foreach (BaseItemDto item in NextUpEpisodes.Items)
+                {
+                    // TODO: Add Title and Subtitle for MediaItemControl
+                    NextUpCollection.Add(new MediaDataItem
+                    {
+                        BaseItem = item,
+                        Height = 324,
+                        Width = 486,
+                    });
+                }
+            }
+        }
+
         private async Task LoadLatestMedia()
         {
-            IsBusy = true;
-            IsBusyMessage = "Loading Page Content..";
+
 
             foreach (MediaDataItem item in Libraries)
             {
@@ -98,22 +286,7 @@ namespace Jellyfin.ViewModels
                                     limit: 20
                                 );
                             break;
-                        case "homevideos":
-                            LatestMediaItems =
-                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.User.Id,
-                                    parentId: item.BaseItem.Id,
-                                    fields: new ItemFields[] {
-                                        ItemFields.PrimaryImageAspectRatio,
-                                        ItemFields.BasicSyncInfo,
-                                        ItemFields.Path
-                                    },
-                                    imageTypeLimit: 1,
-                                    enableImages: true,
-                                    enableImageTypes: new ImageType[] { ImageType.Primary },
-                                    limit: 20
-                                );
-                            break;
-                        case "music":
+                        default:
                             LatestMediaItems =
                                 await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(
                                     App.Current.AppUser.User.Id,
@@ -129,38 +302,7 @@ namespace Jellyfin.ViewModels
                                     limit: 20
                                 );
                             break;
-                        case "books":
-                            LatestMediaItems =
-                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.User.Id,
-                                    parentId: item.BaseItem.Id,
-                                    fields: new ItemFields[] {
-                                        ItemFields.PrimaryImageAspectRatio,
-                                        ItemFields.BasicSyncInfo,
-                                        ItemFields.Path
-                                    },
-                                    imageTypeLimit: 1,
-                                    enableImages: true,
-                                    enableImageTypes: new ImageType[] { ImageType.Primary },
-                                    limit: 20
-                                );
-                            break;
-                        default:
-                            LatestMediaItems =
-                                await JellyfinClientServices.Current.UserLibraryClient.GetLatestMediaAsync(App.Current.AppUser.User.Id,
-                                    parentId: item.BaseItem.Id,
-                                    fields: new ItemFields[] {
-                                        ItemFields.PrimaryImageAspectRatio,
-                                        ItemFields.BasicSyncInfo,
-                                        ItemFields.Path
-                                    },
-                                    imageTypeLimit: 1,
-                                    enableImages: true,
-                                    enableImageTypes: new ImageType[] { ImageType.Primary },
-                                    limit: 20
-                                );
-                            break;
                     }
-
 
                     List<MediaDataItem> ltmiList = new List<MediaDataItem>();
 
@@ -181,6 +323,7 @@ namespace Jellyfin.ViewModels
                             width = 300;
                         }
 
+                        // TODO: Add Title and Subtitle for MediaItemControl
                         ltmiList.Add(new MediaDataItem
                         {
                             BaseItem = LatestMediaItem,
@@ -190,16 +333,13 @@ namespace Jellyfin.ViewModels
                         });
                     }
 
-                    LatestMedia.Add(new LatestMedia
+                    LatestMedia.Add(new MediaDataItemCollection
                     {
                         Name = $"Latest {item.BaseItem.Name}",
                         LatestItems = ltmiList
                     });
                 }
             }
-
-            IsBusy = false;
-            IsBusyMessage = "";
         }
     }
 }

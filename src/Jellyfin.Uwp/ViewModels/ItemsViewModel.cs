@@ -201,7 +201,8 @@ namespace Jellyfin.ViewModels
                     int height, width;
 
                     if (item.Type == "Series" ||
-                        item.Type == "Movie")
+                        item.Type == "Movie" ||
+                        item.Type == "Video")
                     {
                         height = 450;
                         width = 300;
@@ -212,6 +213,7 @@ namespace Jellyfin.ViewModels
                         width = 300;
                     }
 
+                    // TODO: Add Title and Subtitle for MediaItemControl
                     GridItems.Add(new MediaDataItem
                     {
                         BaseItem = item,

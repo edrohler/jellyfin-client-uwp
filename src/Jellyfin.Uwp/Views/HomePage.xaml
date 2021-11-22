@@ -18,6 +18,10 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="My Media"
@@ -49,8 +53,156 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </StackPanel>
+                <ScrollViewer x:Name="LiveTvRecommendationsScollViewer"
+                              Grid.Row="1"
+                              Visibility="{Binding HasLiveTvRecommendations, Converter={StaticResource BoolToVisibilityConv}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Live Tv Recommendations"
+                                               FontSize="32"
+                                               Grid.Row="0"
+                                               Margin="0,25,0,25" />
+                        <ListView x:Name="LiveTvRecommendationsList"
+                                              ItemsSource="{Binding LiveTvRecommendationCollection}"
+                                              ScrollViewer.HorizontalScrollMode="Enabled"
+                                              ScrollViewer.VerticalScrollMode="Disabled"
+                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              Grid.Row="1"
+                                              Margin="15">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsStackPanel Background="Transparent"
+                                                                 Orientation="Horizontal"
+                                                                 Margin="15"
+                                                                 GroupPadding="1">
+                                    </ItemsStackPanel>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <customControls:MediaItemUserControl DataContext="{Binding}" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </ScrollViewer>
+                <ScrollViewer x:Name="ContinueWatchingScollViewer"
+                              Grid.Row="2"
+                              Visibility="{Binding HasContinueWatchingTvShows, Converter={StaticResource BoolToVisibilityConv}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Continue Watching"
+                                               FontSize="32"
+                                               Grid.Row="0"
+                                               Margin="0,25,0,25" />
+                        <ListView x:Name="ContinueWatchingList"
+                                              ItemsSource="{Binding ContinueWatchingTvShowsCollection}"
+                                              ScrollViewer.HorizontalScrollMode="Enabled"
+                                              ScrollViewer.VerticalScrollMode="Disabled"
+                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              Grid.Row="1"
+                                              Margin="15">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsStackPanel Background="Transparent"
+                                                                 Orientation="Horizontal"
+                                                                 Margin="15"
+                                                                 GroupPadding="1">
+                                    </ItemsStackPanel>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <customControls:MediaItemUserControl DataContext="{Binding}" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </ScrollViewer>
+                <ScrollViewer x:Name="ContinueListeningScollViewer"
+                              Grid.Row="3"
+                              Visibility="{Binding HasContinueListeningMusic, Converter={StaticResource BoolToVisibilityConv}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Continue Listening"
+                                               FontSize="32"
+                                               Grid.Row="0"
+                                               Margin="0,25,0,25" />
+                        <ListView x:Name="ContinueListeningList"
+                                              ItemsSource="{Binding ContinueListeningMusicCollection}"
+                                              ScrollViewer.HorizontalScrollMode="Enabled"
+                                              ScrollViewer.VerticalScrollMode="Disabled"
+                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              Grid.Row="1"
+                                              Margin="15">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsStackPanel Background="Transparent"
+                                                                 Orientation="Horizontal"
+                                                                 Margin="15"
+                                                                 GroupPadding="1">
+                                    </ItemsStackPanel>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <customControls:MediaItemUserControl DataContext="{Binding}" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </ScrollViewer>
+                <ScrollViewer x:Name="NextUpScollViewer"
+                              Grid.Row="4"
+                              Visibility="{Binding HasNextUp, Converter={StaticResource BoolToVisibilityConv}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Next Up"
+                                               FontSize="32"
+                                               Grid.Row="0"
+                                               Margin="0,25,0,25" />
+                        <ListView x:Name="NextUpList"
+                                              ItemsSource="{Binding NextUpCollection}"
+                                              ScrollViewer.HorizontalScrollMode="Enabled"
+                                              ScrollViewer.VerticalScrollMode="Disabled"
+                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                                              Grid.Row="1"
+                                              Margin="15">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsStackPanel Background="Transparent"
+                                                                 Orientation="Horizontal"
+                                                                 Margin="15"
+                                                                 GroupPadding="1">
+                                    </ItemsStackPanel>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <customControls:MediaItemUserControl DataContext="{Binding}" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </ScrollViewer>                
                 <ListView x:Name="LatestMediaList"
-                          Grid.Row="1"
+                          Grid.Row="5"
                           ItemsSource="{Binding LatestMedia}"
                           Visibility="{Binding IsBusy, Converter={StaticResource InvertedBoolToVisibilityConv}}">
                     <ListView.ItemsPanel>

@@ -2,26 +2,13 @@
 using Jellyfin.Sdk;
 using Jellyfin.Services;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
-using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
-
-// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Jellyfin.Controls
 {
@@ -29,21 +16,21 @@ namespace Jellyfin.Controls
     {
         public MediaItemImageUserControl()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         #region Dependency Properties
 
-        public static readonly DependencyProperty MediaIdProperty = DependencyProperty.Register(
-            "MediaId", typeof(Guid), typeof(MediaItemImageUserControl), new PropertyMetadata(default(Guid), OnMediaIdChanged));
-
         public static readonly DependencyProperty DesiredImageTypeProperty = DependencyProperty.Register(
             "DesiredImageType", typeof(ImageType), typeof(MediaItemImageUserControl), new PropertyMetadata(ImageType.Primary));
 
-        public Guid MediaId
+        public static readonly DependencyProperty MediaProperty = DependencyProperty.Register(
+            "Media", typeof(BaseItemDto), typeof(MediaItemImageUserControl), new PropertyMetadata(null, OnMediaChanged));
+
+        public BaseItemDto Media
         {
-            get => (Guid)GetValue(MediaIdProperty);
-            set => SetValue(MediaIdProperty, value);
+            get => (BaseItemDto)GetValue(MediaProperty);
+            set => SetValue(MediaProperty, value);
         }
 
         public ImageType DesiredImageType
@@ -52,7 +39,7 @@ namespace Jellyfin.Controls
             set => SetValue(DesiredImageTypeProperty, value);
         }
 
-        private static async void OnMediaIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void OnMediaChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is MediaItemImageUserControl self)
             {
@@ -74,18 +61,28 @@ namespace Jellyfin.Controls
 
         private async Task LoadImageAsync()
         {
-            //var height = this.Height;
-            //var width = this.Width;
-
-            //BitmapImage bitmapImage = new BitmapImage
-            //{
-            //    DecodePixelHeight = Convert.ToInt32(this.Height),
-            //    DecodePixelWidth = Convert.ToInt32(this.Width)
-            //};
-
             // Set FileName without Extension
             // Accounts for various image types.
-            string cacheFileName = $"{this.MediaId}-{this.DesiredImageType}";
+            // Single Episodes and Single Audio Songs
+            // need to get parent Id.
+            string cacheFileName;
+            Guid mediaId;
+
+            switch (Media.Type)
+            {
+                case "Episode":
+                    mediaId = (Guid)Media.SeriesId;
+                    cacheFileName = $"{Media.SeriesId}-{DesiredImageType}";
+                    break;
+                case "Audio":
+                    mediaId = (Guid)Media.AlbumId;
+                    cacheFileName = $"{Media.AlbumId}-{DesiredImageType}";
+                    break;
+                default:
+                    mediaId = Media.Id;
+                    cacheFileName = $"{Media.Id}-{DesiredImageType}";
+                    break;
+            }
 
             // Verify that an image exists by {filename}.*
             DirectoryInfo root = new DirectoryInfo(ApplicationData.Current.LocalCacheFolder.Path);
@@ -119,7 +116,7 @@ namespace Jellyfin.Controls
                     using (MemoryStream ms = new MemoryStream())
                     {
                         // Get the API response
-                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(this.MediaId, this.DesiredImageType);
+                        FileResponse fr = await JellyfinClientServices.Current.ImageClient.GetItemImageAsync(mediaId, DesiredImageType, addPlayedIndicator: true);
 
                         // Copy the API stream into a MemoryStream
                         await fr.Stream.CopyToAsync(ms);
@@ -152,9 +149,6 @@ namespace Jellyfin.Controls
                     ExceptionLogger.LogException(ex);
                 }
             }
-
-            // Finally assign the ImageSource to the Image
-            //this.ItemImage.Source = bitmapImage;
         }
 
         #endregion
